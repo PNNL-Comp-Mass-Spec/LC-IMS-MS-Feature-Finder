@@ -45,7 +45,7 @@ namespace FeatureFinder.Data
 			return msFeature2.MassMonoisotopic.CompareTo(msFeature1.MassMonoisotopic);
 		};
 
-		public static Comparison<MSFeature> FrameComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
+		public static Comparison<MSFeature> ScanLCComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
 		{
 			return msFeature1.ScanLC.CompareTo(msFeature2.ScanLC);
 		};
@@ -70,7 +70,7 @@ namespace FeatureFinder.Data
 			return msFeature2.Abundance.CompareTo(msFeature1.Abundance);
 		};
 
-		public static Comparison<MSFeature> FrameAndDriftComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
+		public static Comparison<MSFeature> ScanLCAndDriftComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
 		{
 			if (msFeature1.ScanLC != msFeature2.ScanLC)
 			{
