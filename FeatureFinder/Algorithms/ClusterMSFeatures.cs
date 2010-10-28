@@ -9,7 +9,7 @@ namespace FeatureFinder.Algorithms
 {
 	public static class ClusterMSFeatures
 	{
-		public static List<IMSMSFeature> ClusterByMass(IEnumerable<MSFeature> msFeatureEnumerable)
+		public static IEnumerable<IMSMSFeature> ClusterByMass(IEnumerable<MSFeature> msFeatureEnumerable)
 		{
 			List<IMSMSFeature> imsmsFeatureList = new List<IMSMSFeature>();
 			

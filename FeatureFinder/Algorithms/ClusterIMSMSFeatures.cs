@@ -10,7 +10,7 @@ namespace FeatureFinder.Algorithms
 	public static class ClusterIMSMSFeatures
 	{
 		// TODO: Finish this implementation. Should I just sort by mass, cluster everything across NET, and then split at the end?
-		public static List<LCIMSMSFeature> ClusterByMass(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
+		public static IEnumerable<LCIMSMSFeature> ClusterByMass(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
 		{
 			List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
 			

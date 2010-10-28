@@ -115,7 +115,7 @@ namespace LCMSFeatureFinder
 
 			Parallel.ForEach(groupByScanLCAndChargeQuery, msFeatureGroup =>
 			{
-				List<IMSMSFeature> imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+				IEnumerable<IMSMSFeature> imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
 
 				foreach (IMSMSFeature imsmsFeature in imsmsFeatureList)
 				{
@@ -126,7 +126,6 @@ namespace LCMSFeatureFinder
 			Logger.Log("Total Number of Unfiltered IMS-MS Features = " + imsmsfeatureBag.Count);
 			Logger.Log("Filtering out short IMS-MS Features...");
 
-			//List<IMSMSFeature> imsmsFeatureFilteredList = FeatureUtil.FilterByMemberCount(imsmsfeatureBag);
 			IEnumerable<IMSMSFeature> imsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(imsmsfeatureBag);
 			imsmsfeatureBag = null;
 
@@ -141,7 +140,7 @@ namespace LCMSFeatureFinder
 
 			Parallel.ForEach(groupByChargeQuery, imsmsFeatureGroup =>
 			{
-				List<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMass(imsmsFeatureGroup);
+				IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMass(imsmsFeatureGroup);
 
 				foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
 				{
