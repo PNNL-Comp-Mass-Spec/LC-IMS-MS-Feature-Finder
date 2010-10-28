@@ -99,6 +99,7 @@
   <ItemGroup>
     <Compile Include="Algorithms\ClusterMSFeatures.cs" />
     <Compile Include="Algorithms\ClusterIMSMSFeatures.cs" />
+    <Compile Include="Algorithms\ConformationDetection.cs" />
     <Compile Include="Control\IniReader.cs" />
     <Compile Include="Control\IsosReader.cs" />
     <Compile Include="Control\IsosWriter.cs" />

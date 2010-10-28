@@ -9,8 +9,7 @@ namespace FeatureFinder.Algorithms
 {
 	public static class ClusterIMSMSFeatures
 	{
-		// TODO: Finish this implementation. Should I just sort by mass, cluster everything across NET, and then split at the end?
-		public static IEnumerable<LCIMSMSFeature> ClusterByMass(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
+		public static IEnumerable<LCIMSMSFeature> ClusterByMassAndScanLC(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
 		{
 			List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
 			
@@ -43,6 +42,45 @@ namespace FeatureFinder.Algorithms
 				}
 
 				massReference = mass;
+			}
+
+			return lcimsmsFeatureList;
+
+			//IEnumerable<LCIMSMSFeature> splitLCIMSMSFeatureEnumerable = SplitByScanLCGap(lcimsmsFeatureList);
+
+			//return splitLCIMSMSFeatureEnumerable;
+		}
+
+		private static IEnumerable<LCIMSMSFeature> SplitByScanLCGap(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+		{
+			List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
+
+			int gapSizeMax = Settings.LCGapSizeMax;
+
+			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+			{
+				var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
+										orderby imsmsFeature.ScanLC
+										select imsmsFeature;
+
+				LCIMSMSFeature newLCIMSMSFeature = null;
+				int scanLCReference = -99;
+
+				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
+				{
+					if (imsmsFeature.ScanLC - scanLCReference - 1 <= gapSizeMax)
+					{
+						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
+					}
+					else
+					{
+						newLCIMSMSFeature = new LCIMSMSFeature(imsmsFeature.Charge);
+						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
+						lcimsmsFeatureList.Add(newLCIMSMSFeature);
+					}
+
+					scanLCReference = imsmsFeature.ScanLC;
+				}
 			}
 
 			return lcimsmsFeatureList;

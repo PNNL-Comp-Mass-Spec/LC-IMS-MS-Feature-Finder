@@ -9,17 +9,17 @@ namespace FeatureFinder.Data
 	{
 		public byte Charge { get; set; }
 
-		public List<IMSMSFeature> m_imsmsFeatureList;
+		public List<IMSMSFeature> IMSMSFeatureList { get; set; }
 
 		public LCIMSMSFeature(byte charge)
 		{
-			m_imsmsFeatureList = new List<IMSMSFeature>();
+			IMSMSFeatureList = new List<IMSMSFeature>();
 			Charge = charge;
 		}
 
 		public void AddIMSMSFeature(IMSMSFeature imsmsFeature)
 		{
-			m_imsmsFeatureList.Add(imsmsFeature);
+			IMSMSFeatureList.Add(imsmsFeature);
 		}
 	}
 }

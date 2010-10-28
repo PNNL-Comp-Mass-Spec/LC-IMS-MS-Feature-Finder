@@ -126,21 +126,21 @@ namespace LCMSFeatureFinder
 			Logger.Log("Total Number of Unfiltered IMS-MS Features = " + imsmsfeatureBag.Count);
 			Logger.Log("Filtering out short IMS-MS Features...");
 
-			IEnumerable<IMSMSFeature> imsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(imsmsfeatureBag);
-			imsmsfeatureBag = null;
+			//IEnumerable<IMSMSFeature> imsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(imsmsfeatureBag);
+			//imsmsfeatureBag = null;
 
-			Logger.Log("Total Number of Filtered IMS-MS Features = " + imsmsFeatureEnumerable.Count());
+			//Logger.Log("Total Number of Filtered IMS-MS Features = " + imsmsFeatureEnumerable.Count());
 			Logger.Log("Creating LC-IMS-MS Features...");
 
 			ConcurrentBag<LCIMSMSFeature> lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
 
-			var groupByChargeQuery = from imsmsFeature in imsmsFeatureEnumerable
+			var groupByChargeQuery = from imsmsFeature in imsmsfeatureBag
 									 group imsmsFeature by imsmsFeature.Charge into newGroup
 									 select newGroup;
 
 			Parallel.ForEach(groupByChargeQuery, imsmsFeatureGroup =>
 			{
-				IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMass(imsmsFeatureGroup);
+				IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsFeatureGroup);
 
 				foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
 				{
@@ -148,7 +148,12 @@ namespace LCMSFeatureFinder
 				}
 			});
 
-			Logger.Log("Total Number of Pre-Split LC-IMS-MS Features = " + lcimsmsFeatureBag.Count);
+			Logger.Log("Total Number of LC-IMS-MS Features = " + lcimsmsFeatureBag.Count);
+
+			Parallel.ForEach(lcimsmsFeatureBag, lcimsmsFeature =>
+			{
+				// TODO: Conformation Detection
+			});
 		}
 
 		/// <summary>

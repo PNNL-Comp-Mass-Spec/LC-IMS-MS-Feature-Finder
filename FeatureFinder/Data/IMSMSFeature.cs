@@ -10,31 +10,46 @@ namespace FeatureFinder.Data
 		public byte Charge { get; set; }
 		public int ScanLC { get; set; }
 
-		public List<MSFeature> m_msFeatureList;
+		public List<MSFeature> MSFeatureList { get; set; }
 
 		public IMSMSFeature(int scanLC, byte charge)
 		{
-			m_msFeatureList = new List<MSFeature>();
+			MSFeatureList = new List<MSFeature>();
 			ScanLC = scanLC;
 			Charge = charge;
 		}
 
 		public void AddMSFeature(MSFeature msFeature)
 		{
-			m_msFeatureList.Add(msFeature);
+			MSFeatureList.Add(msFeature);
 		}
 
 		public float CalculateAverageMass()
 		{
 			float totalMass = 0;
 
-			foreach (MSFeature msFeature in m_msFeatureList)
+			foreach (MSFeature msFeature in MSFeatureList)
 			{
 				totalMass += msFeature.MassMonoisotopic;
 			}
 
-			float averageMass = totalMass / m_msFeatureList.Count;
+			float averageMass = totalMass / MSFeatureList.Count;
 			return averageMass;
+		}
+
+		public Dictionary<int, int> GetIntensityValues()
+		{
+			Dictionary<int, int> intensityDictionary = new Dictionary<int, int>();
+
+			foreach (MSFeature msFeature in MSFeatureList)
+			{
+				int scanIMS = msFeature.ScanIMS;
+				int intensity = msFeature.Abundance;
+
+
+			}
+
+			return intensityDictionary;
 		}
 	}
 }
