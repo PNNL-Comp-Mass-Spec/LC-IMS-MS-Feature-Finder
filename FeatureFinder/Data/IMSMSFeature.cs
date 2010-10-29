@@ -46,10 +46,28 @@ namespace FeatureFinder.Data
 				int scanIMS = msFeature.ScanIMS;
 				int intensity = msFeature.Abundance;
 
-
+				int currentIntensity = 0;
+				if (intensityDictionary.TryGetValue(scanIMS, out currentIntensity))
+				{
+					intensityDictionary[scanIMS] += intensity;
+				}
+				else
+				{
+					intensityDictionary.Add(scanIMS, intensity);
+				}
 			}
 
 			return intensityDictionary;
+		}
+
+		public void GetMinAndMaxScanIMS(out int scanIMSMinimum, out int scanIMSMaximum)
+		{
+			var sortByScanIMSQuery = from msFeature in MSFeatureList
+									 orderby msFeature.ScanIMS
+									 select msFeature;
+
+			scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
+			scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
 		}
 	}
 }

@@ -152,7 +152,7 @@ namespace LCMSFeatureFinder
 
 			Parallel.ForEach(lcimsmsFeatureBag, lcimsmsFeature =>
 			{
-				// TODO: Conformation Detection
+				ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
 			});
 		}
 
