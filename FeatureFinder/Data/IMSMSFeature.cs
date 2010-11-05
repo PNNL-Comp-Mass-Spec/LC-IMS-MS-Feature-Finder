@@ -24,29 +24,34 @@ namespace FeatureFinder.Data
 			MSFeatureList.Add(msFeature);
 		}
 
-		public float CalculateAverageMass()
+		public void AddMSFeatureList(List<MSFeature> msFeatureList)
 		{
-			float totalMass = 0;
+			MSFeatureList.AddRange(msFeatureList);
+		}
+
+		public double CalculateAverageMass()
+		{
+			double totalMass = 0;
 
 			foreach (MSFeature msFeature in MSFeatureList)
 			{
 				totalMass += msFeature.MassMonoisotopic;
 			}
 
-			float averageMass = totalMass / MSFeatureList.Count;
+			double averageMass = totalMass / MSFeatureList.Count;
 			return averageMass;
 		}
 
-		public Dictionary<int, int> GetIntensityValues()
+		public Dictionary<int, double> GetIntensityValues()
 		{
-			Dictionary<int, int> intensityDictionary = new Dictionary<int, int>();
+			Dictionary<int, double> intensityDictionary = new Dictionary<int, double>();
 
 			foreach (MSFeature msFeature in MSFeatureList)
 			{
 				int scanIMS = msFeature.ScanIMS;
-				int intensity = msFeature.Abundance;
+				double intensity = msFeature.Abundance; // TODO: Use Original Intensity if available
 
-				int currentIntensity = 0;
+				double currentIntensity = 0.0;
 				if (intensityDictionary.TryGetValue(scanIMS, out currentIntensity))
 				{
 					intensityDictionary[scanIMS] += intensity;

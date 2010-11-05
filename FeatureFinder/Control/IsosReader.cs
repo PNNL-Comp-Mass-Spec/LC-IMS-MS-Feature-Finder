@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using FeatureFinder.Data;
+using FeatureFinder.Data.Maps;
 
 namespace FeatureFinder.Control
 {
@@ -259,16 +260,16 @@ namespace FeatureFinder.Control
 						if (i == 0)
 						{
 							currentFrame = frame;
-							ScanLCMapHolder.ScanLCMap.Add(ScanLCMapHolder.ScanLCIndex, frame);
+							ScanLCMap.Mapping.Add(ScanLCMap.ScanLCIndex, frame);
 						}
 						if (frame != currentFrame)
 						{
 							currentFrame = frame;
-							ScanLCMapHolder.ScanLCIndex++;
-							ScanLCMapHolder.ScanLCMap.Add(ScanLCMapHolder.ScanLCIndex, frame);
+							ScanLCMap.ScanLCIndex++;
+							ScanLCMap.Mapping.Add(ScanLCMap.ScanLCIndex, frame);
 						}
 
-						msFeature.ScanLC = ScanLCMapHolder.ScanLCIndex;
+						msFeature.ScanLC = ScanLCMap.ScanLCIndex;
 					}
 
 					if (m_columnMap.ContainsKey("MSFeature.ScanIMS")) msFeature.ScanIMS = Int32.Parse(columns[m_columnMap["MSFeature.ScanIMS"]], System.Globalization.NumberStyles.Any);
@@ -288,6 +289,7 @@ namespace FeatureFinder.Control
 					{
 						msFeature.Id = msFeatureIndex;
 						msFeatureList.Add(msFeature);
+						ScanIMSToDriftTimeMap.Mapping[msFeature.ScanIMS] = msFeature.DriftTime;
 						m_isosFileWriter.WriteLine(line);
 						msFeatureIndex++;
 					}

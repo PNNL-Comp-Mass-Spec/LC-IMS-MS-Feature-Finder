@@ -105,11 +105,11 @@ namespace LCMSFeatureFinder
 		{
 			Logger.Log("Creating IMS-MS Features...");
 
-			List<MSFeature> msFeatureList = isosReader.MSFeatureList;
+			List<MSFeature> filteredMSFeatureList = isosReader.MSFeatureList;
 
 			ConcurrentBag<IMSMSFeature> imsmsfeatureBag = new ConcurrentBag<IMSMSFeature>();
 
-			var groupByScanLCAndChargeQuery = from msFeature in msFeatureList
+			var groupByScanLCAndChargeQuery = from msFeature in filteredMSFeatureList
 											  group msFeature by new { msFeature.ScanLC, msFeature.Charge } into newGroup
 											  select newGroup;
 
@@ -149,11 +149,76 @@ namespace LCMSFeatureFinder
 			});
 
 			Logger.Log("Total Number of LC-IMS-MS Features = " + lcimsmsFeatureBag.Count);
+			Logger.Log("Executing Dalton Correction Algorithm on LC-IMS-MS Features...");
 
-			Parallel.ForEach(lcimsmsFeatureBag, lcimsmsFeature =>
+			ConcurrentBag<LCIMSMSFeature> daCorrectedLCIMSMSFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
+
+			var groupByChargeQuery2 = from lcimsmsFeature in lcimsmsFeatureBag
+									  group lcimsmsFeature by lcimsmsFeature.Charge into newGroup
+									  select newGroup;
+
+			ConcurrentBag<IEnumerable<LCIMSMSFeature>> lcimsmsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
+
+			Parallel.ForEach(groupByChargeQuery2, lcimsmsFeatureGroup =>
+			{
+				IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureGroup);
+
+				foreach (IEnumerable<LCIMSMSFeature> lcimsmsFeatureList in returnList)
+				{
+					lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
+				}
+			});
+
+			lcimsmsFeatureBag = null;
+
+			Parallel.ForEach(lcimsmsFeatureListBag, lcimsmsFeatureGroup =>
+			{
+				IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
+
+				foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
+				{
+					daCorrectedLCIMSMSFeatureBag.Add(lcimsmsFeature);
+				}
+			});
+
+			Logger.Log("Total Number of Dalton Corrected LC-IMS-MS Features = " + daCorrectedLCIMSMSFeatureBag.Count);
+			Logger.Log("Filtering LC-IMS-MS features based on Member Count...");
+
+			IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(daCorrectedLCIMSMSFeatureBag);
+			daCorrectedLCIMSMSFeatureBag = null;
+
+			Logger.Log("Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+
+			Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
+			// TODO: Parallelize
+			lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
+			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+
+			//Parallel.ForEach(lcimsmsFeatureEnumerable, lcimsmsFeature =>
+			//{
+			//    ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
+			//});
+
+			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
 				ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
-			});
+			}
+
+			Logger.Log("Creating filtered Isos file...");
+
+			List<MSFeature> msFeatureListOutput = new List<MSFeature>();
+			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+			{
+				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
+				{
+					msFeatureListOutput.AddRange(imsmsFeature.MSFeatureList);
+				}
+			}
+
+			IsosWriter isosWriter = new IsosWriter(msFeatureListOutput, isosReader.ColumnMap);
+
+			Logger.Log("Writing output files...");
+			FeatureUtil.WriteLCIMSMSFeatureToFile(lcimsmsFeatureEnumerable);
 		}
 
 		/// <summary>

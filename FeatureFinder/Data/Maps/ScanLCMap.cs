@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FeatureFinder.Data
+namespace FeatureFinder.Data.Maps
 {
-	public static class ScanLCMapHolder
+	public static class ScanLCMap
 	{
 		public static int ScanLCIndex { get; set; }
-		public static Dictionary<int, int> ScanLCMap { get; set; }
+		public static Dictionary<int, int> Mapping { get; set; }
 
-		static ScanLCMapHolder()
+		static ScanLCMap()
 		{
 			Reset();
 		}
@@ -16,7 +16,7 @@ namespace FeatureFinder.Data
 		public static void Reset()
 		{
 			ScanLCIndex = 1;
-			ScanLCMap = new Dictionary<int, int>();
+			Mapping = new Dictionary<int, int>();
 		}
 	}
 }

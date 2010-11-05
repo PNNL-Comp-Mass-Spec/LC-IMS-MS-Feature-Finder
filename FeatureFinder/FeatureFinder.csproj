@@ -83,6 +83,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Iridium">
+      <HintPath>bin\lib\MathNet.Iridium.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -100,6 +103,7 @@
     <Compile Include="Algorithms\ClusterMSFeatures.cs" />
     <Compile Include="Algorithms\ClusterIMSMSFeatures.cs" />
     <Compile Include="Algorithms\ConformationDetection.cs" />
+    <Compile Include="Algorithms\DaltonCorrection.cs" />
     <Compile Include="Control\IniReader.cs" />
     <Compile Include="Control\IsosReader.cs" />
     <Compile Include="Control\IsosWriter.cs" />
@@ -107,11 +111,15 @@
     <Compile Include="Data\LCIMSMSFeature.cs" />
     <Compile Include="Data\IMSMSFeature.cs" />
     <Compile Include="Data\LCMSFeature.cs" />
+    <Compile Include="Data\Maps\ScanIMSToDriftTimeMap.cs" />
     <Compile Include="Data\MSFeature.cs" />
-    <Compile Include="Data\ScanLCMapHolder.cs" />
+    <Compile Include="Data\Peak.cs" />
+    <Compile Include="Data\Maps\ScanLCMap.cs" />
+    <Compile Include="Data\XYPair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Control\Settings.cs" />
     <Compile Include="Utilities\FeatureUtil.cs" />
+    <Compile Include="Utilities\PeakUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
