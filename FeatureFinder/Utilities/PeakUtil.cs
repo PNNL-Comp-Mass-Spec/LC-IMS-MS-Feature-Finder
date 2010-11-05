@@ -6,6 +6,7 @@ using MathNet.Numerics.Interpolation;
 using MathNet.Numerics.Distributions;
 using FeatureFinder.Data;
 using MathNet.Numerics.Transformations;
+using FeatureFinder.Control;
 
 namespace FeatureFinder.Utilities
 {
@@ -39,6 +40,10 @@ namespace FeatureFinder.Utilities
 
 		public static double CalculatePeakFit(IInterpolationMethod observedPeak, IInterpolationMethod theoreticalPeak, double minimumXValue, double maximumXValue, double xValueOfMaximumYValue, double minYValueFactor)
 		{
+			List<double> xValues = new List<double>();
+			List<double> yValues1 = new List<double>();
+			List<double> yValues2 = new List<double>();
+
 			double maxObservedPeakValue = observedPeak.Interpolate(xValueOfMaximumYValue);
 			double maxTheoreticalPeakValue = theoreticalPeak.Interpolate(xValueOfMaximumYValue);
 
@@ -59,6 +64,10 @@ namespace FeatureFinder.Utilities
 					double normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
 					double normalizedTheoreticalPeakValue = theoreticalPeak.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
 
+					xValues.Add(minimumXValue + i);
+					yValues1.Add(normalizedObservedPeakValue);
+					yValues2.Add(normalizedTheoreticalPeakValue);
+
 					double residualDifference = normalizedObservedPeakValue - normalizedTheoreticalPeakValue;
 
 					//sumOfSquaredResiduals += Math.Pow(residualDifference, 2);
@@ -69,6 +78,8 @@ namespace FeatureFinder.Utilities
 
 			double fitScore = 1 - (sumOfSquaredResiduals / (double)numPointsTested);
 			//Console.WriteLine(fitScore);
+
+			PeakWriter.Write(xValues, yValues1, yValues2);
 
 			return fitScore;
 		}

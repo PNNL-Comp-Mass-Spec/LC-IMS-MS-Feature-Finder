@@ -104,6 +104,7 @@
     <Compile Include="Algorithms\ClusterIMSMSFeatures.cs" />
     <Compile Include="Algorithms\ConformationDetection.cs" />
     <Compile Include="Algorithms\DaltonCorrection.cs" />
+    <Compile Include="Control\PeakWriter.cs" />
     <Compile Include="Control\IniReader.cs" />
     <Compile Include="Control\IsosReader.cs" />
     <Compile Include="Control\IsosWriter.cs" />
