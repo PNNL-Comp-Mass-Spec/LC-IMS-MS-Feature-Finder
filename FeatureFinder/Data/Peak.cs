@@ -11,7 +11,8 @@ namespace FeatureFinder.Data
 
 		public Peak(List<XYPair> xyPairList)
 		{
-			this.XYPairList = xyPairList;
+			this.XYPairList = new List<XYPair>();
+			this.XYPairList.AddRange(xyPairList);
 		}
 
 		public Peak(List<double> xValues, List<double> yValues)
@@ -55,6 +56,15 @@ namespace FeatureFinder.Data
 
 			xValueMinimum = sortByXValue.First().XValue;
 			xValueMaximum = sortByXValue.Last().XValue;
+		}
+
+		public double GetXValueOfMaximumYValue()
+		{
+			var sortByXValue = from xyPair in XYPairList
+							   orderby xyPair.YValue descending
+							   select xyPair;
+
+			return sortByXValue.First().XValue;
 		}
 
 		public void PrintPeakToConsole()

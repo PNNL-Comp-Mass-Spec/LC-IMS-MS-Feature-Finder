@@ -14,7 +14,7 @@ namespace FeatureFinder.Utilities
 		private const double ONE_OVER_SQRT_OF_2_PI = 0.3989423;
 
 		// TODO: Sometimes, a normalized value of 1 is never seen. This happens when the # of points is an even number.
-		public static List<double> CreateTheoreticalGaussianPeak(double centerOfPeak, int peakWidth, int numOfPoints)
+		public static List<XYPair> CreateTheoreticalGaussianPeak(double centerOfPeak, double peakWidth, int numOfPoints)
 		{
 			double sigma = peakWidth / 2.35;
 			double sixSigma = 3 * peakWidth;
@@ -23,17 +23,54 @@ namespace FeatureFinder.Utilities
 			int startPoint = 0 - (int)Math.Floor(((numOfPoints - 1) / 2.0));
 			int stopPoint = 0 + (int)Math.Ceiling(((numOfPoints - 1) / 2.0));
 
-			List<double> peakPoints = new List<double>();
+			List<XYPair> xyPairList = new List<XYPair>();
 
 			for (int i = startPoint; i <= stopPoint; i++)
 			{
 				double xValue = centerOfPeak + (pointSize * i);
 				double yValue = (1 / sigma) * ONE_OVER_SQRT_OF_2_PI * Math.Exp(-1 * (Math.Pow(xValue - centerOfPeak, 2)) / (2 * Math.Pow(sigma, 2)));
 
-				peakPoints.Add(yValue);
+				XYPair xyPair = new XYPair(xValue, yValue);
+				xyPairList.Add(xyPair);
 			}
 
-			return peakPoints;
+			return xyPairList;
+		}
+
+		public static double CalculatePeakFit(IInterpolationMethod observedPeak, IInterpolationMethod theoreticalPeak, double minimumXValue, double maximumXValue, double xValueOfMaximumYValue, double minYValueFactor)
+		{
+			double maxObservedPeakValue = observedPeak.Interpolate(xValueOfMaximumYValue);
+			double maxTheoreticalPeakValue = theoreticalPeak.Interpolate(xValueOfMaximumYValue);
+
+			double totalWidth = maximumXValue - minimumXValue;
+			double pointWidth = totalWidth / 1000.0;
+
+			double minValueToTest = maxObservedPeakValue * minYValueFactor;
+			int numPointsTested = 0;
+
+			double sumOfSquaredResiduals = 0.0;
+
+			for (double i = 0; i < totalWidth; i += pointWidth)
+			{
+				double observedPeakValue = observedPeak.Interpolate(minimumXValue + i);
+
+				if (observedPeakValue >= minValueToTest)
+				{
+					double normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
+					double normalizedTheoreticalPeakValue = theoreticalPeak.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
+
+					double residualDifference = normalizedObservedPeakValue - normalizedTheoreticalPeakValue;
+
+					//sumOfSquaredResiduals += Math.Pow(residualDifference, 2);
+					sumOfSquaredResiduals += Math.Abs(residualDifference);
+					numPointsTested++;
+				}
+			}
+
+			double fitScore = 1 - (sumOfSquaredResiduals / (double)numPointsTested);
+			//Console.WriteLine(fitScore);
+
+			return fitScore;
 		}
 
 		public static double CalculatePeakFit(List<double> observedPeak, List<double> modelPeak, double minYValueFactor)
@@ -58,7 +95,6 @@ namespace FeatureFinder.Utilities
 			}
 
 			double minValueToTest = maxObservedPeakValue * minYValueFactor;
-			double normalizedMeanOfObservedPeakValues = (sumOfObservedPeakValues / maxObservedPeakValue) / modelPeak.Count;
 
 			double sumOfSquaredResiduals = 0.0;
 
@@ -96,6 +132,7 @@ namespace FeatureFinder.Utilities
 			return newPeak;
 		}
 
+		/*
 		public static List<int> DetectGaussianPeaks(List<double> peak)
 		{
 			int peakWindow = 5;
@@ -160,6 +197,7 @@ namespace FeatureFinder.Utilities
 
 			return null;
 		}
+		*/ 
 
 		// TODO: Verify this actually works --- Da's code, slightly modified by me
 		public static Peak KDESmooth(Peak peak, double bandwidth)

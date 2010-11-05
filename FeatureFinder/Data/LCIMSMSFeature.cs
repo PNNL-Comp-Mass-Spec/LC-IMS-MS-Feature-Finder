@@ -19,6 +19,8 @@ namespace FeatureFinder.Data
 		{
 			IMSMSFeatureList = new List<IMSMSFeature>();
 			Charge = charge;
+			IMSScore = 0;
+			LCScore = 0;
 		}
 
 		public void AddIMSMSFeature(IMSMSFeature imsmsFeature)

@@ -88,15 +88,81 @@ namespace FeatureFinder.Algorithms
 			//Console.WriteLine("================================================");
 		
 			IInterpolationMethod driftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(driftProfilePeak);
-			IInterpolationMethod smoothedDriftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(driftProfilePeak);
+			IInterpolationMethod smoothedDriftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedDriftProfilePeak);
+
+			List<XYPair> xyPairList = new List<XYPair>();
+			List<Peak> peakList = new List<Peak>();
+			int scanIMSMinimum = globalScanIMSMinimum;
+			double previousIntensity = 0;
+			bool movingUp = true;
+
+			for (int i = globalScanIMSMinimum; i <= globalScanIMSMaximum; i++)
+			{
+				double driftTime = scanIMSToDriftTimeInterpolation.Interpolate(i);
+				double intensity = smoothedDriftProfileInterpolation.Interpolate(driftTime);
+
+				if (intensity > previousIntensity)
+				{
+					// End of Peak
+					if (!movingUp)
+					{
+						xyPairList = PadXYPairsWithZeros(xyPairList, scanIMSToDriftTimeInterpolation, scanIMSMinimum, i - 1, imsHalfWindow);
+						Peak peak = new Peak(xyPairList);
+						peakList.Add(peak);
+						
+						// Start over with a new Peak
+						xyPairList.Clear();
+						scanIMSMinimum = i;
+						movingUp = true;
+					}
+				}
+				else
+				{
+					movingUp = false;
+				}
+
+				XYPair xyPair = new XYPair(driftTime, intensity);
+				xyPairList.Add(xyPair);
+
+				previousIntensity = intensity;
+			}
+
+			// When you get to the end, end the last Peak
+			xyPairList = PadXYPairsWithZeros(xyPairList, scanIMSToDriftTimeInterpolation, scanIMSMinimum, globalScanIMSMaximum, imsHalfWindow);
+			Peak lastPeak = new Peak(xyPairList);
+			peakList.Add(lastPeak);
 
 			double resolvingPower = GetResolvingPower(lcimsmsFeature.Charge);
-			double detectedDriftTime = 30; // TODO: Actually detect a peak to get this value
-			double theoreticalFWHM = detectedDriftTime / resolvingPower;
 
-			NormalDistribution normalDistribution = PeakUtil.CreateNormalDistribution(detectedDriftTime, theoreticalFWHM);
+			foreach (Peak peak in peakList)
+			{
+				Peak smoothedPeak = PeakUtil.KDESmooth(peak, 0.35);
+				double driftTime = smoothedPeak.GetXValueOfMaximumYValue();
+				double theoreticalFWHM = driftTime / resolvingPower;
+
+				double minimumXValue = 0;
+				double maximumXValue = 0;
+				smoothedPeak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
+
+				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(driftTime, maximumXValue - minimumXValue, 100);
+				Peak normalDistributionPeak = new Peak(normalDistributionXYPairList);
+
+				IInterpolationMethod smoothedPeakInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedPeak);
+				IInterpolationMethod normalDistribution = PeakUtil.GetLinearInterpolationMethod(normalDistributionPeak);
+
+				//NormalDistribution normalDistribution = PeakUtil.CreateNormalDistribution(driftTime, theoreticalFWHM);
+
+				double fitScore = PeakUtil.CalculatePeakFit(smoothedPeakInterpolation, normalDistribution, minimumXValue, maximumXValue, driftTime, 0.05);
+
+				if (fitScore > lcimsmsFeature.IMSScore)
+				{
+					lcimsmsFeature.IMSScore = (float)fitScore;
+				}
+			}
+
 		}
 
+		/*
 		public static void DetectConformationsForLCIMSMSFeatureOld(LCIMSMSFeature lcimsmsFeature)
 		{
 			List<IMSMSFeature> imsmsFeatureList = lcimsmsFeature.IMSMSFeatureList;
@@ -236,6 +302,7 @@ namespace FeatureFinder.Algorithms
 			lcimsmsFeature.IMSScore = (float)fitScore;
 			lcimsmsFeature.LCScore = (float)lcFitScore;
 		}
+		*/ 
 
 		private static List<XYPair> PadXYPairsWithZeros(List<XYPair> driftProfileXYPairList, IInterpolationMethod scanIMSToDriftTimeInterpolation, int globalScanIMSMinimum, int globalScanIMSMaximum, int imsHalfWindow)
 		{
