@@ -79,7 +79,7 @@ namespace FeatureFinder.Utilities
 			double fitScore = 1 - (sumOfSquaredResiduals / (double)numPointsTested);
 			//Console.WriteLine(fitScore);
 
-			PeakWriter.Write(xValues, yValues1, yValues2);
+			//PeakWriter.Write(xValues, yValues1, yValues2);
 
 			return fitScore;
 		}

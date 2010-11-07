@@ -60,11 +60,11 @@ namespace FeatureFinder.Data
 
 		public double GetXValueOfMaximumYValue()
 		{
-			var sortByXValue = from xyPair in XYPairList
+			var sortByYValue = from xyPair in XYPairList
 							   orderby xyPair.YValue descending
 							   select xyPair;
 
-			return sortByXValue.First().XValue;
+			return sortByYValue.First().XValue;
 		}
 
 		public void PrintPeakToConsole()

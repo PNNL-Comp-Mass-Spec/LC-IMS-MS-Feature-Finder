@@ -144,7 +144,11 @@ namespace FeatureFinder.Algorithms
 				double maximumXValue = 0;
 				smoothedPeak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
 
-				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(driftTime, maximumXValue - minimumXValue, 100);
+				double peakWidth = (maximumXValue - minimumXValue) / 3; // Dividing by 3 to make compatible with Normal Distribution Creator??
+				int numPoints = 100;
+
+				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(driftTime, theoreticalFWHM, numPoints);
+				normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList, scanIMSToDriftTimeInterpolation);
 				Peak normalDistributionPeak = new Peak(normalDistributionXYPairList);
 
 				IInterpolationMethod smoothedPeakInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedPeak);
@@ -310,6 +314,30 @@ namespace FeatureFinder.Algorithms
 			{
 				double lowDriftTime = scanIMSToDriftTimeInterpolation.Interpolate(globalScanIMSMinimum - imsHalfWindow - i);
 				double highDriftTime = scanIMSToDriftTimeInterpolation.Interpolate(globalScanIMSMaximum + imsHalfWindow + i);
+
+				XYPair lowXYPair = new XYPair(lowDriftTime, 0);
+				XYPair highXYPair = new XYPair(highDriftTime, 0);
+
+				driftProfileXYPairList.Add(lowXYPair);
+				driftProfileXYPairList.Add(highXYPair);
+			}
+
+			return driftProfileXYPairList;
+		}
+
+		private static List<XYPair> PadXYPairsWithZeros(List<XYPair> driftProfileXYPairList, IInterpolationMethod scanIMSToDriftTimeInterpolation)
+		{
+			var sortByXValue = from xyPair in driftProfileXYPairList
+							   orderby xyPair.XValue ascending
+							   select xyPair;
+
+			double minXValue = sortByXValue.First().XValue;
+			double maxXValue = sortByXValue.Last().XValue;
+
+			for (int i = 1; i <= 5; i++)
+			{
+				double lowDriftTime = minXValue - i;
+				double highDriftTime = maxXValue + i;
 
 				XYPair lowXYPair = new XYPair(lowDriftTime, 0);
 				XYPair highXYPair = new XYPair(highDriftTime, 0);

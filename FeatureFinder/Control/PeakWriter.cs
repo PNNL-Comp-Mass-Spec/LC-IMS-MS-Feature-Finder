@@ -25,7 +25,7 @@ namespace FeatureFinder.Control
 
 			for(int i = 0; i < xValues.Count; i++)
 			{
-				stringBuilder.Append(xValues[i] + "\t" + yValues1[i] + "\t" + yValues2 + "\n");
+				stringBuilder.Append(xValues[i] + "\t" + yValues1[i] + "\t" + yValues2[i] + "\n");
 			}
 
 			m_textWriter.WriteLine(stringBuilder.ToString());
