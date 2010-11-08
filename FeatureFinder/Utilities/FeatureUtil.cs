@@ -124,6 +124,27 @@ namespace FeatureFinder.Utilities
 			return filterQuery.AsEnumerable();
 		}
 
+		public static IEnumerable<LCIMSMSFeature> FilterSingleLCScan(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+		{
+			List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
+
+			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+			{
+				int referenceScanLC = lcimsmsFeature.IMSMSFeatureList[0].ScanLC;
+
+				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
+				{
+					if (imsmsFeature.ScanLC != referenceScanLC)
+					{
+						lcimsmsFeatureList.Add(lcimsmsFeature);
+						break;
+					}
+				}
+			}
+
+			return lcimsmsFeatureList;
+		}
+
 		public static bool DoLCIMSMSFeaturesFitTogether(LCIMSMSFeature feature1, LCIMSMSFeature feature2)
 		{
 			if (feature1.Charge != feature2.Charge)

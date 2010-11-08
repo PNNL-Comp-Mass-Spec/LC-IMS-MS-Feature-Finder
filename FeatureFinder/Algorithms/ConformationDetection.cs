@@ -14,7 +14,7 @@ namespace FeatureFinder.Algorithms
 	{
 		private const int IMS_SCAN_WINDOW_WIDTH = 5;
 
-		public static void DetectConformationsForLCIMSMSFeature(LCIMSMSFeature lcimsmsFeature)
+		public static IEnumerable<LCIMSMSFeature> DetectConformationsForLCIMSMSFeature(LCIMSMSFeature lcimsmsFeature)
 		{
 			List<IMSMSFeature> imsmsFeatureList = lcimsmsFeature.IMSMSFeatureList;
 
@@ -47,6 +47,7 @@ namespace FeatureFinder.Algorithms
 			int indexOfMaxIntensity = 0;
 
 			IInterpolationMethod scanIMSToDriftTimeInterpolation = ScanIMSToDriftTimeMap.GetInterpolation();
+			double driftTimeHalfWindow = scanIMSToDriftTimeInterpolation.Interpolate(imsHalfWindow + 0.5) - scanIMSToDriftTimeInterpolation.Interpolate(0);
 			
 			List<XYPair> driftProfileXYPairList = new List<XYPair>();
 
@@ -134,6 +135,8 @@ namespace FeatureFinder.Algorithms
 
 			double resolvingPower = GetResolvingPower(lcimsmsFeature.Charge);
 
+			List<LCIMSMSFeature> newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
+
 			foreach (Peak peak in peakList)
 			{
 				Peak smoothedPeak = PeakUtil.KDESmooth(peak, 0.35);
@@ -144,11 +147,10 @@ namespace FeatureFinder.Algorithms
 				double maximumXValue = 0;
 				smoothedPeak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
 
-				double peakWidth = (maximumXValue - minimumXValue) / 3; // Dividing by 3 to make compatible with Normal Distribution Creator??
 				int numPoints = 100;
 
 				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(driftTime, theoreticalFWHM, numPoints);
-				normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList, scanIMSToDriftTimeInterpolation);
+				normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList);
 				Peak normalDistributionPeak = new Peak(normalDistributionXYPairList);
 
 				IInterpolationMethod smoothedPeakInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedPeak);
@@ -158,12 +160,37 @@ namespace FeatureFinder.Algorithms
 
 				double fitScore = PeakUtil.CalculatePeakFit(smoothedPeakInterpolation, normalDistribution, minimumXValue, maximumXValue, driftTime, 0.05);
 
-				if (fitScore > lcimsmsFeature.IMSScore)
+				// Create a new LC-IMS-MS Feature
+				LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge);
+				newLCIMSMSFeature.IMSScore = (float)fitScore;
+
+				double lowDriftTime = driftTime - driftTimeHalfWindow;
+				double highDriftTime = driftTime + driftTimeHalfWindow;
+
+				// Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
+				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
 				{
-					lcimsmsFeature.IMSScore = (float)fitScore;
+					IEnumerable<MSFeature> msFeatureEnumerable = imsmsFeature.FindMSFeaturesInDriftTimeRange(lowDriftTime, highDriftTime);
+
+					if (msFeatureEnumerable.Count() > 0)
+					{
+						IMSMSFeature newIMSMSFeature = new IMSMSFeature(imsmsFeature.ScanLC, imsmsFeature.Charge);
+						newIMSMSFeature.AddMSFeatureList(msFeatureEnumerable);
+						newLCIMSMSFeature.AddIMSMSFeature(newIMSMSFeature);
+					}
 				}
+
+				if (newLCIMSMSFeature.IMSMSFeatureList.Count > 0)
+				{
+					newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
+				}
+
+				// TODO: Find LC Peaks
+
+				// TODO: Calculate LC Score
 			}
 
+			return newLCIMSMSFeatureList;
 		}
 
 		/*
@@ -325,7 +352,7 @@ namespace FeatureFinder.Algorithms
 			return driftProfileXYPairList;
 		}
 
-		private static List<XYPair> PadXYPairsWithZeros(List<XYPair> driftProfileXYPairList, IInterpolationMethod scanIMSToDriftTimeInterpolation)
+		private static List<XYPair> PadXYPairsWithZeros(List<XYPair> driftProfileXYPairList)
 		{
 			var sortByXValue = from xyPair in driftProfileXYPairList
 							   orderby xyPair.XValue ascending

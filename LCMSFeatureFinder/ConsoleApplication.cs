@@ -124,7 +124,7 @@ namespace LCMSFeatureFinder
 			});
 
 			Logger.Log("Total Number of Unfiltered IMS-MS Features = " + imsmsfeatureBag.Count);
-			Logger.Log("Filtering out short IMS-MS Features...");
+			//Logger.Log("Filtering out short IMS-MS Features...");
 
 			//IEnumerable<IMSMSFeature> imsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(imsmsfeatureBag);
 			//imsmsfeatureBag = null;
@@ -185,6 +185,7 @@ namespace LCMSFeatureFinder
 			Logger.Log("Filtering LC-IMS-MS features based on Member Count...");
 
 			IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(daCorrectedLCIMSMSFeatureBag);
+			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			daCorrectedLCIMSMSFeatureBag = null;
 
 			Logger.Log("Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
@@ -192,18 +193,32 @@ namespace LCMSFeatureFinder
 			Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
 			// TODO: Parallelize
 			lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
+			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+
+			Logger.Log("Conformation Detection...");
 
 			//Parallel.ForEach(lcimsmsFeatureEnumerable, lcimsmsFeature =>
 			//{
 			//    ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
 			//});
 
+			lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
+
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
-				ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
+				IEnumerable<LCIMSMSFeature> newLCIMSMSFeatureEnumerable = ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
+
+				foreach (LCIMSMSFeature newLCIMSMSFeature in newLCIMSMSFeatureEnumerable)
+				{
+					lcimsmsFeatureBag.Add(newLCIMSMSFeature);
+				}
 			}
 
+			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureBag);
+			lcimsmsFeatureBag = null;
+
+			Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 			Logger.Log("Creating filtered Isos file...");
 
 			List<MSFeature> msFeatureListOutput = new List<MSFeature>();

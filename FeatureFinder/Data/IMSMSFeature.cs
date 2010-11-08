@@ -24,9 +24,9 @@ namespace FeatureFinder.Data
 			MSFeatureList.Add(msFeature);
 		}
 
-		public void AddMSFeatureList(List<MSFeature> msFeatureList)
+		public void AddMSFeatureList(IEnumerable<MSFeature> msFeatureEnumerable)
 		{
-			MSFeatureList.AddRange(msFeatureList);
+			MSFeatureList.AddRange(msFeatureEnumerable);
 		}
 
 		public double CalculateAverageMass()
@@ -73,6 +73,15 @@ namespace FeatureFinder.Data
 
 			scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
 			scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
+		}
+
+		public IEnumerable<MSFeature> FindMSFeaturesInDriftTimeRange(double lowDriftTime, double highDriftTime)
+		{
+			var findByDriftTimeQuery = from msFeature in MSFeatureList
+									   where msFeature.DriftTime >= lowDriftTime && msFeature.DriftTime <= highDriftTime
+									   select msFeature;
+
+			return findByDriftTimeQuery.AsEnumerable();
 		}
 	}
 }
