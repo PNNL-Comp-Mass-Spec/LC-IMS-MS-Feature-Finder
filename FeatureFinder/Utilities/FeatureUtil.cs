@@ -317,12 +317,13 @@ namespace FeatureFinder.Utilities
 						newLCIMSMSFeature = new LCIMSMSFeature(imsmsFeature.Charge);
 						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
 						lcimsmsFeatureList.Add(newLCIMSMSFeature);
-						referenceScanLC = scanLC;
 					}
 					else
 					{
 						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
 					}
+
+					referenceScanLC = scanLC;
 				}
 			}
 
