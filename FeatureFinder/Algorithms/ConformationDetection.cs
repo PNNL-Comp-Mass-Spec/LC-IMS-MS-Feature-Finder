@@ -12,7 +12,7 @@ namespace FeatureFinder.Algorithms
 {
 	public static class ConformationDetection
 	{
-		private const int IMS_SCAN_WINDOW_WIDTH = 5;
+		private const int IMS_SCAN_WINDOW_WIDTH = 9;
 
 		public static IEnumerable<LCIMSMSFeature> DetectConformationsForLCIMSMSFeature(LCIMSMSFeature lcimsmsFeature)
 		{
@@ -137,6 +137,9 @@ namespace FeatureFinder.Algorithms
 
 			List<LCIMSMSFeature> newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
 
+			int index = 0;
+			int conformationIndex = 0;
+
 			foreach (Peak peak in peakList)
 			{
 				Peak smoothedPeak = PeakUtil.KDESmooth(peak, 0.35);
@@ -182,12 +185,46 @@ namespace FeatureFinder.Algorithms
 
 				if (newLCIMSMSFeature.IMSMSFeatureList.Count > 0)
 				{
+					newLCIMSMSFeature.ConformationIndex = conformationIndex;
 					newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
+					conformationIndex++;
+					/*
+					// TODO: Find LC Peaks
+					var sortByScanLC = from imsmsFeature in newLCIMSMSFeature.IMSMSFeatureList
+									   orderby imsmsFeature.ScanLC ascending
+									   select imsmsFeature;
+
+					Console.WriteLine("*************************************************");
+					Console.WriteLine("Index = " + index + "\tMass = " + newLCIMSMSFeature.CalculateAverageMass() + "\tDrift = " + driftTime + "\tLC Range = " + sortByScanLC.First().ScanLC + "\t" + sortByScanLC.Last().ScanLC);
+
+					List<XYPair> lcXYPairList = new List<XYPair>();
+					int scanLC = sortByScanLC.First().ScanLC - 1;
+
+					foreach (IMSMSFeature imsmsFeature in sortByScanLC)
+					{
+						int currentScanLC = imsmsFeature.ScanLC;
+
+						for (int i = scanLC + 1; i < currentScanLC; i++)
+						{
+							XYPair zeroValue = new XYPair(i, 0);
+							lcXYPairList.Add(zeroValue);
+							Console.Write("0\t");
+						}
+
+						XYPair xyPair = new XYPair(currentScanLC, imsmsFeature.GetIntensity());
+						lcXYPairList.Add(xyPair);
+
+						scanLC = currentScanLC;
+
+						Console.Write(imsmsFeature.GetIntensity() + "\t");
+					}
+					Console.WriteLine("");
+					Console.WriteLine("*************************************************");
+					*/
+					// TODO: Calculate LC Score
 				}
 
-				// TODO: Find LC Peaks
-
-				// TODO: Calculate LC Score
+				index++;
 			}
 
 			return newLCIMSMSFeatureList;

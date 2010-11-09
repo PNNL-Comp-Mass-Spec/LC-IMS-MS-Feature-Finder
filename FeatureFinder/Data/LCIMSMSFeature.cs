@@ -14,6 +14,7 @@ namespace FeatureFinder.Data
 
 		public float IMSScore { get; set; }
 		public float LCScore { get; set; }
+		public int ConformationIndex { get; set; }
 
 		public LCIMSMSFeature(byte charge)
 		{
@@ -21,6 +22,7 @@ namespace FeatureFinder.Data
 			Charge = charge;
 			IMSScore = 0;
 			LCScore = 0;
+			ConformationIndex = 0;
 		}
 
 		public void AddIMSMSFeature(IMSMSFeature imsmsFeature)

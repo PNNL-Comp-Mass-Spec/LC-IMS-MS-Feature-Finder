@@ -25,7 +25,7 @@ namespace FeatureFinder.Utilities
 			TextWriter featureWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatures.txt");
 			TextWriter mapWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatureToPeakMap.txt");
 
-			featureWriter.WriteLine("Feature_Index\tMonoisotopic_Mass\tAverage_Mono_Mass\tUMC_MW_Min\tUMC_MW_Max\tScan_Start\tScan_End\tScan\tUMC_Member_Count\tMax_Abundance\tAbundance\tClass_Rep_MZ\tClass_Rep_Charge\tCharge_Max\tDrift_Time\tIMS_Fit_Score\tLC_Fit_Score\tAverage_Isotopic_Fit");
+			featureWriter.WriteLine("Feature_Index\tMonoisotopic_Mass\tAverage_Mono_Mass\tUMC_MW_Min\tUMC_MW_Max\tScan_Start\tScan_End\tScan\tUMC_Member_Count\tMax_Abundance\tAbundance\tClass_Rep_MZ\tClass_Rep_Charge\tCharge_Max\tDrift_Time\tConformation_Fit_Score\tLC_Fit_Score\tAverage_Isotopic_Fit\tConformation_Index");
 			mapWriter.WriteLine("Feature_Index\tPeak_Index\tFiltered_Peak_Index");
 
 			int index = 0;
@@ -95,7 +95,8 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(msFeatureRep.DriftTime + "\t");
 				stringBuilder.Append(lcimsmsFeature.IMSScore + "\t");
 				stringBuilder.Append(lcimsmsFeature.LCScore + "\t");
-				stringBuilder.Append(averageFit);
+				stringBuilder.Append(averageFit + "\t");
+				stringBuilder.Append(lcimsmsFeature.ConformationIndex);
 
 				featureWriter.WriteLine(stringBuilder.ToString());
 
@@ -249,7 +250,7 @@ namespace FeatureFinder.Utilities
 					msFeature.MassMonoisotopic += massChange;
 
 					// TODO: Keep this??
-					msFeature.Mz = (msFeature.MassMonoisotopic / msFeature.Charge) + (float)1.00727849;
+					//msFeature.Mz = (msFeature.MassMonoisotopic / msFeature.Charge) + (float)1.00727849;
 				}
 
 				IMSMSFeature dominantIMSMSFeature = null;

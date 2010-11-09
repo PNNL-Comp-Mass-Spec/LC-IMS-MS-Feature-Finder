@@ -42,6 +42,18 @@ namespace FeatureFinder.Data
 			return averageMass;
 		}
 
+		public double GetIntensity()
+		{
+			double totalIntensity = 0;
+
+			foreach (MSFeature msFeature in MSFeatureList)
+			{
+				totalIntensity += msFeature.Abundance;
+			}
+
+			return totalIntensity;
+		}
+
 		public Dictionary<int, double> GetIntensityValues()
 		{
 			Dictionary<int, double> intensityDictionary = new Dictionary<int, double>();
