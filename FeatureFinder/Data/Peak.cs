@@ -73,10 +73,10 @@ namespace FeatureFinder.Data
 							   orderby xyPair.XValue ascending
 							   select xyPair;
 
-			Console.WriteLine("*********************************************");
+			
 			foreach (XYPair xyPair in sortByXValue)
 			{
-				Console.Write(xyPair.YValue + "\t");
+				Console.Write("[" + xyPair.XValue + "," + xyPair.YValue + "]\t");
 			}
 		}
 	}

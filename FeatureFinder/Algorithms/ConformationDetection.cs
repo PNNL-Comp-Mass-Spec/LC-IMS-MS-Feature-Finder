@@ -12,7 +12,7 @@ namespace FeatureFinder.Algorithms
 {
 	public static class ConformationDetection
 	{
-		private const int IMS_SCAN_WINDOW_WIDTH = 9;
+		private const int IMS_SCAN_WINDOW_WIDTH = 5;
 
 		public static IEnumerable<LCIMSMSFeature> DetectConformationsForLCIMSMSFeature(LCIMSMSFeature lcimsmsFeature)
 		{
@@ -47,8 +47,9 @@ namespace FeatureFinder.Algorithms
 			int indexOfMaxIntensity = 0;
 
 			IInterpolationMethod scanIMSToDriftTimeInterpolation = ScanIMSToDriftTimeMap.GetInterpolation();
-			double driftTimeHalfWindow = scanIMSToDriftTimeInterpolation.Interpolate(imsHalfWindow + 0.5) - scanIMSToDriftTimeInterpolation.Interpolate(0);
-			
+			double driftTimeWindow = scanIMSToDriftTimeInterpolation.Interpolate(imsHalfWindow + 0.5) - scanIMSToDriftTimeInterpolation.Interpolate(0);
+			double driftTimeHalfWindow = driftTimeWindow / 2.0;
+
 			List<XYPair> driftProfileXYPairList = new List<XYPair>();
 
 			// Add "0" intensity values to the left and right of the Peak
@@ -170,6 +171,9 @@ namespace FeatureFinder.Algorithms
 				double lowDriftTime = driftTime - driftTimeHalfWindow;
 				double highDriftTime = driftTime + driftTimeHalfWindow;
 
+				//Console.WriteLine("**************************************************************************");
+				//Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
+
 				// Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
 				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
 				{
@@ -222,6 +226,12 @@ namespace FeatureFinder.Algorithms
 					Console.WriteLine("*************************************************");
 					*/
 					// TODO: Calculate LC Score
+				}
+				else
+				{
+					//Console.WriteLine("===============================================================");
+					//Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
+					//peak.PrintPeakToConsole();
 				}
 
 				index++;

@@ -196,6 +196,8 @@ namespace LCMSFeatureFinder
 			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 
+			// TODO: Go back to raw data and grab original intensity values for each MS Feature in each LC_IMS_MS Feature 
+
 			Logger.Log("Conformation Detection...");
 
 			//Parallel.ForEach(lcimsmsFeatureEnumerable, lcimsmsFeature =>

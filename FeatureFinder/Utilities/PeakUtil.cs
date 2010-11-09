@@ -15,10 +15,10 @@ namespace FeatureFinder.Utilities
 		private const double ONE_OVER_SQRT_OF_2_PI = 0.3989423;
 
 		// TODO: Sometimes, a normalized value of 1 is never seen. This happens when the # of points is an even number.
-		public static List<XYPair> CreateTheoreticalGaussianPeak(double centerOfPeak, double peakWidth, int numOfPoints)
+		public static List<XYPair> CreateTheoreticalGaussianPeak(double centerOfPeak, double peakFWHM, int numOfPoints)
 		{
-			double sigma = peakWidth / 2.35;
-			double sixSigma = 3 * peakWidth;
+			double sigma = peakFWHM / 2.35482;
+			double sixSigma = 3 * peakFWHM;
 			double pointSize = sixSigma / (double)(numOfPoints - 1);
 
 			int startPoint = 0 - (int)Math.Floor(((numOfPoints - 1) / 2.0));
