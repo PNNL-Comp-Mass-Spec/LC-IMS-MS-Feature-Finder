@@ -83,7 +83,7 @@ namespace FeatureFinder.Algorithms
 			}
 
 			Peak driftProfilePeak = new Peak(driftProfileXYPairList);
-			Peak smoothedDriftProfilePeak = PeakUtil.KDESmooth(driftProfilePeak, 0.35);
+			Peak smoothedDriftProfilePeak = PeakUtil.KDESmooth(driftProfilePeak, 0.35); // TODO: Find a good value. 0.15? Less smooth = more conformations!
 
 			//driftProfilePeak.PrintPeakToConsole();
 			//smoothedDriftProfilePeak.PrintPeakToConsole();
@@ -98,6 +98,9 @@ namespace FeatureFinder.Algorithms
 			double previousIntensity = 0;
 			bool movingUp = true;
 
+			// TODO: Found an example in my small dataset where I detected same DT twice
+			// Mass = 2511.2872, LC Scans = 1335 - 1344, Charge = 2, DT = 50.155, Score1 = 0.8803248, Score2 = 0.7762359, Conf Idx = 5 and 6
+			// Different scores means the peak was created differently
 			for (int i = globalScanIMSMinimum; i <= globalScanIMSMaximum; i++)
 			{
 				double driftTime = scanIMSToDriftTimeInterpolation.Interpolate(i);
