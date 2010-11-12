@@ -76,7 +76,7 @@ namespace FeatureFinder.Data
 			
 			foreach (XYPair xyPair in sortByXValue)
 			{
-				Console.Write("[" + xyPair.XValue + "," + xyPair.YValue + "]\t");
+				Console.WriteLine("[" + xyPair.XValue + ", " + xyPair.YValue + "]\t");
 			}
 		}
 	}

@@ -54,37 +54,37 @@ namespace FeatureFinder.Data
 			return totalIntensity;
 		}
 
-		public Dictionary<int, double> GetIntensityValues()
+		public Dictionary<double, double> GetIntensityValues()
 		{
-			Dictionary<int, double> intensityDictionary = new Dictionary<int, double>();
+			Dictionary<double, double> intensityDictionary = new Dictionary<double, double>();
 
 			foreach (MSFeature msFeature in MSFeatureList)
 			{
-				int scanIMS = msFeature.ScanIMS;
+				double driftTime = msFeature.DriftTime;
 				double intensity = msFeature.Abundance; // TODO: Use Original Intensity if available
 
 				double currentIntensity = 0.0;
-				if (intensityDictionary.TryGetValue(scanIMS, out currentIntensity))
+				if (intensityDictionary.TryGetValue(driftTime, out currentIntensity))
 				{
-					intensityDictionary[scanIMS] += intensity;
+					intensityDictionary[driftTime] += intensity;
 				}
 				else
 				{
-					intensityDictionary.Add(scanIMS, intensity);
+					intensityDictionary.Add(driftTime, intensity);
 				}
 			}
 
 			return intensityDictionary;
 		}
 
-		public void GetMinAndMaxScanIMS(out int scanIMSMinimum, out int scanIMSMaximum)
+		public void GetMinAndMaxDriftTimes(out double driftTimeMinimum, out double driftTimeMaximum)
 		{
 			var sortByScanIMSQuery = from msFeature in MSFeatureList
-									 orderby msFeature.ScanIMS
+									 orderby msFeature.DriftTime
 									 select msFeature;
 
-			scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
-			scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
+			driftTimeMinimum = sortByScanIMSQuery.First().DriftTime;
+			driftTimeMaximum = sortByScanIMSQuery.Last().DriftTime;
 		}
 
 		public IEnumerable<MSFeature> FindMSFeaturesInDriftTimeRange(double lowDriftTime, double highDriftTime)

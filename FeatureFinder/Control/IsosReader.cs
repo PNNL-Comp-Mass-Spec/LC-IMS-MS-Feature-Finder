@@ -289,7 +289,7 @@ namespace FeatureFinder.Control
 					{
 						msFeature.Id = msFeatureIndex;
 						msFeatureList.Add(msFeature);
-						ScanIMSToDriftTimeMap.Mapping[msFeature.ScanIMS] = msFeature.DriftTime;
+						//ScanIMSToDriftTimeMap.Mapping[msFeature.ScanIMS] = msFeature.DriftTime;
 						m_isosFileWriter.WriteLine(line);
 						msFeatureIndex++;
 					}
