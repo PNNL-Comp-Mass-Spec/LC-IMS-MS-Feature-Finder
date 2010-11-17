@@ -207,17 +207,19 @@ namespace LCMSFeatureFinder
 
 			lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
 
-			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
-			{
-				IEnumerable<LCIMSMSFeature> newLCIMSMSFeatureEnumerable = ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
+			lcimsmsFeatureEnumerable = ConformationDetection.DetectConformationsUsingRawData(lcimsmsFeatureEnumerable);
 
-				foreach (LCIMSMSFeature newLCIMSMSFeature in newLCIMSMSFeatureEnumerable)
-				{
-					lcimsmsFeatureBag.Add(newLCIMSMSFeature);
-				}
-			}
+			//foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+			//{
+			//    IEnumerable<LCIMSMSFeature> newLCIMSMSFeatureEnumerable = ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
 
-			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureBag);
+			//    foreach (LCIMSMSFeature newLCIMSMSFeature in newLCIMSMSFeatureEnumerable)
+			//    {
+			//        lcimsmsFeatureBag.Add(newLCIMSMSFeature);
+			//    }
+			//}
+
+			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			lcimsmsFeatureBag = null;
 
 			Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());

@@ -25,7 +25,7 @@ namespace FeatureFinder.Utilities
 			TextWriter featureWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatures.txt");
 			TextWriter mapWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatureToPeakMap.txt");
 
-			featureWriter.WriteLine("Feature_Index\tMonoisotopic_Mass\tAverage_Mono_Mass\tUMC_MW_Min\tUMC_MW_Max\tScan_Start\tScan_End\tScan\tUMC_Member_Count\tMax_Abundance\tAbundance\tClass_Rep_MZ\tClass_Rep_Charge\tCharge_Max\tDrift_Time\tConformation_Fit_Score\tLC_Fit_Score\tAverage_Isotopic_Fit\tConformation_Index");
+			featureWriter.WriteLine("Feature_Index\tOriginal_Index\tMonoisotopic_Mass\tAverage_Mono_Mass\tUMC_MW_Min\tUMC_MW_Max\tScan_Start\tScan_End\tScan\tUMC_Member_Count\tMax_Abundance\tAbundance\tClass_Rep_MZ\tClass_Rep_Charge\tCharge_Max\tDrift_Time\tConformation_Fit_Score\tLC_Fit_Score\tAverage_Isotopic_Fit\tConformation_Index");
 			mapWriter.WriteLine("Feature_Index\tPeak_Index\tFiltered_Peak_Index");
 
 			int index = 0;
@@ -79,6 +79,7 @@ namespace FeatureFinder.Utilities
 
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.Append(index + "\t");
+				stringBuilder.Append(lcimsmsFeature.OriginalIndex + "\t");
 				stringBuilder.Append(averageMass.ToString("0.00000") + "\t");
 				stringBuilder.Append(averageMass.ToString("0.00000") + "\t");
 				stringBuilder.Append(minMass.ToString("0.00000") + "\t");
@@ -300,6 +301,8 @@ namespace FeatureFinder.Utilities
 		{
 			List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
 
+			int lcimcmsFeatureIndex = 0;
+
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
 				var sortByScanLC = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
@@ -317,6 +320,8 @@ namespace FeatureFinder.Utilities
 					{
 						newLCIMSMSFeature = new LCIMSMSFeature(imsmsFeature.Charge);
 						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
+						newLCIMSMSFeature.OriginalIndex = lcimcmsFeatureIndex;
+						lcimcmsFeatureIndex++;
 						lcimsmsFeatureList.Add(newLCIMSMSFeature);
 					}
 					else

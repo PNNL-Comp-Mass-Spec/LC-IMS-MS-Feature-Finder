@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FeatureFinder.Utilities;
+using UIMFLibrary;
+using FeatureFinder.Data.Maps;
+using FeatureFinder.Algorithms;
 
 namespace FeatureFinder.Data
 {
@@ -15,6 +18,7 @@ namespace FeatureFinder.Data
 		public float IMSScore { get; set; }
 		public float LCScore { get; set; }
 		public int ConformationIndex { get; set; }
+		public int OriginalIndex { get; set; }
 
 		public LCIMSMSFeature(byte charge)
 		{
@@ -105,8 +109,93 @@ namespace FeatureFinder.Data
 									orderby msFeature.ScanLC
 									select msFeature;
 
-			scanLCMinimum = sortByScanLCQuery.First().ScanIMS;
-			scanLCMaximum = sortByScanLCQuery.Last().ScanIMS;
+			scanLCMinimum = sortByScanLCQuery.First().ScanLC;
+			scanLCMaximum = sortByScanLCQuery.Last().ScanLC;
+		}
+
+		public void GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out int scanLCMinimum, out int scanLCMaximum, out int scanIMSMinimum, out int scanIMSMaximum, out MSFeature msFeatureRep)
+		{
+			List<MSFeature> msFeatureList = new List<MSFeature>();
+
+			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
+			{
+				msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+			}
+
+			var sortByScanLCQuery = from msFeature in msFeatureList
+									orderby msFeature.ScanLC ascending
+									select msFeature;
+
+			scanLCMinimum = sortByScanLCQuery.First().ScanLC;
+			scanLCMaximum = sortByScanLCQuery.Last().ScanLC;
+
+			var sortByScanIMSQuery = from msFeature in msFeatureList
+									 orderby msFeature.ScanIMS ascending
+									 select msFeature;
+
+			scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
+			scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
+
+			var sortByAbundanceQuery = from msFeature in msFeatureList
+									   orderby msFeature.Abundance descending
+									   select msFeature;
+
+			msFeatureRep = sortByAbundanceQuery.First();
+		}
+
+		public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, int frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
+		{
+			int scanLCMinimum = 0;
+			int scanLCMaximum = 0;
+			int scanIMSMinimum = 0;
+			int scanIMSMaximum = 0;
+
+			MSFeature msFeatureRep = null;
+
+			GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
+
+			double currentFWHM = msFeatureRep.Fwhm;
+			double currentMonoMZ = msFeatureRep.MassMonoisotopic / msFeatureRep.Charge + 1.00727649;
+
+			List<double> startMZ = new List<double>();
+			List<double> endMZ = new List<double>();
+
+			// Set ranges over which to look for the original data in the UIMF.
+			double charge = Convert.ToDouble(this.Charge);
+			for (int i = 0; i < 3; i++)
+			{
+				startMZ.Add(currentMonoMZ + (1.003 * i / charge) - (0.5 * currentFWHM));
+				endMZ.Add(currentMonoMZ + (1.003 * i / charge) + (0.5 * currentFWHM));
+			}
+
+			double minMZ = startMZ[0];
+			double maxMZ = endMZ[endMZ.Count - 1];
+
+			int globalStartBin = (int)((Math.Sqrt(minMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth);
+			int globalEndBin = (int)Math.Ceiling(((Math.Sqrt(maxMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth));
+
+			int[][] intensityValues = uimfReader.GetIntensityBlock(ScanLCMap.Mapping[scanLCMinimum], ScanLCMap.Mapping[scanLCMaximum], frameType, scanIMSMinimum, scanIMSMaximum, globalStartBin, globalEndBin);
+
+			List<XYPair> imsScanProfile = new List<XYPair>();
+
+			for (int i = 0; i < intensityValues.Length; i++)
+			{
+				int[] intensityArray = intensityValues[i];
+				int intensitySum = 0;
+
+				foreach (int intensity in intensityArray)
+				{
+					intensitySum += intensity;
+				}
+
+				XYPair xyPair = new XYPair(scanIMSMinimum + i, intensitySum);
+				imsScanProfile.Add(xyPair);
+			}
+
+			// Add "0" intensity values to the left and right of the Peak
+			imsScanProfile = ConformationDetection.PadXYPairsWithZeros(imsScanProfile, 5);
+
+			return imsScanProfile;
 		}
 	}
 }
