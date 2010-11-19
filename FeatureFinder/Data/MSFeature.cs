@@ -16,7 +16,6 @@ namespace FeatureFinder.Data
 		private int m_scanIMS;
 
 		private float m_mz;
-		private float m_mzCorrected;
 		private float m_fit;
 		private float m_fwhm;
 		private float m_signalNoise;
@@ -222,12 +221,6 @@ namespace FeatureFinder.Data
 		{
 			get { return m_mz; }
 			set { m_mz = value; }
-		}
-
-		public float MzCorrected
-		{
-			get { return m_mzCorrected; }
-			set { m_mzCorrected = value; }
 		}
 
 		public float MassMonoisotopic

@@ -185,7 +185,7 @@ namespace LCMSFeatureFinder
 			Logger.Log("Filtering LC-IMS-MS features based on Member Count...");
 
 			IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(daCorrectedLCIMSMSFeatureBag);
-			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
+			//lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			daCorrectedLCIMSMSFeatureBag = null;
 
 			Logger.Log("Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
@@ -193,8 +193,16 @@ namespace LCMSFeatureFinder
 			Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
 			// TODO: Parallelize
 			lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
-			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
+			//lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+
+
+
+
+			ConformationDetection.TestDriftTimeTheory(lcimsmsFeatureEnumerable);
+
+
+
 
 			// TODO: Go back to raw data and grab original intensity values for each MS Feature in each LC_IMS_MS Feature 
 
@@ -219,7 +227,7 @@ namespace LCMSFeatureFinder
 			//    }
 			//}
 
-			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
+			//lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			lcimsmsFeatureBag = null;
 
 			Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());

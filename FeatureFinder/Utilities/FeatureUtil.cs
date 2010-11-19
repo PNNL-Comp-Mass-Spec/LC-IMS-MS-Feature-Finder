@@ -25,7 +25,31 @@ namespace FeatureFinder.Utilities
 			TextWriter featureWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatures.txt");
 			TextWriter mapWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatureToPeakMap.txt");
 
-			featureWriter.WriteLine("Feature_Index\tOriginal_Index\tMonoisotopic_Mass\tAverage_Mono_Mass\tUMC_MW_Min\tUMC_MW_Max\tScan_Start\tScan_End\tScan\tUMC_Member_Count\tMax_Abundance\tAbundance\tClass_Rep_MZ\tClass_Rep_Charge\tCharge_Max\tDrift_Time\tConformation_Fit_Score\tLC_Fit_Score\tAverage_Isotopic_Fit\tConformation_Index");
+			StringBuilder labelStringBuilder = new StringBuilder();
+			labelStringBuilder.Append("Feature_Index" + "\t");
+			labelStringBuilder.Append("Original_Index" + "\t");
+			labelStringBuilder.Append("Monoisotopic_Mass" + "\t");
+			labelStringBuilder.Append("Average_Mono_Mass" + "\t");
+			labelStringBuilder.Append("UMC_MW_Min" + "\t");
+			labelStringBuilder.Append("UMC_MW_Max" + "\t");
+			labelStringBuilder.Append("Scan_Start" + "\t");
+			labelStringBuilder.Append("Scan_End" + "\t");
+			labelStringBuilder.Append("Scan" + "\t");
+			labelStringBuilder.Append("UMC_Member_Count" + "\t");
+			labelStringBuilder.Append("Max_Abundance" + "\t");
+			labelStringBuilder.Append("Abundance" + "\t");
+			labelStringBuilder.Append("Class_Rep_MZ" + "\t");
+			labelStringBuilder.Append("Class_Rep_Charge" + "\t");
+			labelStringBuilder.Append("Charge_Max" + "\t");
+			labelStringBuilder.Append("Drift_Time" + "\t");
+			labelStringBuilder.Append("Conformation_Fit_Score" + "\t");
+			labelStringBuilder.Append("LC_Fit_Score" + "\t");
+			labelStringBuilder.Append("Average_Isotopic_Fit" + "\t");
+			labelStringBuilder.Append("Members_Percentage" + "\t");
+			labelStringBuilder.Append("Combined_Score");
+
+			featureWriter.WriteLine(labelStringBuilder.ToString());
+
 			mapWriter.WriteLine("Feature_Index\tPeak_Index\tFiltered_Peak_Index");
 
 			int index = 0;
@@ -75,7 +99,9 @@ namespace FeatureFinder.Utilities
 				}
 
 				double averageMass = totalMass / msFeatureCount;
-				double averageFit = totalFit / msFeatureCount;
+				double averageFit = 1.0 - ((totalFit / msFeatureCount) / Settings.FitMax);
+				double memberPercentage = (double)msFeatureCount / (double)lcimsmsFeature.MaxMemberCount;
+				double combinedScore = (lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0;
 
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.Append(index + "\t");
@@ -94,10 +120,11 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
 				stringBuilder.Append(msFeatureRep.DriftTime + "\t");
-				stringBuilder.Append(lcimsmsFeature.IMSScore + "\t");
-				stringBuilder.Append(lcimsmsFeature.LCScore + "\t");
-				stringBuilder.Append(averageFit + "\t");
-				stringBuilder.Append(lcimsmsFeature.ConformationIndex);
+				stringBuilder.Append(lcimsmsFeature.IMSScore.ToString("0.00000") + "\t");
+				stringBuilder.Append(lcimsmsFeature.LCScore.ToString("0.00000") + "\t");
+				stringBuilder.Append(averageFit.ToString("0.00000") + "\t");
+				stringBuilder.Append(memberPercentage.ToString("0.00000") + "\t"); // Mem Percent
+				stringBuilder.Append(combinedScore.ToString("0.00000")); // Combined
 
 				featureWriter.WriteLine(stringBuilder.ToString());
 

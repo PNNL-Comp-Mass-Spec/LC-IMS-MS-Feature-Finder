@@ -95,5 +95,14 @@ namespace FeatureFinder.Data
 
 			return findByDriftTimeQuery.AsEnumerable();
 		}
+
+		public MSFeature FindRepMSFeature()
+		{
+			var sortByAbudnanceQuery = from msFeature in MSFeatureList
+									   orderby msFeature.Abundance descending
+									   select msFeature;
+
+			return sortByAbudnanceQuery.First();
+		}
 	}
 }

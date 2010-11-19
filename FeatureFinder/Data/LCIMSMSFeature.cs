@@ -17,8 +17,8 @@ namespace FeatureFinder.Data
 
 		public float IMSScore { get; set; }
 		public float LCScore { get; set; }
-		public int ConformationIndex { get; set; }
 		public int OriginalIndex { get; set; }
+		public int MaxMemberCount { get; set; }
 
 		public LCIMSMSFeature(byte charge)
 		{
@@ -26,7 +26,7 @@ namespace FeatureFinder.Data
 			Charge = charge;
 			IMSScore = 0;
 			LCScore = 0;
-			ConformationIndex = 0;
+			MaxMemberCount = 0;
 		}
 
 		public void AddIMSMSFeature(IMSMSFeature imsmsFeature)
@@ -143,6 +143,23 @@ namespace FeatureFinder.Data
 			msFeatureRep = sortByAbundanceQuery.First();
 		}
 
+		public MSFeature GetMSFeatureRep()
+		{
+			List<MSFeature> msFeatureList = new List<MSFeature>();
+
+			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
+			{
+				msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+			}
+
+			var sortByAbundanceQuery = from msFeature in msFeatureList
+									   orderby msFeature.Abundance descending
+									   select msFeature;
+
+			MSFeature msFeatureRep = sortByAbundanceQuery.First();
+			return msFeatureRep;
+		}
+
 		public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, int frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
 		{
 			int scanLCMinimum = 0;
@@ -196,6 +213,36 @@ namespace FeatureFinder.Data
 			imsScanProfile = ConformationDetection.PadXYPairsWithZeros(imsScanProfile, 5);
 
 			return imsScanProfile;
+		}
+
+		public void PrintLCAndDriftTimeMap()
+		{
+			List<MSFeature> msFeatureList = new List<MSFeature>();
+
+			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
+			{
+				msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+			}
+
+			var groupByScanLCQuery = from msFeature in msFeatureList
+									 group msFeature by new { msFeature.ScanLC } into newGroup
+									 select newGroup;
+
+			foreach (IEnumerable<MSFeature> msFeatureGroup in groupByScanLCQuery)
+			{
+				Console.Write("LC Scan = " + msFeatureGroup.First().ScanLC + ": ");
+
+				var orderByDriftTimeQuery = from msFeature in msFeatureGroup
+											orderby msFeature.ScanLC, msFeature.DriftTime ascending
+											select msFeature;
+
+				foreach (MSFeature msFeature in orderByDriftTimeQuery)
+				{
+					Console.Write(msFeature.DriftTime + ",");
+				}
+
+				Console.Write("\n");
+			}
 		}
 	}
 }

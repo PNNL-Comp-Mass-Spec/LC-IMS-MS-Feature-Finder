@@ -4,6 +4,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using FeatureFinder.Data;
 using FeatureFinder.Data.Maps;
+using UIMFLibrary;
+using System.Linq;
+using FeatureFinder.Algorithms;
 
 namespace FeatureFinder.Control
 {
@@ -30,6 +33,13 @@ namespace FeatureFinder.Control
 			m_lcScanToFrameTypeMap = CreateLCScanToFrameTypeMapping(baseFileName);
 			m_columnMap = CreateColumnMapping();
 			m_msFeatureList = SaveDataToMSFeatureList();
+
+			DataReader uimfReader = new UIMFLibrary.DataReader();
+			if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+			{
+				FixDriftTimeValues(uimfReader);
+			}
+			uimfReader.CloseUIMF();
 		}
 		#endregion
 
@@ -337,6 +347,29 @@ namespace FeatureFinder.Control
 			}
 
 			return true;
+		}
+
+		private void FixDriftTimeValues(DataReader uimfReader)
+		{
+			var groupByScanLCQuery = from msFeature in m_msFeatureList
+									 group msFeature by msFeature.ScanLC into newGroup
+									 select newGroup;
+
+			foreach (IEnumerable<MSFeature> msFeatureGroup in groupByScanLCQuery)
+			{
+				int lcScan = ScanLCMap.Mapping[msFeatureGroup.First().ScanLC];
+
+				FrameParameters frameParameters = uimfReader.GetFrameParameters(lcScan);
+				double averageTOFLength = frameParameters.AverageTOFLength;
+				double framePressure = frameParameters.PressureBack;
+
+				foreach(MSFeature msFeature in msFeatureGroup)
+				{
+					double driftTime = ConformationDetection.ConvertIMSScanToDriftTime(msFeature.ScanIMS, averageTOFLength, framePressure);
+					//Console.WriteLine(driftTime - msFeature.DriftTime);
+					msFeature.DriftTime = (float)driftTime;
+				}
+			}
 		}
 		#endregion
 	}
