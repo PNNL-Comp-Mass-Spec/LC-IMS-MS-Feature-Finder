@@ -13,13 +13,11 @@ namespace FeatureFinder.Control
 		private static short lcGapSizeMax;
 		private static short imsGapSizeMax;
 
-		private static int lcDaCorrectionMax;
 		private static int imsDaCorrectionMax;
 		private static int scanIMSMin;
 		private static int scanIMSMax;
 		private static int scanLCMin;
 		private static int scanLCMax;
-		private static int peakWidthMinimum;
 
 		private static float fitMax;
 		private static float intensityMin;
@@ -35,7 +33,6 @@ namespace FeatureFinder.Control
 		private static bool split;
 		private static bool useConformationDetection;
 		private static bool useConformationIndex;
-		private static bool reportFittedTime;
 		private static bool ignoreIMSDriftTime;
 		private static bool filterIsosToSinglePoint;
 
@@ -66,13 +63,11 @@ namespace FeatureFinder.Control
 			imsGapSizeMax = 5;
 			minimumDifferenceInMedianPpmMassToSplit = 4;
 			split = true;
-			lcDaCorrectionMax = 3;
+			imsDaCorrectionMax = 1;
 			smoothingStDev = 0.35f;
 			umcFitScoreMinimum = 0f;
-			peakWidthMinimum = 3;
 			useConformationDetection = true;
 			useConformationIndex = false;
-			reportFittedTime = false;
 			ignoreIMSDriftTime = false;
 			filterIsosToSinglePoint = true;
 			frameTypeFilter = FrameType.NoFilter;
@@ -103,8 +98,7 @@ namespace FeatureFinder.Control
 			Console.WriteLine("MinFeatureLengthPoints=3");
 			Console.WriteLine("LCGapMaxSize=4");
 			Console.WriteLine("IMSGapMaxSize=4");
-			Console.WriteLine("LCMaxDaCorrection=0");
-			Console.WriteLine("IMSMaxDaCorrection=0");
+			Console.WriteLine("IMSMaxDaCorrection=1");
 			Console.WriteLine("UMCFitScoreMinimum=0.9");
 			Console.WriteLine("[UMCSplittingOptions]");
 			Console.WriteLine("Split=True");
@@ -112,8 +106,7 @@ namespace FeatureFinder.Control
 			Console.WriteLine("[DriftProfileOptions]");
 			Console.WriteLine("UseConformationDetection=True");
 			Console.WriteLine("UseConformationIndex=False");
-			Console.WriteLine("ReportFittedTime=False");
-			Console.WriteLine("PeakWidthMinimum=3");
+			Console.WriteLine("SmoothingStDev=0.35");
 			Console.WriteLine("[PostCreationFilteringOptions]");
 			Console.WriteLine("FilterIsosToSinglePoint=True");
 		}
@@ -182,18 +175,6 @@ namespace FeatureFinder.Control
 		{
 			get { return scanLCMax; }
 			set { scanLCMax = value; }
-		}
-
-		public static int PeakWidthMinimum
-		{
-			get { return peakWidthMinimum; }
-			set { peakWidthMinimum = value; }
-		}
-
-		public static int LCDaCorrectionMax
-		{
-			get { return lcDaCorrectionMax; }
-			set { lcDaCorrectionMax = value; }
 		}
 
 		public static int IMSDaCorrectionMax
@@ -278,12 +259,6 @@ namespace FeatureFinder.Control
 		{
 			get { return useConformationIndex; }
 			set { useConformationIndex = value; }
-		}
-
-		public static bool ReportFittedTime
-		{
-			get { return reportFittedTime; }
-			set { reportFittedTime = value; }
 		}
 
 		public static bool IgnoreIMSDriftTime

@@ -68,6 +68,7 @@ namespace LCMSFeatureFinder
 				if (dataType == LC_DATA || Settings.IgnoreIMSDriftTime)
 				{
 					Logger.Log("Processing LC-MS Data...");
+					Logger.Log("Currently not implemented. Exiting...");
 					//RunLCMSFeatureFinder(isosReader);
 				}
 				else if (dataType == IMS_DATA)
@@ -98,7 +99,7 @@ namespace LCMSFeatureFinder
 		}
 
 		/// <summary>
-		/// Runs the necessary steps for LC-IMS-MS Feature Finding
+		/// Runs the necessary steps for LC-IMS-MS Feature Finding.
 		/// </summary>
 		/// <param name="isosReader">The IsosReader object</param>
 		private static void RunLCIMSMSFeatureFinder(IsosReader isosReader)
@@ -185,60 +186,34 @@ namespace LCMSFeatureFinder
 			Logger.Log("Filtering LC-IMS-MS features based on Member Count...");
 
 			IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(daCorrectedLCIMSMSFeatureBag);
-			//lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			daCorrectedLCIMSMSFeatureBag = null;
 
 			Logger.Log("Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 
 			Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
-			// TODO: Parallelize
 			lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
-			//lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 
-
-
-
-			ConformationDetection.TestDriftTimeTheory(lcimsmsFeatureEnumerable);
-
-
-
-
-			// TODO: Go back to raw data and grab original intensity values for each MS Feature in each LC_IMS_MS Feature 
-
 			Logger.Log("Conformation Detection...");
-
-			//Parallel.ForEach(lcimsmsFeatureEnumerable, lcimsmsFeature =>
-			//{
-			//    ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
-			//});
-
-			lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
-
 			lcimsmsFeatureEnumerable = ConformationDetection.DetectConformationsUsingRawData(lcimsmsFeatureEnumerable);
-
-			//foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
-			//{
-			//    IEnumerable<LCIMSMSFeature> newLCIMSMSFeatureEnumerable = ConformationDetection.DetectConformationsForLCIMSMSFeature(lcimsmsFeature);
-
-			//    foreach (LCIMSMSFeature newLCIMSMSFeature in newLCIMSMSFeatureEnumerable)
-			//    {
-			//        lcimsmsFeatureBag.Add(newLCIMSMSFeature);
-			//    }
-			//}
-
-			//lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
-			lcimsmsFeatureBag = null;
-
 			Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+
 			Logger.Log("Creating filtered Isos file...");
 
 			List<MSFeature> msFeatureListOutput = new List<MSFeature>();
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
-				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
+				if (Settings.FilterIsosToSinglePoint)
 				{
-					msFeatureListOutput.AddRange(imsmsFeature.MSFeatureList);
+					MSFeature msFeatureRep = lcimsmsFeature.GetMSFeatureRep();
+					msFeatureListOutput.Add(msFeatureRep);
+				}
+				else
+				{
+					foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
+					{
+						msFeatureListOutput.AddRange(imsmsFeature.MSFeatureList);
+					}
 				}
 			}
 
@@ -249,7 +224,7 @@ namespace LCMSFeatureFinder
 		}
 
 		/// <summary>
-		/// Checks to see what type of data is being processed
+		/// Checks to see what type of data is being processed.
 		/// </summary>
 		/// <returns>LC_DATA if LC Data is being processed, IMS_DATA if IMS Data is being processed, -1 if error</returns>
 		private static int PeekAtIsosFile()
@@ -279,7 +254,7 @@ namespace LCMSFeatureFinder
 		}
 
 		/// <summary>
-		/// Formats the file location into a usable format
+		/// Formats the file location into a usable format.
 		/// </summary>
 		/// <param name="filename">Original file location</param>
 		/// <returns>Processed file location</returns>
@@ -308,7 +283,7 @@ namespace LCMSFeatureFinder
 		}
 
 		/// <summary>
-		/// Prints the correct usage of the application
+		/// Prints the correct usage of the application.
 		/// </summary>
 		private static void PrintUsage()
 		{

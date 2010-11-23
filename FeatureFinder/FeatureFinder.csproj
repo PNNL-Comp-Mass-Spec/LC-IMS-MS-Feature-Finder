@@ -143,7 +143,6 @@
     <Compile Include="Data\LCIMSMSFeature.cs" />
     <Compile Include="Data\IMSMSFeature.cs" />
     <Compile Include="Data\LCMSFeature.cs" />
-    <Compile Include="Data\Maps\ScanIMSToDriftTimeMap.cs" />
     <Compile Include="Data\MSFeature.cs" />
     <Compile Include="Data\Peak.cs" />
     <Compile Include="Data\Maps\ScanLCMap.cs" />

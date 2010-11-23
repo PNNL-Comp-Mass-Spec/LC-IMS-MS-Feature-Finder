@@ -34,6 +34,7 @@ namespace FeatureFinder.Control
 			m_columnMap = CreateColumnMapping();
 			m_msFeatureList = SaveDataToMSFeatureList();
 
+			// Calculate the drift time for each MS Feature. We are choosing to not use the Decon2ls output.
 			DataReader uimfReader = new UIMFLibrary.DataReader();
 			if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
 			{
@@ -289,9 +290,6 @@ namespace FeatureFinder.Control
 					if (m_columnMap.ContainsKey("MSFeature.Fit")) msFeature.Fit = float.Parse(columns[m_columnMap["MSFeature.Fit"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) msFeature.MassMonoisotopic = float.Parse(columns[m_columnMap["MSFeature.MassMonoisotopic"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Fwhm")) msFeature.Fwhm = float.Parse(columns[m_columnMap["MSFeature.Fwhm"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.SignalNoise")) msFeature.SignalNoise = float.Parse(columns[m_columnMap["MSFeature.SignalNoise"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.IntensityOriginal")) msFeature.IntensityOriginal = float.Parse(columns[m_columnMap["MSFeature.IntensityOriginal"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.IntensityOriginalTIA")) msFeature.IntensityOriginalTIA = float.Parse(columns[m_columnMap["MSFeature.IntensityOriginalTIA"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.DriftTimeIMS")) msFeature.DriftTime = float.Parse(columns[m_columnMap["MSFeature.DriftTimeIMS"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.ErrorFlag")) msFeature.ErrorFlag = (byte)(columns[m_columnMap["MSFeature.ErrorFlag"]].Equals("") ? 0 : Int16.Parse(columns[m_columnMap["MSFeature.ErrorFlag"]], System.Globalization.NumberStyles.Any));
 
@@ -299,7 +297,6 @@ namespace FeatureFinder.Control
 					{
 						msFeature.Id = msFeatureIndex;
 						msFeatureList.Add(msFeature);
-						//ScanIMSToDriftTimeMap.Mapping[msFeature.ScanIMS] = msFeature.DriftTime;
 						m_isosFileWriter.WriteLine(line);
 						msFeatureIndex++;
 					}
@@ -349,6 +346,11 @@ namespace FeatureFinder.Control
 			return true;
 		}
 
+		/// <summary>
+		/// This method will alter the Drift Time values of the MS Features.
+		/// The drift time value will be calculated assuming that frame pressure is normal and not varying.
+		/// </summary>
+		/// <param name="uimfReader">The UIMF file DataReader object</param>
 		private void FixDriftTimeValues(DataReader uimfReader)
 		{
 			var groupByScanLCQuery = from msFeature in m_msFeatureList
@@ -365,8 +367,7 @@ namespace FeatureFinder.Control
 
 				foreach(MSFeature msFeature in msFeatureGroup)
 				{
-					double driftTime = ConformationDetection.ConvertIMSScanToDriftTime(msFeature.ScanIMS, averageTOFLength, framePressure);
-					//Console.WriteLine(driftTime - msFeature.DriftTime);
+					double driftTime = ConformationDetection.ConvertIMSScanToDriftTime(msFeature.ScanIMS, averageTOFLength);
 					msFeature.DriftTime = (float)driftTime;
 				}
 			}

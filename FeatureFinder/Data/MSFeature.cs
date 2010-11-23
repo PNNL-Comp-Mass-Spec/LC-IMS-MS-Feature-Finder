@@ -18,15 +18,12 @@ namespace FeatureFinder.Data
 		private float m_mz;
 		private float m_fit;
 		private float m_fwhm;
-		private float m_signalNoise;
-		private float m_intensityOriginal;
-		private float m_intensityOriginalTIA;
 		private float m_driftTime;
 		private float m_massMonoisotopic;
 
 		public MSFeature()
 		{
-
+			m_filteredIndex = -1;
 		}
 
 		public int CompareTo(MSFeature otherMSFeature)
@@ -191,24 +188,6 @@ namespace FeatureFinder.Data
 		{
 			get { return m_fwhm; }
 			set { m_fwhm = value; }
-		}
-
-		public float SignalNoise
-		{
-			get { return m_signalNoise; }
-			set { m_signalNoise = value; }
-		}
-
-		public float IntensityOriginal
-		{
-			get { return m_intensityOriginal; }
-			set { m_intensityOriginal = value; }
-		}
-
-		public float IntensityOriginalTIA
-		{
-			get { return m_intensityOriginalTIA; }
-			set { m_intensityOriginalTIA = value; }
 		}
 
 		public float DriftTime

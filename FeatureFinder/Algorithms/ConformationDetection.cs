@@ -49,22 +49,15 @@ namespace FeatureFinder.Algorithms
 
 				List<XYPair> imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth, calibrationSlope, calibrationIntercept);
 
-				//Console.WriteLine("*************************************************************************");
 				// Convert IMS Scan # to Drift Time values
 				foreach (XYPair xyPair in imsScanProfile)
 				{
 					double imsScan = xyPair.XValue;
-					double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength, framePressure);
-					//Console.WriteLine("Old = [" + xyPair.XValue + ", " + xyPair.YValue + "]");
+					double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
 					xyPair.XValue = driftTime;
-					//Console.WriteLine("New = [" + xyPair.XValue + ", " + xyPair.YValue + "]");
 				}
 
 				Peak driftProfilePeak = new Peak(imsScanProfile);
-
-				Console.WriteLine("============================================================================");
-				driftProfilePeak.PrintPeakToConsole();
-				Console.WriteLine("============================================================================");
 
 				IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature);
 				newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
@@ -99,11 +92,7 @@ namespace FeatureFinder.Algorithms
 
 			double driftTimeHalfWindow = DRIFT_TIME_WINDOW_WIDTH / 2.0;
 
-			Peak smoothedDriftProfilePeak = PeakUtil.KDESmooth(driftProfilePeak, 0.35); // TODO: Find a good value. 0.15? Less smooth = more conformations!
-
-			//driftProfilePeak.PrintPeakToConsole();
-			smoothedDriftProfilePeak.PrintPeakToConsole();
-			//Console.WriteLine("================================================");
+			Peak smoothedDriftProfilePeak = PeakUtil.KDESmooth(driftProfilePeak, Settings.SmoothingStDev); // TODO: Find a good value. 0.15? Less smooth = more conformations!
 
 			IInterpolationMethod smoothedDriftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedDriftProfilePeak);
 
@@ -187,8 +176,6 @@ namespace FeatureFinder.Algorithms
 				IInterpolationMethod peakInterpolation = PeakUtil.GetLinearInterpolationMethod(peak);
 				IInterpolationMethod normalDistribution = PeakUtil.GetLinearInterpolationMethod(normalDistributionPeak);
 
-				//NormalDistribution normalDistribution = PeakUtil.CreateNormalDistribution(driftTime, theoreticalFWHM);
-
 				double fitScore = PeakUtil.CalculatePeakFit(peakInterpolation, normalDistribution, minimumXValue, maximumXValue, driftTime, 0);
 
 				// Create a new LC-IMS-MS Feature
@@ -263,16 +250,14 @@ namespace FeatureFinder.Algorithms
 				{
 					// TODO: Figure out why this actually happens. I believe that this SHOULD NOT happen. Below is a hack to return a conformation even if this happens
 
-					Console.WriteLine("**********************************************************************");
-					Console.WriteLine("Detected Drift Time = " + driftTime + "\tLow = " + lowDriftTime + "\tHigh = " + highDriftTime);
-					lcimsmsFeature.PrintLCAndDriftTimeMap();
-					Console.WriteLine("**********************************************************************");
+					//Console.WriteLine("**********************************************************************");
+					//Console.WriteLine("Detected Drift Time = " + driftTime + "\tLow = " + lowDriftTime + "\tHigh = " + highDriftTime);
+					//lcimsmsFeature.PrintLCAndDriftTimeMap();
+					//Console.WriteLine("**********************************************************************");
 
 					//Console.WriteLine("===============================================================");
 					//Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
 					//Console.WriteLine("Global Min = " + globalDriftTimeMinimum + "\tGlobal Max = " + globalDriftTimeMaximum);
-					//smoothedPeak.PrintPeakToConsole();
-					//Console.WriteLine("***************************************************************");
 					//peak.PrintPeakToConsole();
 					//Console.WriteLine("===============================================================");
 				}
@@ -329,389 +314,6 @@ namespace FeatureFinder.Algorithms
 
 			return newLCIMSMSFeatureList;
 		}
-
-		//public static IEnumerable<LCIMSMSFeature> DetectConformationsForLCIMSMSFeature(LCIMSMSFeature lcimsmsFeature)
-		//{
-		//    List<IMSMSFeature> imsmsFeatureList = lcimsmsFeature.IMSMSFeatureList;
-
-		//    var sortByScanLCQuery = from imsmsFeature in imsmsFeatureList
-		//                            orderby imsmsFeature.ScanLC
-		//                            select imsmsFeature;
-
-		//    List<Dictionary<double, double>> intensityDictionaries = new List<Dictionary<double, double>>();
-
-		//    double globalDriftTimeMinimum = double.MaxValue;
-		//    double globalDriftTimeMaximum = double.MinValue;
-		//    double localDriftTimeMinimum = 0;
-		//    double localDriftTimeMaximum = 0;
-
-		//    // Grab all of the intensity values for each IMS-MS Feature and find the global minimum and maximum Drift Times
-		//    foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
-		//    {
-		//        intensityDictionaries.Add(imsmsFeature.GetIntensityValues());
-
-		//        imsmsFeature.GetMinAndMaxDriftTimes(out localDriftTimeMinimum, out localDriftTimeMaximum);
-
-		//        if (localDriftTimeMinimum < globalDriftTimeMinimum) globalDriftTimeMinimum = localDriftTimeMinimum;
-		//        if (localDriftTimeMaximum > globalDriftTimeMaximum) globalDriftTimeMaximum = localDriftTimeMaximum;
-		//    }
-
-		//    double maxIntensity = 0.0;
-
-		//    double driftTimeHalfWindow = DRIFT_TIME_WINDOW_WIDTH / 2.0;
-
-		//    List<XYPair> driftProfileXYPairList = new List<XYPair>();
-
-		//    // Add "0" intensity values to the left and right of the Peak
-		//    driftProfileXYPairList = PadXYPairsWithZeros(driftProfileXYPairList, globalDriftTimeMinimum, globalDriftTimeMaximum, 5);
-
-		//    // Find the drift profile
-		//    for (double i = globalDriftTimeMinimum - driftTimeHalfWindow; i < globalDriftTimeMaximum + driftTimeHalfWindow; i += DRIFT_TIME_SLICE_WIDTH)
-		//    {
-		//        double totalIntensity = 0.0;
-
-		//        foreach (Dictionary<double, double> intensityDictionary in intensityDictionaries)
-		//        {
-		//            var getIntensitiesByDriftTimeRange = from entry in intensityDictionary
-		//                                                 where entry.Key >= i - driftTimeHalfWindow && entry.Key <= i + driftTimeHalfWindow
-		//                                                 select entry.Value;
-
-		//            foreach (double intensity in getIntensitiesByDriftTimeRange)
-		//            {
-		//                totalIntensity += intensity;
-		//            }
-		//        }
-
-		//        double driftTime = i;
-
-		//        XYPair xyPair = new XYPair(driftTime, totalIntensity);
-		//        driftProfileXYPairList.Add(xyPair);
-
-		//        if (totalIntensity > maxIntensity)
-		//        {
-		//            maxIntensity = totalIntensity;
-		//        }
-		//    }
-
-		//    Peak driftProfilePeak = new Peak(driftProfileXYPairList);
-		//    Peak smoothedDriftProfilePeak = PeakUtil.KDESmooth(driftProfilePeak, 0.25); // TODO: Find a good value. 0.15? Less smooth = more conformations!
-
-		//    //driftProfilePeak.PrintPeakToConsole();
-		//    //smoothedDriftProfilePeak.PrintPeakToConsole();
-		//    //Console.WriteLine("================================================");
-		
-		//    IInterpolationMethod driftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(driftProfilePeak);
-		//    IInterpolationMethod smoothedDriftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedDriftProfilePeak);
-
-		//    List<XYPair> xyPairList = new List<XYPair>();
-		//    List<Peak> peakList = new List<Peak>();
-		//    double driftTimeMinimum = globalDriftTimeMinimum;
-		//    double previousIntensity = 0;
-		//    bool movingUp = true;
-
-		//    // TODO: Found an example in my small dataset where I detected same DT twice
-		//    // Mass = 2511.2872, LC Scans = 1335 - 1344, Charge = 2, DT = 50.155, Score1 = 0.8803248, Score2 = 0.7762359, Conf Idx = 5 and 6
-		//    // Different scores means the peak was created differently
-
-		//    int minScanLC = 0;
-		//    int maxScanLC = 0;
-		//    lcimsmsFeature.GetMinAndMaxScanLC(out minScanLC, out maxScanLC);
-
-		//    if (lcimsmsFeature.CalculateAverageMass() > 2526.1 && lcimsmsFeature.CalculateAverageMass() < 2526.5 && lcimsmsFeature.Charge == 2)
-		//    {
-		//        //Console.WriteLine("here");
-		//    }
-
-		//    for (double i = globalDriftTimeMinimum; i <= globalDriftTimeMaximum; i += DRIFT_TIME_SLICE_WIDTH)
-		//    {
-		//        double driftTime = i;
-		//        double intensity = smoothedDriftProfileInterpolation.Interpolate(driftTime);
-
-		//        if (intensity > previousIntensity)
-		//        {
-		//            // End of Peak
-		//            if (!movingUp)
-		//            {
-		//                xyPairList = PadXYPairsWithZeros(xyPairList, driftTimeMinimum, i - DRIFT_TIME_SLICE_WIDTH, 2);
-		//                Peak peak = new Peak(xyPairList);
-		//                peakList.Add(peak);
-						
-		//                // Start over with a new Peak
-		//                xyPairList.Clear();
-		//                driftTimeMinimum = i;
-		//                movingUp = true;
-		//            }
-		//        }
-		//        else
-		//        {
-		//            movingUp = false;
-		//        }
-
-		//        XYPair xyPair = new XYPair(driftTime, intensity);
-		//        xyPairList.Add(xyPair);
-
-		//        previousIntensity = intensity;
-		//    }
-
-		//    // When you get to the end, end the last Peak
-		//    xyPairList = PadXYPairsWithZeros(xyPairList, driftTimeMinimum, globalDriftTimeMaximum, 2);
-		//    Peak lastPeak = new Peak(xyPairList);
-		//    peakList.Add(lastPeak);
-
-		//    double resolvingPower = GetResolvingPower(lcimsmsFeature.Charge);
-
-		//    List<LCIMSMSFeature> newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
-
-		//    int index = 0;
-		//    int conformationIndex = 0;
-
-		//    foreach (Peak peak in peakList)
-		//    {
-		//        Peak smoothedPeak = PeakUtil.KDESmooth(peak, 0.35);
-		//        double driftTime = smoothedPeak.GetXValueOfMaximumYValue();
-		//        double theoreticalFWHM = driftTime / resolvingPower;
-
-		//        double minimumXValue = 0;
-		//        double maximumXValue = 0;
-		//        smoothedPeak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
-
-		//        int numPoints = 100;
-
-		//        List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(driftTime, theoreticalFWHM, numPoints);
-		//        normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList, 5);
-		//        Peak normalDistributionPeak = new Peak(normalDistributionXYPairList);
-
-		//        IInterpolationMethod smoothedPeakInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedPeak);
-		//        IInterpolationMethod normalDistribution = PeakUtil.GetLinearInterpolationMethod(normalDistributionPeak);
-
-		//        //NormalDistribution normalDistribution = PeakUtil.CreateNormalDistribution(driftTime, theoreticalFWHM);
-
-		//        double fitScore = PeakUtil.CalculatePeakFit(smoothedPeakInterpolation, normalDistribution, minimumXValue, maximumXValue, driftTime, 0.05);
-
-		//        // Create a new LC-IMS-MS Feature
-		//        LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge);
-		//        newLCIMSMSFeature.IMSScore = (float)fitScore;
-
-		//        double lowDriftTime = driftTime - driftTimeHalfWindow;
-		//        double highDriftTime = driftTime + driftTimeHalfWindow;
-
-		//        //Console.WriteLine("**************************************************************************");
-		//        //Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
-
-		//        // Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
-		//        foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
-		//        {
-		//            IEnumerable<MSFeature> msFeatureEnumerable = imsmsFeature.FindMSFeaturesInDriftTimeRange(lowDriftTime, highDriftTime);
-
-		//            if (msFeatureEnumerable.Count() > 0)
-		//            {
-		//                IMSMSFeature newIMSMSFeature = new IMSMSFeature(imsmsFeature.ScanLC, imsmsFeature.Charge);
-		//                newIMSMSFeature.AddMSFeatureList(msFeatureEnumerable);
-		//                newLCIMSMSFeature.AddIMSMSFeature(newIMSMSFeature);
-		//            }
-		//        }
-
-		//        if (newLCIMSMSFeature.IMSMSFeatureList.Count > 0)
-		//        {
-		//            //Console.WriteLine("*****************************************************************");
-		//            //Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
-		//            //smoothedPeak.PrintPeakToConsole();
-		//            //Console.WriteLine("*****************************************************************");
-
-		//            newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
-		//            conformationIndex++;
-		//            /*
-		//            // TODO: Find LC Peaks
-		//            var sortByScanLC = from imsmsFeature in newLCIMSMSFeature.IMSMSFeatureList
-		//                               orderby imsmsFeature.ScanLC ascending
-		//                               select imsmsFeature;
-
-		//            Console.WriteLine("*************************************************");
-		//            Console.WriteLine("Index = " + index + "\tMass = " + newLCIMSMSFeature.CalculateAverageMass() + "\tDrift = " + driftTime + "\tLC Range = " + sortByScanLC.First().ScanLC + "\t" + sortByScanLC.Last().ScanLC);
-
-		//            List<XYPair> lcXYPairList = new List<XYPair>();
-		//            int scanLC = sortByScanLC.First().ScanLC - 1;
-
-		//            foreach (IMSMSFeature imsmsFeature in sortByScanLC)
-		//            {
-		//                int currentScanLC = imsmsFeature.ScanLC;
-
-		//                for (int i = scanLC + 1; i < currentScanLC; i++)
-		//                {
-		//                    XYPair zeroValue = new XYPair(i, 0);
-		//                    lcXYPairList.Add(zeroValue);
-		//                    Console.Write("0\t");
-		//                }
-
-		//                XYPair xyPair = new XYPair(currentScanLC, imsmsFeature.GetIntensity());
-		//                lcXYPairList.Add(xyPair);
-
-		//                scanLC = currentScanLC;
-
-		//                Console.Write(imsmsFeature.GetIntensity() + "\t");
-		//            }
-		//            Console.WriteLine("");
-		//            Console.WriteLine("*************************************************");
-		//            */
-		//            // TODO: Calculate LC Score
-		//        }
-		//        else
-		//        {
-		//            Console.WriteLine("===============================================================");
-		//            Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
-		//            smoothedPeak.PrintPeakToConsole();
-		//            Console.WriteLine("***************************************************************");
-		//            peak.PrintPeakToConsole();
-		//            Console.WriteLine("===============================================================");
-		//        }
-
-		//        index++;
-		//    }
-
-		//    return newLCIMSMSFeatureList;
-		//}
-
-		/*
-		public static void DetectConformationsForLCIMSMSFeatureOld(LCIMSMSFeature lcimsmsFeature)
-		{
-			List<IMSMSFeature> imsmsFeatureList = lcimsmsFeature.IMSMSFeatureList;
-
-			var sortByScanLCQuery = from imsmsFeature in imsmsFeatureList
-									orderby imsmsFeature.ScanLC
-									select imsmsFeature;
-
-			List<Dictionary<int, double>> intensityDictionaries = new List<Dictionary<int, double>>();
-
-			int globalScanIMSMinimum = int.MaxValue;
-			int globalScanIMSMaximum = int.MinValue;
-			int localScanIMSMinimum = 0;
-			int localScanIMSMaximum = 0;
-
-			// Grab all of the intensity values for each IMS-MS Feature and find the global minimum and maximum IMS Scan
-			foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
-			{
-				intensityDictionaries.Add(imsmsFeature.GetIntensityValues());
-
-				imsmsFeature.GetMinAndMaxScanIMS(out localScanIMSMinimum, out localScanIMSMaximum);
-
-				if (localScanIMSMinimum < globalScanIMSMinimum) globalScanIMSMinimum = localScanIMSMinimum;
-				if (localScanIMSMaximum > globalScanIMSMaximum) globalScanIMSMaximum = localScanIMSMaximum;
-			}
-
-			List<double> driftProfile = new List<double>();
-			List<XYPair> driftProfileXYPairList = new List<XYPair>();
-
-			// Pad the beginning of the drift profile with zeros
-			driftProfile.AddRange(new double[] { 0, 0, 0, 0, 0 });
-
-			// Calculate the IMS half window. i.e. If the window size is 5, the half window is 2 in each direction.
-			int imsHalfWindow = (int)Math.Floor(IMS_SCAN_WINDOW_WIDTH / 2.0);
-
-			double maxIntensity = 0.0;
-			int indexOfMaxIntensity = 0;
-
-			// Find the drift profile
-			for (int i = globalScanIMSMinimum - imsHalfWindow; i <= globalScanIMSMaximum + imsHalfWindow; i++)
-			{
-				double totalIntensity = 0.0;
-
-				foreach (Dictionary<int, double> intensityDictionary in intensityDictionaries)
-				{
-					for (int j = -imsHalfWindow; j <= imsHalfWindow; j++)
-					{
-						double currentIntensity = 0.0;
-						intensityDictionary.TryGetValue(i + j, out currentIntensity);
-						totalIntensity += currentIntensity;
-					}
-				}
-
-				float driftTime = ScanIMSToDriftTimeMap.Mapping[i];
-
-				XYPair xyPair = new XYPair(driftTime, totalIntensity);
-				driftProfileXYPairList.Add(xyPair);
-
-				driftProfile.Add(totalIntensity);
-
-				if (totalIntensity > maxIntensity)
-				{
-					maxIntensity = totalIntensity;
-					indexOfMaxIntensity = i;
-				}
-			}
-
-			// Pad the end of the drift profile with zeros
-			driftProfile.AddRange(new double[] { 0, 0, 0, 0, 0 });
-			Peak driftProfilePeak = new Peak(driftProfileXYPairList);
-			IInterpolationMethod driftprofileInterpolation = PeakUtil.GetLinearInterpolationMethod(driftProfilePeak);
-
-			//foreach (double intensity in driftProfile)
-			//{
-			//    Console.Write(intensity + "\t");
-			//}
-			//Console.Write("\n");
-			//Console.Write("*************************************************************\n");
-
-			// TODO: Smooth Drift Profile
-
-			// TODO: Detect Peaks for Drift Profile
-			PeakUtil.DetectGaussianPeaks(driftProfile);
-
-			// Create theoretical Gaussian Peak
-			int peakWidth = driftProfile.Count - 10;
-			List<double> theoreticalGaussianPeak = PeakUtil.CreateTheoreticalGaussianPeak(peakWidth / 2.0, peakWidth, peakWidth);
-
-			// Calculate Fit Score for Drift Profile
-			double fitScore = PeakUtil.CalculatePeakFit(driftProfile.GetRange(5, peakWidth), theoreticalGaussianPeak, 0.05);
-
-			//Console.WriteLine("IMS Fit Score = " + fitScore);
-			//Console.WriteLine("==========================================================");
-
-			List<double> lcProfile = new List<double>();
-
-			// Pad the beginning of the LC profile with zeros
-			lcProfile.AddRange(new double[] { 0, 0, 0, 0, 0 });
-
-			// TODO: Grab LC Profile for each detected drift time
-			// Calculate the half window. i.e. If the window size is 5, the half window is 2 in each direction.
-			foreach (Dictionary<int, double> intensityDictionary in intensityDictionaries)
-			{
-				double totalIntensity = 0.0;
-
-				for (int i = indexOfMaxIntensity - imsHalfWindow; i <= indexOfMaxIntensity + imsHalfWindow; i++)
-				{
-					double currentIntensity = 0.0;
-					intensityDictionary.TryGetValue(i, out currentIntensity);
-					totalIntensity += currentIntensity;
-				}
-
-				lcProfile.Add(totalIntensity);
-			}
-
-			// Pad the end of the LC profile with zeros
-			lcProfile.AddRange(new double[] { 0, 0, 0, 0, 0 });
-
-			//foreach (double intensity in lcProfile)
-			//{
-			//    Console.Write(intensity + "\t");
-			//}
-			//Console.Write("\n");
-			//Console.Write("----------------------------------------------------------------\n");
-
-			// TODO: Smooth LC Profile
-
-			// TODO: Detect Peaks for LC Profile
-
-			// TODO: Calculate fit score for LC Profile
-			int lcPeakWidth = lcProfile.Count - 10;
-			List<double> lcTheoreticalGaussianPeak = PeakUtil.CreateTheoreticalGaussianPeak(lcPeakWidth / 2.0, lcPeakWidth, lcPeakWidth);
-
-			double lcFitScore = PeakUtil.CalculatePeakFit(lcProfile.GetRange(5, lcPeakWidth), lcTheoreticalGaussianPeak, 0.05);
-			//Console.WriteLine("LC Fit Score = " + lcFitScore);
-
-			lcimsmsFeature.IMSScore = (float)fitScore;
-			lcimsmsFeature.LCScore = (float)lcFitScore;
-		}
-		*/ 
 
 		public static List<XYPair> PadXYPairsWithZeros(List<XYPair> driftProfileXYPairList, double globalDriftTimeMinimum, double globalDriftTimeMaximum, int numZeros)
 		{
@@ -785,6 +387,12 @@ namespace FeatureFinder.Algorithms
 			return driftTime;
 		}
 
+		public static double ConvertIMSScanToDriftTime(int imsScan, double averageTOFLength)
+		{
+			double driftTime = (averageTOFLength * imsScan / 1e6);
+			return driftTime;
+		}
+
 		public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
 		{
 			DataReader uimfReader = new UIMFLibrary.DataReader();
@@ -815,7 +423,6 @@ namespace FeatureFinder.Algorithms
 
 					Console.WriteLine("Drift Time = " + driftTime + "\tCorrected = " + correctedDriftTime);
 				}
-
 
 				Console.WriteLine("**************************************************************");
 			}

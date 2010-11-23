@@ -162,21 +162,6 @@ namespace FeatureFinder.Control
 				Settings.IMSGapSizeMax = short.Parse(value);
 			}
 
-			value = IniReadValue("UMCCreationOptions", "LCMaxDaCorrection");
-			if (!value.Equals(String.Empty))
-			{
-				int readValue = short.Parse(value);
-
-				if (readValue < 0)
-				{
-					Settings.LCDaCorrectionMax = 0;
-				}
-				else
-				{
-					Settings.LCDaCorrectionMax = readValue;
-				}
-			}
-
 			value = IniReadValue("UMCCreationOptions", "IMSMaxDaCorrection");
 			if (!value.Equals(String.Empty))
 			{
@@ -228,22 +213,10 @@ namespace FeatureFinder.Control
 				Settings.UseConformationIndex = bool.Parse(value);
 			}
 
-			value = IniReadValue("DriftProfileOptions", "ReportFittedTime");
-			if (!value.Equals(String.Empty))
-			{
-				Settings.ReportFittedTime = bool.Parse(value);
-			}
-
 			value = IniReadValue("DriftProfileOptions", "SmoothingStDev");
 			if (!value.Equals(String.Empty))
 			{
 				Settings.SmoothingStDev = float.Parse(value);
-			}
-
-			value = IniReadValue("DriftProfileOptions", "PeakWidthMinimum");
-			if (!value.Equals(String.Empty))
-			{
-				Settings.PeakWidthMinimum = int.Parse(value);
 			}
 
 			/*

@@ -7,6 +7,8 @@ using FeatureFinder.Control;
 using System.IO;
 using System.Text.RegularExpressions;
 using FeatureFinder.Data.Maps;
+using UIMFLibrary;
+using FeatureFinder.Algorithms;
 
 namespace FeatureFinder.Utilities
 {
@@ -25,6 +27,12 @@ namespace FeatureFinder.Utilities
 			TextWriter featureWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatures.txt");
 			TextWriter mapWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatureToPeakMap.txt");
 
+			DataReader uimfReader = new UIMFLibrary.DataReader();
+			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+			{
+				throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
+			}
+
 			StringBuilder labelStringBuilder = new StringBuilder();
 			labelStringBuilder.Append("Feature_Index" + "\t");
 			labelStringBuilder.Append("Original_Index" + "\t");
@@ -41,6 +49,7 @@ namespace FeatureFinder.Utilities
 			labelStringBuilder.Append("Class_Rep_MZ" + "\t");
 			labelStringBuilder.Append("Class_Rep_Charge" + "\t");
 			labelStringBuilder.Append("Charge_Max" + "\t");
+			labelStringBuilder.Append("Old_Drift_Time" + "\t");
 			labelStringBuilder.Append("Drift_Time" + "\t");
 			labelStringBuilder.Append("Conformation_Fit_Score" + "\t");
 			labelStringBuilder.Append("LC_Fit_Score" + "\t");
@@ -66,6 +75,7 @@ namespace FeatureFinder.Utilities
 				float maxMass = float.MinValue;
 				double totalMass = 0;
 				double totalFit = 0;
+				double totalAbundanceTimesDriftTime = 0;
 
 				var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
 										orderby imsmsFeature.ScanLC ascending
@@ -74,8 +84,27 @@ namespace FeatureFinder.Utilities
 				int scanLCStart = sortByScanLCQuery.First().ScanLC;
 				int scanLCEnd = sortByScanLCQuery.Last().ScanLC;
 
+				// TODO: Use a moving average frame pressure instead
+				// First find the average Pressure for the Feature to use for Drift Time calculation
+				double totalFramePressure = 0;
 				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
 				{
+					int scanLC = ScanLCMap.Mapping[imsmsFeature.ScanLC];
+					FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
+
+					double framePressure = frameParameters.PressureBack;
+
+					totalFramePressure += framePressure;
+				}
+				double averageFramePressure = totalFramePressure / (double)sortByScanLCQuery.Count();
+
+				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
+				{
+					int scanLC = ScanLCMap.Mapping[imsmsFeature.ScanLC];
+					FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
+
+					double averageTOFLength = frameParameters.AverageTOFLength;
+
 					foreach (MSFeature msFeature in imsmsFeature.MSFeatureList)
 					{
 						String filteredFeatureId = msFeature.FilteredIndex >= 0 ? msFeature.FilteredIndex.ToString() : "";
@@ -91,7 +120,10 @@ namespace FeatureFinder.Utilities
 						if (msFeature.MassMonoisotopic < minMass) minMass = msFeature.MassMonoisotopic;
 						if (msFeature.MassMonoisotopic > maxMass) maxMass = msFeature.MassMonoisotopic;
 
+						double driftTime = ConformationDetection.ConvertIMSScanToDriftTime((int)msFeature.ScanIMS, averageTOFLength, averageFramePressure);
+
 						totalAbundance += msFeature.Abundance;
+						totalAbundanceTimesDriftTime += ((double)msFeature.Abundance * (double)driftTime);
 						totalMass += msFeature.MassMonoisotopic;
 						totalFit += msFeature.Fit;
 						msFeatureCount++;
@@ -102,6 +134,7 @@ namespace FeatureFinder.Utilities
 				double averageFit = 1.0 - ((totalFit / msFeatureCount) / Settings.FitMax);
 				double memberPercentage = (double)msFeatureCount / (double)lcimsmsFeature.MaxMemberCount;
 				double combinedScore = (lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0;
+				double driftTimeWeightedAverage = totalAbundanceTimesDriftTime / (double)totalAbundance;
 
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.Append(index + "\t");
@@ -120,6 +153,7 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
 				stringBuilder.Append(msFeatureRep.DriftTime + "\t");
+				stringBuilder.Append(driftTimeWeightedAverage.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.IMSScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.LCScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(averageFit.ToString("0.00000") + "\t");
