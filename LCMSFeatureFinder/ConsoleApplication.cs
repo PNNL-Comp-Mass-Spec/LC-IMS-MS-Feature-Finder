@@ -192,6 +192,7 @@ namespace LCMSFeatureFinder
 
 			Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
 			lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
+			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 
 			Logger.Log("Conformation Detection...");
