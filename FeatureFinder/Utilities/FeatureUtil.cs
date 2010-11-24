@@ -49,7 +49,6 @@ namespace FeatureFinder.Utilities
 			labelStringBuilder.Append("Class_Rep_MZ" + "\t");
 			labelStringBuilder.Append("Class_Rep_Charge" + "\t");
 			labelStringBuilder.Append("Charge_Max" + "\t");
-			labelStringBuilder.Append("Old_Drift_Time" + "\t");
 			labelStringBuilder.Append("Drift_Time" + "\t");
 			labelStringBuilder.Append("Conformation_Fit_Score" + "\t");
 			labelStringBuilder.Append("LC_Fit_Score" + "\t");
@@ -152,7 +151,6 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(msFeatureRep.Mz + "\t");
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
-				stringBuilder.Append(msFeatureRep.DriftTime + "\t");
 				stringBuilder.Append(driftTimeWeightedAverage.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.IMSScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.LCScore.ToString("0.00000") + "\t");

@@ -156,12 +156,6 @@ namespace FeatureFinder.Control
 				Settings.LCGapSizeMax = short.Parse(value);
 			}
 
-			value = IniReadValue("UMCCreationOptions", "IMSGapMaxSize");
-			if (!value.Equals(String.Empty))
-			{
-				Settings.IMSGapSizeMax = short.Parse(value);
-			}
-
 			value = IniReadValue("UMCCreationOptions", "IMSMaxDaCorrection");
 			if (!value.Equals(String.Empty))
 			{

@@ -11,7 +11,6 @@ namespace FeatureFinder.Control
 		private static short featureLengthMin;
 		private static short minimumDifferenceInMedianPpmMassToSplit;
 		private static short lcGapSizeMax;
-		private static short imsGapSizeMax;
 
 		private static int imsDaCorrectionMax;
 		private static int scanIMSMin;
@@ -60,11 +59,10 @@ namespace FeatureFinder.Control
 			useGenericNET = true;
 			useCharge = false;
 			lcGapSizeMax = 5;
-			imsGapSizeMax = 5;
 			minimumDifferenceInMedianPpmMassToSplit = 4;
 			split = true;
 			imsDaCorrectionMax = 1;
-			smoothingStDev = 0.35f;
+			smoothingStDev = 0.25f;
 			umcFitScoreMinimum = 0f;
 			useConformationDetection = true;
 			useConformationIndex = false;
@@ -97,7 +95,6 @@ namespace FeatureFinder.Control
 			Console.WriteLine("UseCharge=True");
 			Console.WriteLine("MinFeatureLengthPoints=3");
 			Console.WriteLine("LCGapMaxSize=4");
-			Console.WriteLine("IMSGapMaxSize=4");
 			Console.WriteLine("IMSMaxDaCorrection=1");
 			Console.WriteLine("UMCFitScoreMinimum=0.9");
 			Console.WriteLine("[UMCSplittingOptions]");
@@ -106,7 +103,7 @@ namespace FeatureFinder.Control
 			Console.WriteLine("[DriftProfileOptions]");
 			Console.WriteLine("UseConformationDetection=True");
 			Console.WriteLine("UseConformationIndex=False");
-			Console.WriteLine("SmoothingStDev=0.35");
+			Console.WriteLine("SmoothingStDev=0.25");
 			Console.WriteLine("[PostCreationFilteringOptions]");
 			Console.WriteLine("FilterIsosToSinglePoint=True");
 		}
@@ -145,12 +142,6 @@ namespace FeatureFinder.Control
 		{
 			get { return lcGapSizeMax; }
 			set { lcGapSizeMax = value; }
-		}
-
-		public static short IMSGapSizeMax
-		{
-			get { return imsGapSizeMax; }
-			set { imsGapSizeMax = value; }
 		}
 
 		public static int ScanIMSMin
