@@ -274,6 +274,7 @@ namespace FeatureFinder.Algorithms
 				index++;
 			}
 
+			// TODO: Keep this? Probably a very crappy Feature.
 			// If no conformation was detected, use the most abundant drift time
 			if (newLCIMSMSFeatureList.Count == 0)
 			{
@@ -302,7 +303,8 @@ namespace FeatureFinder.Algorithms
 					}
 				}
 
-				newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
+				// TODO: I decided not to add this Feature to the list. I need to decide if I should keept his or not.
+				//newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
 			}
 
 			// Find the Conformation that has the highest member count and store the value into all conformations of this LC-IMS-MS Feature
