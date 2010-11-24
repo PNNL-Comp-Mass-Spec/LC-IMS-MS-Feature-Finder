@@ -141,13 +141,21 @@ namespace FeatureFinder.Algorithms
 				previousIntensity = intensity;
 			}
 
-			// When you get to the end, end the last Peak
-			xyPairList = PadXYPairsWithZeros(xyPairList, driftTimeMinimum, globalDriftTimeMaximum, 1);
-			Peak lastPeak = new Peak(xyPairList);
-
-			if (lastPeak.XYPairList.Count >= 3)
+			// When you get to the end, end the last Peak, but only if it has a non-zero value
+			foreach (XYPair xyPair in xyPairList)
 			{
-				peakList.Add(lastPeak);
+				if (xyPair.YValue > 0)
+				{
+					xyPairList = PadXYPairsWithZeros(xyPairList, driftTimeMinimum, globalDriftTimeMaximum, 1);
+					Peak lastPeak = new Peak(xyPairList);
+
+					if (lastPeak.XYPairList.Count >= 3)
+					{
+						peakList.Add(lastPeak);
+					}
+
+					break;
+				}
 			}
 
 			double resolvingPower = GetResolvingPower(lcimsmsFeature.Charge);
