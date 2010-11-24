@@ -249,6 +249,7 @@ namespace FeatureFinder.Algorithms
 				else
 				{
 					// TODO: Figure out why this actually happens. I believe that this SHOULD NOT happen. Below is a hack to return a conformation even if this happens
+					// It actually looks like most of these occurences are due to large gaps in the drift time, which cause a small peak to be found in the gap which has no members.
 
 					//Console.WriteLine("**********************************************************************");
 					//Console.WriteLine("Detected Drift Time = " + driftTime + "\tLow = " + lowDriftTime + "\tHigh = " + highDriftTime);
@@ -292,6 +293,8 @@ namespace FeatureFinder.Algorithms
 						newLCIMSMSFeature.AddIMSMSFeature(newIMSMSFeature);
 					}
 				}
+
+				newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
 			}
 
 			// Find the Conformation that has the highest member count and store the value into all conformations of this LC-IMS-MS Feature
