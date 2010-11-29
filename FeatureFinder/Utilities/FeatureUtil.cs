@@ -394,5 +394,14 @@ namespace FeatureFinder.Utilities
 
 			return lcimsmsFeatureList;
 		}
+
+		public static IEnumerable<LCIMSMSFeature> SortByMass(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+		{
+			var sortByMassQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
+								  orderby lcimsmsFeature.Charge ascending, lcimsmsFeature.CalculateAverageMass() ascending
+								  select lcimsmsFeature;
+
+			return sortByMassQuery.AsEnumerable();
+		}
 	}
 }

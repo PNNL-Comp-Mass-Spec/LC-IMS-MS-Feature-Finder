@@ -199,6 +199,8 @@ namespace LCMSFeatureFinder
 			lcimsmsFeatureEnumerable = ConformationDetection.DetectConformationsUsingRawData(lcimsmsFeatureEnumerable);
 			Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 
+			lcimsmsFeatureEnumerable = FeatureUtil.SortByMass(lcimsmsFeatureEnumerable);
+
 			Logger.Log("Creating filtered Isos file...");
 
 			List<MSFeature> msFeatureListOutput = new List<MSFeature>();
