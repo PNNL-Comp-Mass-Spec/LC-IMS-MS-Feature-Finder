@@ -10,11 +10,18 @@ using FeatureFinder.Data;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using FeatureFinder.Utilities;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace LCMSFeatureFinder
 {
 	class ConsoleApplication
 	{
+		[DllImport("kernel32.dll")]
+		public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+
+		private const uint ENABLE_EXTENDED_FLAGS = 0x0080;
+
 		private const int LC_DATA = 0;
 		private const int IMS_DATA = 1;
 
@@ -32,6 +39,9 @@ namespace LCMSFeatureFinder
 				return;
 			}
 
+			IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
+			SetConsoleMode(handle, ENABLE_EXTENDED_FLAGS);
+
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			string assemblyVersion = assembly.GetName().Version.ToString();
 
@@ -48,6 +58,7 @@ namespace LCMSFeatureFinder
 			Logger.Log(" Minimum IMS scan = " + Settings.ScanIMSMin);
 			Logger.Log(" Maximum IMS scan = " + Settings.ScanIMSMax);
 			Logger.Log(" Maximum fit = " + Settings.FitMax);
+			Logger.Log(" Maximum i_score = " + Settings.InterferenceScoreMax);
 			Logger.Log(" Minimum intensity = " + Settings.IntensityMin);
 			Logger.Log(" Mono mass start = " + Settings.MassMonoisotopicStart);
 			Logger.Log(" Mono mass end = " + Settings.MassMonoisotopicEnd);
@@ -150,55 +161,69 @@ namespace LCMSFeatureFinder
 			});
 
 			Logger.Log("Total Number of LC-IMS-MS Features = " + lcimsmsFeatureBag.Count);
-			Logger.Log("Executing Dalton Correction Algorithm on LC-IMS-MS Features...");
 
-			ConcurrentBag<LCIMSMSFeature> daCorrectedLCIMSMSFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
+			IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = null;
 
-			var groupByChargeQuery2 = from lcimsmsFeature in lcimsmsFeatureBag
-									  group lcimsmsFeature by lcimsmsFeature.Charge into newGroup
-									  select newGroup;
-
-			ConcurrentBag<IEnumerable<LCIMSMSFeature>> lcimsmsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
-
-			Parallel.ForEach(groupByChargeQuery2, lcimsmsFeatureGroup =>
+			if (Settings.IMSDaCorrectionMax > 0)
 			{
-				IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureGroup);
+				Logger.Log("Executing Dalton Correction Algorithm on LC-IMS-MS Features...");
 
-				foreach (IEnumerable<LCIMSMSFeature> lcimsmsFeatureList in returnList)
+				ConcurrentBag<LCIMSMSFeature> daCorrectedLCIMSMSFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
+
+				var groupByChargeQuery2 = from lcimsmsFeature in lcimsmsFeatureBag
+										  group lcimsmsFeature by lcimsmsFeature.Charge into newGroup
+										  select newGroup;
+
+				ConcurrentBag<IEnumerable<LCIMSMSFeature>> lcimsmsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
+
+				Parallel.ForEach(groupByChargeQuery2, lcimsmsFeatureGroup =>
 				{
-					lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
-				}
-			});
+					IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureGroup);
 
-			lcimsmsFeatureBag = null;
+					foreach (IEnumerable<LCIMSMSFeature> lcimsmsFeatureList in returnList)
+					{
+						lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
+					}
+				});
 
-			Parallel.ForEach(lcimsmsFeatureListBag, lcimsmsFeatureGroup =>
+				lcimsmsFeatureBag = null;
+
+				Parallel.ForEach(lcimsmsFeatureListBag, lcimsmsFeatureGroup =>
+				{
+					IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
+
+					foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
+					{
+						daCorrectedLCIMSMSFeatureBag.Add(lcimsmsFeature);
+					}
+				});
+
+				lcimsmsFeatureEnumerable = daCorrectedLCIMSMSFeatureBag;
+				daCorrectedLCIMSMSFeatureBag = null;
+
+				Logger.Log("Total Number of Dalton Corrected LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+			}
+			else
 			{
-				IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
+				lcimsmsFeatureEnumerable = lcimsmsFeatureBag;
+			}
 
-				foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
-				{
-					daCorrectedLCIMSMSFeatureBag.Add(lcimsmsFeature);
-				}
-			});
-
-			Logger.Log("Total Number of Dalton Corrected LC-IMS-MS Features = " + daCorrectedLCIMSMSFeatureBag.Count);
 			Logger.Log("Filtering LC-IMS-MS features based on Member Count...");
-
-			IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(daCorrectedLCIMSMSFeatureBag);
-			daCorrectedLCIMSMSFeatureBag = null;
-
+			lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(lcimsmsFeatureEnumerable);
 			Logger.Log("Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 
 			Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
 			lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
 			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
 			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
-
-			Logger.Log("Conformation Detection...");
-			lcimsmsFeatureEnumerable = ConformationDetection.DetectConformationsUsingRawData(lcimsmsFeatureEnumerable);
-			Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
-
+			
+			if (Settings.UseConformationDetection)
+			{
+				Logger.Log("Conformation Detection...");
+				lcimsmsFeatureEnumerable = ConformationDetection.DetectConformationsUsingRawData(lcimsmsFeatureEnumerable);
+				Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+			}
+				
 			lcimsmsFeatureEnumerable = FeatureUtil.SortByMass(lcimsmsFeatureEnumerable);
 
 			Logger.Log("Creating filtered Isos file...");

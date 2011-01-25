@@ -43,6 +43,11 @@ namespace FeatureFinder.Utilities
 			labelStringBuilder.Append("Scan_Start" + "\t");
 			labelStringBuilder.Append("Scan_End" + "\t");
 			labelStringBuilder.Append("Scan" + "\t");
+			labelStringBuilder.Append("IMS_Scan" + "\t");
+			labelStringBuilder.Append("IMS_Scan_Start" + "\t");
+			labelStringBuilder.Append("IMS_Scan_End" + "\t");
+			labelStringBuilder.Append("Avg_Interference_Score" + "\t");
+			labelStringBuilder.Append("Decon2ls_Fit_Score" + "\t");
 			labelStringBuilder.Append("UMC_Member_Count" + "\t");
 			labelStringBuilder.Append("Max_Abundance" + "\t");
 			labelStringBuilder.Append("Abundance" + "\t");
@@ -69,11 +74,14 @@ namespace FeatureFinder.Utilities
 
 				int maxAbundance = int.MinValue;
 				int msFeatureCount = 0;
+				int repMinIMSScan = 0;
+				int repMaxIMSScan = 0;
 				long totalAbundance = 0;
 				float minMass = float.MaxValue;
 				float maxMass = float.MinValue;
 				double totalMass = 0;
 				double totalFit = 0;
+				double totalInterferenceScore = 0;
 				double totalAbundanceTimesDriftTime = 0;
 
 				var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
@@ -100,9 +108,13 @@ namespace FeatureFinder.Utilities
 				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
 				{
 					int scanLC = ScanLCMap.Mapping[imsmsFeature.ScanLC];
+					int minIMSScan = int.MaxValue;
+					int maxIMSScan = int.MinValue;
 					FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
 
 					double averageTOFLength = frameParameters.AverageTOFLength;
+
+					bool isFeatureRep = false;
 
 					foreach (MSFeature msFeature in imsmsFeature.MSFeatureList)
 					{
@@ -114,10 +126,14 @@ namespace FeatureFinder.Utilities
 							imsmsFeatureRep = imsmsFeature;
 							msFeatureRep = msFeature;
 							maxAbundance = msFeature.Abundance;
+							isFeatureRep = true;
 						}
 
 						if (msFeature.MassMonoisotopic < minMass) minMass = msFeature.MassMonoisotopic;
 						if (msFeature.MassMonoisotopic > maxMass) maxMass = msFeature.MassMonoisotopic;
+
+						if (msFeature.ScanIMS < minIMSScan) minIMSScan = msFeature.ScanIMS;
+						if (msFeature.ScanIMS > maxIMSScan) maxIMSScan = msFeature.ScanIMS;
 
 						double driftTime = ConformationDetection.ConvertIMSScanToDriftTime((int)msFeature.ScanIMS, averageTOFLength, averageFramePressure);
 
@@ -125,14 +141,28 @@ namespace FeatureFinder.Utilities
 						totalAbundanceTimesDriftTime += ((double)msFeature.Abundance * (double)driftTime);
 						totalMass += msFeature.MassMonoisotopic;
 						totalFit += msFeature.Fit;
+						totalInterferenceScore += msFeature.InterferenceScore;
 						msFeatureCount++;
+					}
+
+					if (isFeatureRep)
+					{
+						repMinIMSScan = minIMSScan;
+						repMaxIMSScan = maxIMSScan;
 					}
 				}
 
 				double averageMass = totalMass / msFeatureCount;
 				double averageFit = 1.0 - ((totalFit / msFeatureCount) / Settings.FitMax);
+				double averageInterferenceScore = (totalInterferenceScore / msFeatureCount);
+				double averageDecon2lsFit = (totalFit / msFeatureCount);
+
 				double memberPercentage = (double)msFeatureCount / (double)lcimsmsFeature.MaxMemberCount;
+				if (double.IsInfinity(memberPercentage)) memberPercentage = 0.0;
+
 				double combinedScore = (lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0;
+				if (double.IsInfinity(combinedScore)) combinedScore = 0.0;
+
 				double driftTimeWeightedAverage = totalAbundanceTimesDriftTime / (double)totalAbundance;
 
 				StringBuilder stringBuilder = new StringBuilder();
@@ -145,6 +175,11 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(ScanLCMap.Mapping[scanLCStart] + "\t");
 				stringBuilder.Append(ScanLCMap.Mapping[scanLCEnd] + "\t");
 				stringBuilder.Append(ScanLCMap.Mapping[msFeatureRep.ScanLC] + "\t");
+				stringBuilder.Append(msFeatureRep.ScanIMS + "\t");
+				stringBuilder.Append(repMinIMSScan + "\t");
+				stringBuilder.Append(repMaxIMSScan + "\t");
+				stringBuilder.Append(averageInterferenceScore.ToString("0.00000") + "\t");
+				stringBuilder.Append(averageDecon2lsFit.ToString("0.00000") + "\t");
 				stringBuilder.Append(msFeatureCount + "\t");
 				stringBuilder.Append(maxAbundance + "\t");
 				stringBuilder.Append(totalAbundance + "\t");
@@ -385,6 +420,7 @@ namespace FeatureFinder.Utilities
 					}
 					else
 					{
+						//Console.WriteLine("Scan LC = " + scanLC + "\tReference LC = " + referenceScanLC);
 						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
 					}
 

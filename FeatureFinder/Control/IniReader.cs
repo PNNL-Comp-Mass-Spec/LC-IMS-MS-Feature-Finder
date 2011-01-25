@@ -61,6 +61,12 @@ namespace FeatureFinder.Control
 				Settings.FitMax = float.Parse(value);
 			}
 
+			value = IniReadValue("DataFilters", "MaxIScore");
+			if (!value.Equals(String.Empty))
+			{
+				Settings.InterferenceScoreMax = float.Parse(value);
+			}
+
 			value = IniReadValue("DataFilters", "MinimumIntensity");
 			if (!value.Equals(String.Empty))
 			{

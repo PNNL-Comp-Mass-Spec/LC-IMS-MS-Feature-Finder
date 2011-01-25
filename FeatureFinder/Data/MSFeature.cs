@@ -17,6 +17,7 @@ namespace FeatureFinder.Data
 
 		private float m_mz;
 		private float m_fit;
+		private float m_interferenceScore;
 		private float m_fwhm;
 		private float m_driftTime;
 		private float m_massMonoisotopic;
@@ -182,6 +183,12 @@ namespace FeatureFinder.Data
 		{
 			get { return m_fit; }
 			set { m_fit = value; }
+		}
+
+		public float InterferenceScore
+		{
+			get { return m_interferenceScore; }
+			set { m_interferenceScore = value; }
 		}
 
 		public float Fwhm

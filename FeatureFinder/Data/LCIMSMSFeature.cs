@@ -38,6 +38,8 @@ namespace FeatureFinder.Data
 				if (otherIMSMSFeature.ScanLC == lcScan)
 				{
 					FeatureUtil.MergeIMSMSFeatures(imsmsFeature, otherIMSMSFeature);
+					IMSMSFeatureList.Add(imsmsFeature);
+					IMSMSFeatureList.Remove(otherIMSMSFeature);
 					return;
 				}
 			}

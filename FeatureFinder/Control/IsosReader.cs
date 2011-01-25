@@ -180,6 +180,9 @@ namespace FeatureFinder.Control
 					case "fit":
 						columnMap.Add("MSFeature.Fit", i);
 						break;
+					case "interference_score":
+						columnMap.Add("MSFeature.InterferenceScore", i);
+						break;
 					case "average_mw":
 						columnMap.Add("MSFeature.MassAverage", i);
 						break;
@@ -288,6 +291,7 @@ namespace FeatureFinder.Control
 					if (m_columnMap.ContainsKey("MSFeature.Abundance")) msFeature.Abundance = Int32.Parse(columns[m_columnMap["MSFeature.Abundance"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Mz")) msFeature.Mz = float.Parse(columns[m_columnMap["MSFeature.Mz"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Fit")) msFeature.Fit = float.Parse(columns[m_columnMap["MSFeature.Fit"]], System.Globalization.NumberStyles.Any);
+					if (m_columnMap.ContainsKey("MSFeature.InterferenceScore")) msFeature.InterferenceScore = float.Parse(columns[m_columnMap["MSFeature.InterferenceScore"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) msFeature.MassMonoisotopic = float.Parse(columns[m_columnMap["MSFeature.MassMonoisotopic"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Fwhm")) msFeature.Fwhm = float.Parse(columns[m_columnMap["MSFeature.Fwhm"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.DriftTimeIMS")) msFeature.DriftTime = float.Parse(columns[m_columnMap["MSFeature.DriftTimeIMS"]], System.Globalization.NumberStyles.Any);
@@ -331,6 +335,11 @@ namespace FeatureFinder.Control
 			if (m_columnMap.ContainsKey("MSFeature.Fit"))
 			{
 				if (msFeature.Fit > Settings.FitMax) return false;
+			}
+
+			if (m_columnMap.ContainsKey("MSFeature.InterferenceScore"))
+			{
+				if (msFeature.InterferenceScore > Settings.InterferenceScoreMax) return false;
 			}
 
 			if (m_columnMap.ContainsKey("MSFeature.Abundance"))

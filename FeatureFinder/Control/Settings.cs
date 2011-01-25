@@ -19,6 +19,7 @@ namespace FeatureFinder.Control
 		private static int scanLCMax;
 
 		private static float fitMax;
+		private static float interferenceScoreMax;
 		private static float intensityMin;
 		private static float massMonoisotopicConstraint;
 		private static float umcFitScoreMinimum;
@@ -46,6 +47,7 @@ namespace FeatureFinder.Control
 			inputFileName = "";
 			outputDirectory = "";
 			fitMax = 0.15f;
+			interferenceScoreMax = 0.3f;
 			intensityMin = 2500;
 			scanIMSMin = 0;
 			scanIMSMax = int.MaxValue;
@@ -79,6 +81,7 @@ namespace FeatureFinder.Control
 			Console.WriteLine("OutputDirectory=C:\\");
 			Console.WriteLine("[DataFilters]");
 			Console.WriteLine("MaxIsotopicFit=0.15");
+			Console.WriteLine("MaxIScore=0.3");
 			Console.WriteLine("MinimumIntensity=0");
 			Console.WriteLine("IMSMinScan=0");
 			Console.WriteLine("IMSMaxScan=0");
@@ -178,6 +181,12 @@ namespace FeatureFinder.Control
 		{
 			get { return fitMax; }
 			set { fitMax = value; }
+		}
+
+		public static float InterferenceScoreMax
+		{
+			get { return interferenceScoreMax; }
+			set { interferenceScoreMax = value; }
 		}
 
 		public static float IntensityMin
