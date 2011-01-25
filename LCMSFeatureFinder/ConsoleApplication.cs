@@ -121,19 +121,38 @@ namespace LCMSFeatureFinder
 
 			ConcurrentBag<IMSMSFeature> imsmsfeatureBag = new ConcurrentBag<IMSMSFeature>();
 
-			var groupByScanLCAndChargeQuery = from msFeature in filteredMSFeatureList
-											  group msFeature by new { msFeature.ScanLC, msFeature.Charge } into newGroup
-											  select newGroup;
-
-			Parallel.ForEach(groupByScanLCAndChargeQuery, msFeatureGroup =>
+			if (Settings.UseCharge)
 			{
-				IEnumerable<IMSMSFeature> imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+				var groupByScanLCAndChargeQuery = from msFeature in filteredMSFeatureList
+												  group msFeature by new { msFeature.ScanLC, msFeature.Charge } into newGroup
+												  select newGroup;
 
-				foreach (IMSMSFeature imsmsFeature in imsmsFeatureList)
+				Parallel.ForEach(groupByScanLCAndChargeQuery, msFeatureGroup =>
 				{
-					imsmsfeatureBag.Add(imsmsFeature);
-				}
-			});
+					IEnumerable<IMSMSFeature> imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+
+					foreach (IMSMSFeature imsmsFeature in imsmsFeatureList)
+					{
+						imsmsfeatureBag.Add(imsmsFeature);
+					}
+				});
+			}
+			else
+			{
+				var groupByScanLCQuery = from msFeature in filteredMSFeatureList
+										 group msFeature by msFeature.ScanLC into newGroup
+										 select newGroup;
+
+				Parallel.ForEach(groupByScanLCQuery, msFeatureGroup =>
+				{
+					IEnumerable<IMSMSFeature> imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+
+					foreach (IMSMSFeature imsmsFeature in imsmsFeatureList)
+					{
+						imsmsfeatureBag.Add(imsmsFeature);
+					}
+				});
+			}
 
 			Logger.Log("Total Number of Unfiltered IMS-MS Features = " + imsmsfeatureBag.Count);
 			//Logger.Log("Filtering out short IMS-MS Features...");
@@ -146,19 +165,31 @@ namespace LCMSFeatureFinder
 
 			ConcurrentBag<LCIMSMSFeature> lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
 
-			var groupByChargeQuery = from imsmsFeature in imsmsfeatureBag
-									 group imsmsFeature by imsmsFeature.Charge into newGroup
-									 select newGroup;
-
-			Parallel.ForEach(groupByChargeQuery, imsmsFeatureGroup =>
+			if (Settings.UseCharge)
 			{
-				IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsFeatureGroup);
+				var groupByChargeQuery = from imsmsFeature in imsmsfeatureBag
+										 group imsmsFeature by imsmsFeature.Charge into newGroup
+										 select newGroup;
+
+				Parallel.ForEach(groupByChargeQuery, imsmsFeatureGroup =>
+				{
+					IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsFeatureGroup);
+
+					foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
+					{
+						lcimsmsFeatureBag.Add(lcimsmsFeature);
+					}
+				});
+			}
+			else
+			{
+				IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsfeatureBag);
 
 				foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
 				{
 					lcimsmsFeatureBag.Add(lcimsmsFeature);
 				}
-			});
+			}
 
 			Logger.Log("Total Number of LC-IMS-MS Features = " + lcimsmsFeatureBag.Count);
 
@@ -169,22 +200,33 @@ namespace LCMSFeatureFinder
 				Logger.Log("Executing Dalton Correction Algorithm on LC-IMS-MS Features...");
 
 				ConcurrentBag<LCIMSMSFeature> daCorrectedLCIMSMSFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
-
-				var groupByChargeQuery2 = from lcimsmsFeature in lcimsmsFeatureBag
-										  group lcimsmsFeature by lcimsmsFeature.Charge into newGroup
-										  select newGroup;
-
 				ConcurrentBag<IEnumerable<LCIMSMSFeature>> lcimsmsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
 
-				Parallel.ForEach(groupByChargeQuery2, lcimsmsFeatureGroup =>
+				if (Settings.UseCharge)
 				{
-					IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureGroup);
+					var groupByChargeQuery2 = from lcimsmsFeature in lcimsmsFeatureBag
+											  group lcimsmsFeature by lcimsmsFeature.Charge into newGroup
+											  select newGroup;
+
+					Parallel.ForEach(groupByChargeQuery2, lcimsmsFeatureGroup =>
+					{
+						IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureGroup);
+
+						foreach (IEnumerable<LCIMSMSFeature> lcimsmsFeatureList in returnList)
+						{
+							lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
+						}
+					});
+				}
+				else
+				{
+					IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureBag);
 
 					foreach (IEnumerable<LCIMSMSFeature> lcimsmsFeatureList in returnList)
 					{
 						lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
 					}
-				});
+				}
 
 				lcimsmsFeatureBag = null;
 
