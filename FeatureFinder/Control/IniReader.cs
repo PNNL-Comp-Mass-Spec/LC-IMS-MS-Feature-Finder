@@ -73,6 +73,12 @@ namespace FeatureFinder.Control
 				Settings.IntensityMin = float.Parse(value);
 			}
 
+			value = IniReadValue("DataFilters", "UseHardCodedFilters");
+			if (!value.Equals(String.Empty))
+			{
+				Settings.FilterUsingHardCodedFilters = bool.Parse(value);
+			}
+
 			value = IniReadValue("DataFilters", "IMSMinScan");
 			if (!value.Equals(String.Empty))
 			{

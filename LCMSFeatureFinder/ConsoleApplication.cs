@@ -57,9 +57,16 @@ namespace LCMSFeatureFinder
 			Logger.Log(" Maximum LC scan = " + Settings.ScanLCMax);
 			Logger.Log(" Minimum IMS scan = " + Settings.ScanIMSMin);
 			Logger.Log(" Maximum IMS scan = " + Settings.ScanIMSMax);
-			Logger.Log(" Maximum fit = " + Settings.FitMax);
-			Logger.Log(" Maximum i_score = " + Settings.InterferenceScoreMax);
-			Logger.Log(" Minimum intensity = " + Settings.IntensityMin);
+			if (Settings.FilterUsingHardCodedFilters)
+			{
+				Logger.Log(" Using hard-coded filters for intensity, fit, and i_score");
+			}
+			else
+			{
+				Logger.Log(" Maximum fit = " + Settings.FitMax);
+				Logger.Log(" Maximum i_score = " + Settings.InterferenceScoreMax);
+				Logger.Log(" Minimum intensity = " + Settings.IntensityMin);
+			}
 			Logger.Log(" Mono mass start = " + Settings.MassMonoisotopicStart);
 			Logger.Log(" Mono mass end = " + Settings.MassMonoisotopicEnd);
 

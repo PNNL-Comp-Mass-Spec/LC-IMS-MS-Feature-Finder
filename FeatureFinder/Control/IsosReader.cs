@@ -7,6 +7,7 @@ using FeatureFinder.Data.Maps;
 using UIMFLibrary;
 using System.Linq;
 using FeatureFinder.Algorithms;
+using FeatureFinder.Utilities;
 
 namespace FeatureFinder.Control
 {
@@ -331,25 +332,35 @@ namespace FeatureFinder.Control
 			{
 				if (msFeature.ScanIMS < Settings.ScanIMSMin || msFeature.ScanIMS > Settings.ScanIMSMax) return false;
 			}
-			
-			if (m_columnMap.ContainsKey("MSFeature.Fit"))
-			{
-				if (msFeature.Fit > Settings.FitMax) return false;
-			}
-
-			if (m_columnMap.ContainsKey("MSFeature.InterferenceScore"))
-			{
-				if (msFeature.InterferenceScore > Settings.InterferenceScoreMax) return false;
-			}
-
-			if (m_columnMap.ContainsKey("MSFeature.Abundance"))
-			{
-				if (msFeature.Abundance < Settings.IntensityMin) return false;
-			}
 
 			if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic"))
 			{
 				if (msFeature.MassMonoisotopic < Settings.MassMonoisotopicStart || msFeature.MassMonoisotopic > Settings.MassMonoisotopicEnd) return false;
+			}
+
+			if (Settings.FilterUsingHardCodedFilters)
+			{
+				if (!DeconToolsFilterUtil.IsValidMSFeature(msFeature))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (m_columnMap.ContainsKey("MSFeature.Fit"))
+				{
+					if (msFeature.Fit > Settings.FitMax) return false;
+				}
+
+				if (m_columnMap.ContainsKey("MSFeature.InterferenceScore"))
+				{
+					if (msFeature.InterferenceScore > Settings.InterferenceScoreMax) return false;
+				}
+
+				if (m_columnMap.ContainsKey("MSFeature.Abundance"))
+				{
+					if (msFeature.Abundance < Settings.IntensityMin) return false;
+				}
 			}
 
 			return true;

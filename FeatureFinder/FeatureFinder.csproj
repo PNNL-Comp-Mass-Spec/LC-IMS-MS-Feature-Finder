@@ -135,6 +135,7 @@
     <Compile Include="Algorithms\ClusterIMSMSFeatures.cs" />
     <Compile Include="Algorithms\ConformationDetection.cs" />
     <Compile Include="Algorithms\DaltonCorrection.cs" />
+    <Compile Include="Control\DeconToolsFilter.cs" />
     <Compile Include="Control\PeakWriter.cs" />
     <Compile Include="Control\IniReader.cs" />
     <Compile Include="Control\IsosReader.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Data\XYPair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Control\Settings.cs" />
+    <Compile Include="Utilities\DeconToolsFilterUtil.cs" />
     <Compile Include="Utilities\FeatureUtil.cs" />
     <Compile Include="Utilities\PeakUtil.cs" />
   </ItemGroup>
