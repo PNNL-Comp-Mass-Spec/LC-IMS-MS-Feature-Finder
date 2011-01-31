@@ -36,12 +36,12 @@ namespace FeatureFinder.Control
 			m_msFeatureList = SaveDataToMSFeatureList();
 
 			// Calculate the drift time for each MS Feature. We are choosing to not use the Decon2ls output.
-			DataReader uimfReader = new UIMFLibrary.DataReader();
-			if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
-			{
-				FixDriftTimeValues(uimfReader);
-			}
-			uimfReader.CloseUIMF();
+			//DataReader uimfReader = new UIMFLibrary.DataReader();
+			//if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+			//{
+			//    FixDriftTimeValues(uimfReader);
+			//}
+			//uimfReader.CloseUIMF();
 		}
 		#endregion
 
