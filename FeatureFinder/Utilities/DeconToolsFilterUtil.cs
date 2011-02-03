@@ -61,8 +61,8 @@ namespace FeatureFinder.Utilities
 				else if (i == 2)
 				{
 					deconsToolsFilter1 = new DeconToolsFilter(i, i, 500, 1000, 0.15, 0);
-					deconsToolsFilter2 = new DeconToolsFilter(i, i, 1000, 2000, 0.35, 0);
-					deconsToolsFilter3 = new DeconToolsFilter(i, i, 2000, 5000, 0.35, 0.45);
+					deconsToolsFilter2 = new DeconToolsFilter(i, i, 1000, 2000, 0.15, 0);
+					deconsToolsFilter3 = new DeconToolsFilter(i, i, 2000, 5000, 0.15, 0.45);
 					deconsToolsFilter4 = new DeconToolsFilter(i, i, 5000, 10000, 0.15, 0.8);
 					deconsToolsFilter5 = new DeconToolsFilter(i, i, 10000, 25000, 0.2, 0.8);
 					deconsToolsFilter6 = new DeconToolsFilter(i, i, 25000, int.MaxValue, 0.3, 1);
