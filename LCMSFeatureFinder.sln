@@ -5,7 +5,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCMSFeatureFinder", "LCMSFe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureFinder", "FeatureFinder\FeatureFinder.csproj", "{BF0D4C3C-8B59-4009-AAE3-9997C1DD7F4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{2EF309B8-149C-4086-8AB1-BA5259550D83}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4585AEA3-8867-46E8-97B5-059BE5482FE3}"
+	ProjectSection(SolutionItems) = preProject
+		LCMSFeatureFinder.vsmdi = LCMSFeatureFinder.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = LCMSFeatureFinder.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -29,6 +41,13 @@ Global
 		{BF0D4C3C-8B59-4009-AAE3-9997C1DD7F4E}.Release|x64.Build.0 = Release|x64
 		{BF0D4C3C-8B59-4009-AAE3-9997C1DD7F4E}.Release|x86.ActiveCfg = Release|x86
 		{BF0D4C3C-8B59-4009-AAE3-9997C1DD7F4E}.Release|x86.Build.0 = Release|x86
+		{2EF309B8-149C-4086-8AB1-BA5259550D83}.Debug|x64.ActiveCfg = Debug|x64
+		{2EF309B8-149C-4086-8AB1-BA5259550D83}.Debug|x64.Build.0 = Debug|x64
+		{2EF309B8-149C-4086-8AB1-BA5259550D83}.Debug|x86.ActiveCfg = Debug|x86
+		{2EF309B8-149C-4086-8AB1-BA5259550D83}.Debug|x86.Build.0 = Debug|x86
+		{2EF309B8-149C-4086-8AB1-BA5259550D83}.Release|x64.ActiveCfg = Release|x64
+		{2EF309B8-149C-4086-8AB1-BA5259550D83}.Release|x86.ActiveCfg = Release|x86
+		{2EF309B8-149C-4086-8AB1-BA5259550D83}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
