@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -33,23 +33,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
@@ -83,32 +66,32 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-      <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-        <SpecificVersion>True</SpecificVersion>
-        <HintPath>..\FeatureFinder\bin\lib\x86\System.Data.SQLite.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-      <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
-        <SpecificVersion>True</SpecificVersion>
-        <HintPath>..\FeatureFinder\bin\lib\x64\System.Data.SQLite.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-      <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-        <SpecificVersion>True</SpecificVersion>
-        <HintPath>..\FeatureFinder\bin\lib\x86\System.Data.SQLite.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-      <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
-        <SpecificVersion>True</SpecificVersion>
-        <HintPath>..\FeatureFinder\bin\lib\x64\System.Data.SQLite.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>True</SpecificVersion>
+      <HintPath>..\FeatureFinder\bin\lib\x86\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
+      <SpecificVersion>True</SpecificVersion>
+      <HintPath>..\FeatureFinder\bin\lib\x64\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>True</SpecificVersion>
+      <HintPath>..\FeatureFinder\bin\lib\x86\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
+      <SpecificVersion>True</SpecificVersion>
+      <HintPath>..\FeatureFinder\bin\lib\x64\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
