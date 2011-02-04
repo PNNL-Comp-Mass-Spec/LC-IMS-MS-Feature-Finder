@@ -36,6 +36,7 @@ namespace FeatureFinder.Control
 		private static bool ignoreIMSDriftTime;
 		private static bool filterIsosToSinglePoint;
 		private static bool filterUsingHardCodedFilters;
+		private static bool filterFlaggedData;
 
 		private static FrameType frameTypeFilter;
 
@@ -73,6 +74,7 @@ namespace FeatureFinder.Control
 			filterIsosToSinglePoint = true;
 			frameTypeFilter = FrameType.NoFilter;
 			filterUsingHardCodedFilters = false;
+			filterFlaggedData = false;
 		}
 
 		public static void PrintExampleSettings()
@@ -86,6 +88,7 @@ namespace FeatureFinder.Control
 			Console.WriteLine("MaxIScore=0.3");
 			Console.WriteLine("MinimumIntensity=0");
 			Console.WriteLine("UseHardCodedFilters=False");
+			Console.WriteLine("FilterFlaggedData=False");
 			Console.WriteLine("IMSMinScan=0");
 			Console.WriteLine("IMSMaxScan=0");
 			Console.WriteLine("LCMinScan=0");
@@ -280,6 +283,12 @@ namespace FeatureFinder.Control
 		{
 			get { return filterUsingHardCodedFilters; }
 			set { filterUsingHardCodedFilters = value; }
+		}
+
+		public static bool FilterFlaggedData
+		{
+			get { return filterFlaggedData; }
+			set { filterFlaggedData = value; }
 		}
 
 		public static FrameType FrameTypeFilter

@@ -79,6 +79,12 @@ namespace FeatureFinder.Control
 				Settings.FilterUsingHardCodedFilters = bool.Parse(value);
 			}
 
+			value = IniReadValue("DataFilters", "FilterFlaggedData");
+			if (!value.Equals(String.Empty))
+			{
+				Settings.FilterFlaggedData = bool.Parse(value);
+			}
+
 			value = IniReadValue("DataFilters", "IMSMinScan");
 			if (!value.Equals(String.Empty))
 			{

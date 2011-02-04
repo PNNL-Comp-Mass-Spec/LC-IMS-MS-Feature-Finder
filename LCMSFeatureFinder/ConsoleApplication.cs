@@ -202,7 +202,7 @@ namespace LCMSFeatureFinder
 
 			IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = null;
 
-			if (Settings.IMSDaCorrectionMax > 0)
+			if (Settings.IMSDaCorrectionMax > 0 && !Settings.FilterFlaggedData)
 			{
 				Logger.Log("Executing Dalton Correction Algorithm on LC-IMS-MS Features...");
 

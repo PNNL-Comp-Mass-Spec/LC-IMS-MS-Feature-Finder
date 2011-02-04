@@ -338,6 +338,11 @@ namespace FeatureFinder.Control
 				if (msFeature.MassMonoisotopic < Settings.MassMonoisotopicStart || msFeature.MassMonoisotopic > Settings.MassMonoisotopicEnd) return false;
 			}
 
+			if (m_columnMap.ContainsKey("MSFeature.ErrorFlag"))
+			{
+				if (msFeature.ErrorFlag == 1) return false;
+			}
+
 			if (Settings.FilterUsingHardCodedFilters)
 			{
 				if (!DeconToolsFilterUtil.IsValidMSFeature(msFeature))
