@@ -67,6 +67,10 @@ namespace LCMSFeatureFinder
 				Logger.Log(" Maximum i_score = " + Settings.InterferenceScoreMax);
 				Logger.Log(" Minimum intensity = " + Settings.IntensityMin);
 			}
+			if (Settings.FilterFlaggedData)
+			{
+				Logger.Log(" Filtering out flagged data");
+			}
 			Logger.Log(" Mono mass start = " + Settings.MassMonoisotopicStart);
 			Logger.Log(" Mono mass end = " + Settings.MassMonoisotopicEnd);
 
