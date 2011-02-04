@@ -20,6 +20,7 @@ namespace FeatureFinder.Data
 		private float m_interferenceScore;
 		private float m_fwhm;
 		private float m_driftTime;
+		private float m_driftTimeUncorrected;
 		private float m_massMonoisotopic;
 
 		public MSFeature()
@@ -201,6 +202,12 @@ namespace FeatureFinder.Data
 		{
 			get { return m_driftTime; }
 			set { m_driftTime = value; }
+		}
+
+		public float DriftTimeUncorrected
+		{
+			get { return m_driftTimeUncorrected; }
+			set { m_driftTimeUncorrected = value; }
 		}
 
 		public float Mz
