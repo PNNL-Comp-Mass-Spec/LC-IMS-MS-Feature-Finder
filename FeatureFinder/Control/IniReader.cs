@@ -219,12 +219,6 @@ namespace FeatureFinder.Control
 				Settings.UseConformationDetection = bool.Parse(value);
 			}
 
-			value = IniReadValue("DriftProfileOptions", "UseConformationIndex");
-			if (!value.Equals(String.Empty))
-			{
-				Settings.UseConformationIndex = bool.Parse(value);
-			}
-
 			value = IniReadValue("DriftProfileOptions", "SmoothingStDev");
 			if (!value.Equals(String.Empty))
 			{

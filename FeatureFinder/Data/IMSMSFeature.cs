@@ -79,12 +79,22 @@ namespace FeatureFinder.Data
 
 		public void GetMinAndMaxDriftTimes(out double driftTimeMinimum, out double driftTimeMaximum)
 		{
+			var sortByDriftTimeQuery = from msFeature in MSFeatureList
+									   orderby msFeature.DriftTime
+									   select msFeature;
+
+			driftTimeMinimum = sortByDriftTimeQuery.First().DriftTime;
+			driftTimeMaximum = sortByDriftTimeQuery.Last().DriftTime;
+		}
+
+		public void GetMinAndMaxIMSScan(out double scanIMSMinimum, out double scanIMSMaximum)
+		{
 			var sortByScanIMSQuery = from msFeature in MSFeatureList
-									 orderby msFeature.DriftTime
+									 orderby msFeature.ScanIMS
 									 select msFeature;
 
-			driftTimeMinimum = sortByScanIMSQuery.First().DriftTime;
-			driftTimeMaximum = sortByScanIMSQuery.Last().DriftTime;
+			scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
+			scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
 		}
 
 		public IEnumerable<MSFeature> FindMSFeaturesInDriftTimeRange(double lowDriftTime, double highDriftTime)
@@ -94,6 +104,15 @@ namespace FeatureFinder.Data
 									   select msFeature;
 
 			return findByDriftTimeQuery.AsEnumerable();
+		}
+
+		public IEnumerable<MSFeature> FindMSFeaturesInScanIMSRange(double lowScanIMS, double highScanIMS)
+		{
+			var findByScanIMSQuery = from msFeature in MSFeatureList
+									 where msFeature.ScanIMS >= lowScanIMS && msFeature.ScanIMS <= highScanIMS
+									 select msFeature;
+
+			return findByScanIMSQuery.AsEnumerable();
 		}
 
 		public MSFeature FindRepMSFeature()

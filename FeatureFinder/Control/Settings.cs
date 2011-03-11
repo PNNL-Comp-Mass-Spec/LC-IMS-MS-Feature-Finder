@@ -32,7 +32,6 @@ namespace FeatureFinder.Control
 		private static bool useCharge;
 		private static bool split;
 		private static bool useConformationDetection;
-		private static bool useConformationIndex;
 		private static bool ignoreIMSDriftTime;
 		private static bool filterIsosToSinglePoint;
 		private static bool filterUsingHardCodedFilters;
@@ -66,10 +65,9 @@ namespace FeatureFinder.Control
 			minimumDifferenceInMedianPpmMassToSplit = 4;
 			split = true;
 			imsDaCorrectionMax = 1;
-			smoothingStDev = 0.25f;
+			smoothingStDev = 1.5f;
 			umcFitScoreMinimum = 0f;
 			useConformationDetection = true;
-			useConformationIndex = false;
 			ignoreIMSDriftTime = false;
 			filterIsosToSinglePoint = true;
 			frameTypeFilter = FrameType.NoFilter;
@@ -111,8 +109,7 @@ namespace FeatureFinder.Control
 			Console.WriteLine("MinimumDifferenceInMedianPpmMassToSplit=4");
 			Console.WriteLine("[DriftProfileOptions]");
 			Console.WriteLine("UseConformationDetection=True");
-			Console.WriteLine("UseConformationIndex=False");
-			Console.WriteLine("SmoothingStDev=0.25");
+			Console.WriteLine("SmoothingStDev=1.5");
 			Console.WriteLine("[PostCreationFilteringOptions]");
 			Console.WriteLine("FilterIsosToSinglePoint=True");
 		}
@@ -259,12 +256,6 @@ namespace FeatureFinder.Control
 		{
 			get { return useConformationDetection; }
 			set { useConformationDetection = value; }
-		}
-
-		public static bool UseConformationIndex
-		{
-			get { return useConformationIndex; }
-			set { useConformationIndex = value; }
 		}
 
 		public static bool IgnoreIMSDriftTime

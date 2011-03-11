@@ -51,6 +51,7 @@ namespace FeatureFinder.Data
 		public void GetMinAndMaxXValues(out double xValueMinimum, out double xValueMaximum)
 		{
 			var sortByXValue = from xyPair in XYPairList
+							   where xyPair.YValue > 0
 							   orderby xyPair.XValue ascending
 							   select xyPair;
 
@@ -65,6 +66,15 @@ namespace FeatureFinder.Data
 							   select xyPair;
 
 			return sortByYValue.First().XValue;
+		}
+
+		public double GetMaximumYValue()
+		{
+			var sortByYValue = from xyPair in XYPairList
+							   orderby xyPair.YValue descending
+							   select xyPair;
+
+			return sortByYValue.First().YValue;
 		}
 
 		public void PrintPeakToConsole()

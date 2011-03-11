@@ -267,13 +267,18 @@ namespace LCMSFeatureFinder
 
 			Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
 			lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
-			lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
+			if (!Settings.UseConformationDetection)
+			{
+				lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
+			}
 			Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 			
 			if (Settings.UseConformationDetection)
 			{
 				Logger.Log("Conformation Detection...");
 				lcimsmsFeatureEnumerable = ConformationDetection.DetectConformationsUsingRawData(lcimsmsFeatureEnumerable);
+				//lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
+				lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(lcimsmsFeatureEnumerable);
 				Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
 			}
 				
