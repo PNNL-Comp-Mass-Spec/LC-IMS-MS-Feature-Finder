@@ -19,6 +19,8 @@ namespace FeatureFinder.Data
 		public float LCScore { get; set; }
 		public int OriginalIndex { get; set; }
 		public int MaxMemberCount { get; set; }
+		public int AbundanceMaxRaw { get; set; }
+		public int AbundanceSumRaw { get; set; }
 
 		public LCIMSMSFeature(byte charge)
 		{
@@ -27,6 +29,8 @@ namespace FeatureFinder.Data
 			IMSScore = 0;
 			LCScore = 0;
 			MaxMemberCount = 0;
+			AbundanceMaxRaw = 0;
+			AbundanceSumRaw = 0;
 		}
 
 		public void AddIMSMSFeature(IMSMSFeature imsmsFeature)

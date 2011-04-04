@@ -220,6 +220,8 @@ namespace FeatureFinder.Algorithms
 				LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge);
 				newLCIMSMSFeature.OriginalIndex = lcimsmsFeature.OriginalIndex;
 				newLCIMSMSFeature.IMSScore = (float)fitScore;
+				newLCIMSMSFeature.AbundanceMaxRaw = (int)Math.Round(peak.GetMaximumYValue());
+				newLCIMSMSFeature.AbundanceSumRaw = (int)peakInterpolation.Integrate(maximumXValue);
 
 				double lowDriftTime = driftTime - driftTimeHalfWindow;
 				double highDriftTime = driftTime + driftTimeHalfWindow;
