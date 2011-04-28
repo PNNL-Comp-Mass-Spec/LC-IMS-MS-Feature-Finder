@@ -11,8 +11,8 @@ namespace FeatureFinder.Data
 		private int m_scanLCMinimum;
 		private int m_scanLCMaximum;
 
-		private float m_massMinimum;
-		private float m_massMaximum;
+		private double m_massMinimum;
+		private double m_massMaximum;
 
 		private List<MSFeature> m_msFeatureList;
 

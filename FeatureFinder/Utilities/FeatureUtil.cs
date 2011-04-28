@@ -72,8 +72,8 @@ namespace FeatureFinder.Utilities
 				int repMinIMSScan = 0;
 				int repMaxIMSScan = 0;
 				long totalAbundance = 0;
-				float minMass = float.MaxValue;
-				float maxMass = float.MinValue;
+				double minMass = double.MaxValue;
+				double maxMass = double.MinValue;
 				double totalMass = 0;
 				double totalFit = 0;
 				double totalInterferenceScore = 0;

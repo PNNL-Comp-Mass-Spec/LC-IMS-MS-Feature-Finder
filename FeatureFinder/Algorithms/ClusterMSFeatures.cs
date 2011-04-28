@@ -20,15 +20,15 @@ namespace FeatureFinder.Algorithms
 								  select msFeature;
 
 			IMSMSFeature imsmsFeature = null;
-			float massReference = -99;
+			double massReference = -99;
 
 			foreach (MSFeature msFeature in sortByMassQuery)
 			{
-				float mass = msFeature.MassMonoisotopic;
+				double mass = msFeature.MassMonoisotopic;
 
-				float massTolerance = massToleranceBase * massReference / 1000000;
-				float massToleranceHigh = massReference + massTolerance;
-				float massToleranceLow = massReference - massTolerance;
+				double massTolerance = massToleranceBase * massReference / 1000000;
+				double massToleranceHigh = massReference + massTolerance;
+				double massToleranceLow = massReference - massTolerance;
 
 				if (mass >= massToleranceLow && mass <= massToleranceHigh)
 				{
