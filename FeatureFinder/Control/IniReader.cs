@@ -52,6 +52,19 @@ namespace FeatureFinder.Control
 				Settings.OutputDirectory = Settings.InputDirectory;
 			}
 
+            value = IniReadValue("Files", "DeconToolsFilterFileName");
+            if (!value.Equals(String.Empty))
+            {
+                Settings.DeconToolsFilterFileName = value;
+                DeconToolsFilterLoader loader = new DeconToolsFilterLoader(value);
+                Settings.DeconToolsFilterList = loader.DeconToolsFilterList;
+            }
+            else
+            {
+                Settings.DeconToolsFilterList = new System.Collections.Generic.List<DeconToolsFilter>();
+                
+            }
+
 			/*
 			 * DataFilters Settings
 			 */

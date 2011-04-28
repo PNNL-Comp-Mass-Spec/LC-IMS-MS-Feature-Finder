@@ -37,6 +37,13 @@ namespace FeatureFinder.Control
 
 			// Calculate the drift time for each MS Feature. We are choosing to not use the Decon2ls output.
 			DataReader uimfReader = new UIMFLibrary.DataReader();
+
+            string uimfRawdataFile = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
+            if (!File.Exists(uimfRawdataFile))
+            {
+                throw new FileNotFoundException("File not found error. Could not find the file: " + uimfRawdataFile);
+            }
+
 			if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
 			{
 				FixDriftTimeValues(uimfReader);
@@ -343,13 +350,15 @@ namespace FeatureFinder.Control
 				if (msFeature.ErrorFlag == 1) return false;
 			}
 
-			if (Settings.FilterUsingHardCodedFilters)
-			{
-				if (!DeconToolsFilterUtil.IsValidMSFeature(msFeature))
-				{
-					return false;
-				}
-			}
+
+            bool deconToolsFilterTableIsBeingUsed = (Settings.FilterUsingHardCodedFilters &&  Settings.DeconToolsFilterList != null && Settings.DeconToolsFilterList.Count > 0);
+            if (deconToolsFilterTableIsBeingUsed)
+            {
+                if (!DeconToolsFilterUtil.IsValidMSFeature(msFeature,Settings.DeconToolsFilterList))
+                {
+                    return false;
+                }
+            }
 			else
 			{
 				if (m_columnMap.ContainsKey("MSFeature.Fit"))

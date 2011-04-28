@@ -287,5 +287,9 @@ namespace FeatureFinder.Control
 			get { return frameTypeFilter; }
 			set { frameTypeFilter = value; }
 		}
-	}
+
+        public static System.Collections.Generic.List<DeconToolsFilter> DeconToolsFilterList { get; set; }
+
+        public static string DeconToolsFilterFileName { get; set; }
+    }
 }
