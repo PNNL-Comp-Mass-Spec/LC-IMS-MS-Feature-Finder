@@ -15,13 +15,14 @@ namespace FeatureFinder.Data
 		private int m_scanLC;
 		private int m_scanIMS;
 
-		private float m_mz;
+		private double m_mz;
+		private double m_massMonoisotopic;
+
 		private float m_fit;
 		private float m_interferenceScore;
 		private float m_fwhm;
 		private float m_driftTime;
 		private float m_driftTimeUncorrected;
-		private float m_massMonoisotopic;
 
 		public MSFeature()
 		{
@@ -210,13 +211,13 @@ namespace FeatureFinder.Data
 			set { m_driftTimeUncorrected = value; }
 		}
 
-		public float Mz
+		public double Mz
 		{
 			get { return m_mz; }
 			set { m_mz = value; }
 		}
 
-		public float MassMonoisotopic
+		public double MassMonoisotopic
 		{
 			get { return m_massMonoisotopic; }
 			set { m_massMonoisotopic = value; }

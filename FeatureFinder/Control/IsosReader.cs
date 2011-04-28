@@ -290,10 +290,10 @@ namespace FeatureFinder.Control
 					if (m_columnMap.ContainsKey("MSFeature.ScanIMS")) msFeature.ScanIMS = Int32.Parse(columns[m_columnMap["MSFeature.ScanIMS"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Charge")) msFeature.Charge = (byte)Int16.Parse(columns[m_columnMap["MSFeature.Charge"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Abundance")) msFeature.Abundance = Int32.Parse(columns[m_columnMap["MSFeature.Abundance"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.Mz")) msFeature.Mz = float.Parse(columns[m_columnMap["MSFeature.Mz"]], System.Globalization.NumberStyles.Any);
+					if (m_columnMap.ContainsKey("MSFeature.Mz")) msFeature.Mz = double.Parse(columns[m_columnMap["MSFeature.Mz"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Fit")) msFeature.Fit = float.Parse(columns[m_columnMap["MSFeature.Fit"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.InterferenceScore")) msFeature.InterferenceScore = float.Parse(columns[m_columnMap["MSFeature.InterferenceScore"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) msFeature.MassMonoisotopic = float.Parse(columns[m_columnMap["MSFeature.MassMonoisotopic"]], System.Globalization.NumberStyles.Any);
+					if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) msFeature.MassMonoisotopic = double.Parse(columns[m_columnMap["MSFeature.MassMonoisotopic"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.Fwhm")) msFeature.Fwhm = float.Parse(columns[m_columnMap["MSFeature.Fwhm"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.DriftTimeIMS")) msFeature.DriftTime = float.Parse(columns[m_columnMap["MSFeature.DriftTimeIMS"]], System.Globalization.NumberStyles.Any);
 					if (m_columnMap.ContainsKey("MSFeature.ErrorFlag")) msFeature.ErrorFlag = (byte)(columns[m_columnMap["MSFeature.ErrorFlag"]].Equals("") ? 0 : Int16.Parse(columns[m_columnMap["MSFeature.ErrorFlag"]], System.Globalization.NumberStyles.Any));
@@ -388,7 +388,6 @@ namespace FeatureFinder.Control
 
 				FrameParameters frameParameters = uimfReader.GetFrameParameters(lcScan);
 				double averageTOFLength = frameParameters.AverageTOFLength;
-				double framePressure = frameParameters.PressureBack;
 
 				foreach(MSFeature msFeature in msFeatureGroup)
 				{
