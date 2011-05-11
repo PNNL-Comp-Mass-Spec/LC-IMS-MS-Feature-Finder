@@ -395,7 +395,10 @@ namespace FeatureFinder.Control
 			{
 				int lcScan = ScanLCMap.Mapping[msFeatureGroup.First().ScanLC];
 
-				FrameParameters frameParameters = uimfReader.GetFrameParameters(lcScan);
+                int frameIndex = uimfReader.get_FrameIndex(lcScan);
+
+
+                FrameParameters frameParameters = uimfReader.GetFrameParameters(frameIndex);
 				double averageTOFLength = frameParameters.AverageTOFLength;
 
 				foreach(MSFeature msFeature in msFeatureGroup)

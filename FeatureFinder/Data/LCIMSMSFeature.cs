@@ -194,26 +194,52 @@ namespace FeatureFinder.Data
 			double minMZ = startMZ[0];
 			double maxMZ = endMZ[endMZ.Count - 1];
 
-			int globalStartBin = (int)((Math.Sqrt(minMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth);
-			int globalEndBin = (int)Math.Ceiling(((Math.Sqrt(maxMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth));
 
-			int[][] intensityValues = uimfReader.GetIntensityBlock(ScanLCMap.Mapping[scanLCMinimum], ScanLCMap.Mapping[scanLCMaximum], frameType, scanIMSMinimum, scanIMSMaximum, globalStartBin, globalEndBin);
 
-			List<XYPair> imsScanProfile = new List<XYPair>();
+            //int globalStartBin = (int)((Math.Sqrt(minMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth);
+            //int globalEndBin = (int)Math.Ceiling(((Math.Sqrt(maxMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth));
 
-			for (int i = 0; i < intensityValues.Length; i++)
-			{
-				int[] intensityArray = intensityValues[i];
-				int intensitySum = 0;
 
-				foreach (int intensity in intensityArray)
-				{
-					intensitySum += intensity;
-				}
+            List<XYPair> imsScanProfile = new List<XYPair>();
 
-				XYPair xyPair = new XYPair(scanIMSMinimum + i, intensitySum);
-				imsScanProfile.Add(xyPair);
-			}
+            //[gord] added May 11 2011
+            int frameIndexMinimum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMinimum]);
+            int frameIndexMaximum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMaximum]);
+            int[] scanValues = null;
+            int[] intensityVals = null;
+
+
+            double midPointMZ = (maxMZ + minMZ) / 2;
+            double toleranceInMZ = midPointMZ - minMZ;
+
+            uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, toleranceInMZ, ref scanValues, ref intensityVals);
+
+            for (int i = 0; i < intensityVals.Length; i++)
+            {
+                XYPair xyPair = new XYPair(scanIMSMinimum + i, intensityVals[i]);
+
+                imsScanProfile.Add(xyPair);
+
+            }
+
+
+
+            //int[][] intensityValues = uimfReader.GetIntensityBlock(ScanLCMap.Mapping[scanLCMinimum], ScanLCMap.Mapping[scanLCMaximum], frameType, scanIMSMinimum, scanIMSMaximum, globalStartBin, globalEndBin);
+
+
+            //for (int i = 0; i < intensityValues.Length; i++)
+            //{
+            //    int[] intensityArray = intensityValues[i];
+            //    int intensitySum = 0;
+
+            //    foreach (int intensity in intensityArray)
+            //    {
+            //        intensitySum += intensity;
+            //    }
+
+            //    XYPair xyPair = new XYPair(scanIMSMinimum + i, intensitySum);
+            //    imsScanProfile.Add(xyPair);
+            //}
 
 			// Add "0" intensity values to the left and right of the Peak
 			imsScanProfile = ConformationDetection.PadXYPairsWithZeros(imsScanProfile, 5);
