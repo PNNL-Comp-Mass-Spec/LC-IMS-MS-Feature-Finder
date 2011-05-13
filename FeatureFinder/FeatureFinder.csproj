@@ -109,9 +109,8 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIMFLibrary, Version=1.3.4148.16231, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Projects\UIMFLibrary\UIMFLibrary\bin\x64\Debug\UIMFLibrary.dll</HintPath>
+    <Reference Include="UIMFLibrary">
+      <HintPath>bin\lib\UIMFLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
