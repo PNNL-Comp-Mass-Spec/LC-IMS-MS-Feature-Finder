@@ -190,12 +190,7 @@ namespace FeatureFinder.Algorithms
 
 			foreach (Peak peak in peakList)
 			{
-				// TODO: Remove
-				//Console.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-				//peak.PrintPeakToConsole();
-
-				//Peak smoothedPeak = PeakUtil.KDESmooth(peak, 0.10); // TODO: To smooth this peak or not
-				double driftTime = peak.GetXValueOfMaximumYValue();
+				double repIMSScan = peak.GetXValueOfMaximumYValue();
 
 				// TODO: Fix this
 				//double theoreticalFWHM = driftTime / resolvingPower;
@@ -207,14 +202,14 @@ namespace FeatureFinder.Algorithms
 
 				int numPoints = 100;
 
-				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(driftTime, theoreticalFWHM, numPoints);
+				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(repIMSScan, theoreticalFWHM, numPoints);
 				normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList, 5);
 				Peak normalDistributionPeak = new Peak(normalDistributionXYPairList);
 
 				IInterpolationMethod peakInterpolation = PeakUtil.GetLinearInterpolationMethod(peak);
 				IInterpolationMethod normalDistribution = PeakUtil.GetLinearInterpolationMethod(normalDistributionPeak);
 
-				double fitScore = PeakUtil.CalculatePeakFit(peakInterpolation, normalDistribution, minimumXValue, maximumXValue, driftTime, 0);
+				double fitScore = PeakUtil.CalculatePeakFit(peakInterpolation, normalDistribution, minimumXValue, maximumXValue, repIMSScan, 0);
 
 				// Create a new LC-IMS-MS Feature
 				LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge);
@@ -222,12 +217,6 @@ namespace FeatureFinder.Algorithms
 				newLCIMSMSFeature.IMSScore = (float)fitScore;
 				newLCIMSMSFeature.AbundanceMaxRaw = (int)Math.Round(peak.GetMaximumYValue());
 				newLCIMSMSFeature.AbundanceSumRaw = (int)peakInterpolation.Integrate(maximumXValue);
-
-				double lowDriftTime = driftTime - driftTimeHalfWindow;
-				double highDriftTime = driftTime + driftTimeHalfWindow;
-
-				//Console.WriteLine("**************************************************************************");
-				//Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
 
 				// Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
 				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
@@ -244,11 +233,6 @@ namespace FeatureFinder.Algorithms
 
 				if (newLCIMSMSFeature.IMSMSFeatureList.Count > 0)
 				{
-					//Console.WriteLine("*****************************************************************");
-					//Console.WriteLine("DT = " + driftTime + "\tLow DT = " + lowDriftTime + "\tHigh DT = " + highDriftTime);
-					//smoothedPeak.PrintPeakToConsole();
-					//Console.WriteLine("*****************************************************************");
-
 					newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
 					conformationIndex++;
 					/*
