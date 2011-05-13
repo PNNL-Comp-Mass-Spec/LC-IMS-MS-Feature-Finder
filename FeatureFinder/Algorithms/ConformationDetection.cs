@@ -39,12 +39,14 @@ namespace FeatureFinder.Algorithms
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
 				int scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
-				FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
+				int frameIndex = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLC]);
+
+				FrameParameters frameParameters = uimfReader.GetFrameParameters(frameIndex);
 
 				double calibrationSlope = frameParameters.CalibrationSlope;
 				double calibrationIntercept = frameParameters.CalibrationIntercept;
 				double averageTOFLength = frameParameters.AverageTOFLength;
-				double framePressure = frameParameters.PressureBack;
+				double framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(frameIndex);
 				int frameType = frameParameters.FrameType;
 
 				List<XYPair> imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth, calibrationSlope, calibrationIntercept);
@@ -59,7 +61,7 @@ namespace FeatureFinder.Algorithms
 
 				Peak driftProfilePeak = new Peak(imsScanProfile);
 
-				IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature);
+				IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature, averageTOFLength, framePressure);
 				newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
 			}
 
@@ -68,7 +70,7 @@ namespace FeatureFinder.Algorithms
 			return newLCIMSMSFeatureList;
 		}
 
-		public static IEnumerable<LCIMSMSFeature> FindDriftTimePeaks(Peak driftProfilePeak, LCIMSMSFeature lcimsmsFeature)
+		public static IEnumerable<LCIMSMSFeature> FindDriftTimePeaks(Peak driftProfilePeak, LCIMSMSFeature lcimsmsFeature, double averageTOFLength, double framePressure)
 		{
 			List<IMSMSFeature> imsmsFeatureList = lcimsmsFeature.IMSMSFeatureList;
 
@@ -190,7 +192,7 @@ namespace FeatureFinder.Algorithms
 
 			foreach (Peak peak in peakList)
 			{
-				double repIMSScan = peak.GetXValueOfMaximumYValue();
+				double repIMSScan = peak.GetQuadraticFit();
 
 				// TODO: Fix this
 				//double theoreticalFWHM = driftTime / resolvingPower;
@@ -217,6 +219,7 @@ namespace FeatureFinder.Algorithms
 				newLCIMSMSFeature.IMSScore = (float)fitScore;
 				newLCIMSMSFeature.AbundanceMaxRaw = (int)Math.Round(peak.GetMaximumYValue());
 				newLCIMSMSFeature.AbundanceSumRaw = (int)peakInterpolation.Integrate(maximumXValue);
+				newLCIMSMSFeature.DriftTime = ConvertIMSScanToDriftTime(repIMSScan, averageTOFLength, framePressure);
 
 				// Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
 				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
@@ -378,13 +381,18 @@ namespace FeatureFinder.Algorithms
 			}
 		}
 
-		public static double ConvertIMSScanToDriftTime(int imsScan, double averageTOFLength, double framePressure)
+		public static double ConvertIMSScanToDriftTime(double imsScan, double averageTOFLength, double framePressure)
 		{
+			if (framePressure == double.NaN || framePressure == 0)
+			{
+				return ConvertIMSScanToDriftTime(imsScan, averageTOFLength);
+			}
+
 			double driftTime = (averageTOFLength * imsScan / 1e6) * (FRAME_PRESSURE_STANDARD / framePressure);
 			return driftTime;
 		}
 
-		public static double ConvertIMSScanToDriftTime(int imsScan, double averageTOFLength)
+		public static double ConvertIMSScanToDriftTime(double imsScan, double averageTOFLength)
 		{
 			double driftTime = (averageTOFLength * imsScan / 1e6);
 			return driftTime;

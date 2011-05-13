@@ -178,7 +178,14 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(msFeatureRep.Mz + "\t");
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
 				stringBuilder.Append(lcimsmsFeature.Charge + "\t");
-				stringBuilder.Append(driftTimeWeightedAverage.ToString("0.00000") + "\t");
+				if (Settings.UseConformationDetection)
+				{
+					stringBuilder.Append(lcimsmsFeature.DriftTime.ToString("0.00000") + "\t");
+				}
+				else
+				{
+					stringBuilder.Append(driftTimeWeightedAverage.ToString("0.00000") + "\t");
+				}
 				stringBuilder.Append(driftTimeUncorrectedWeightedAverage.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.IMSScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.LCScore.ToString("0.00000") + "\t");

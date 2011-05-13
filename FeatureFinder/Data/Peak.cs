@@ -89,5 +89,51 @@ namespace FeatureFinder.Data
 				Console.WriteLine("[" + xyPair.XValue + ", " + xyPair.YValue + "]\t");
 			}
 		}
+
+		public double GetWeightedApex()
+		{
+			double totalY = 0;
+			double totalXTimesY = 0;
+
+			foreach (XYPair xyPair in this.XYPairList)
+			{
+				totalY += xyPair.YValue;
+				totalXTimesY += (xyPair.XValue * xyPair.YValue);
+			}
+
+			return totalXTimesY / totalY;
+		}
+
+		public double GetQuadraticFit()
+		{
+			if(XYPairList.Count < 3)
+			{
+				return double.NaN;
+			}
+
+			var sortByYValue = from xyPair in XYPairList
+							   orderby xyPair.YValue descending
+							   select xyPair;
+
+			List<XYPair> xyPairList = sortByYValue.ToList();
+
+			double x1 = xyPairList[0].XValue;
+			double x2 = xyPairList[1].XValue;
+			double x3 = xyPairList[2].XValue;
+			double y1 = xyPairList[0].YValue;
+			double y2 = xyPairList[1].YValue;
+			double y3 = xyPairList[2].YValue;
+
+			double quadratic = (y2 - y1) * (x3 - x2) - (y3 - y2) * (x2 - x1);
+
+			// no good.  Just return the known peak
+			if (quadratic == 0)
+			{
+				return x2;  
+			}
+
+			quadratic = ((x1 + x2) - ((y2 - y1) * (x3 - x2) * (x1 - x3)) / quadratic) / 2.0;
+			return quadratic;	// Calculated new peak.  Return it.
+		}
 	}
 }

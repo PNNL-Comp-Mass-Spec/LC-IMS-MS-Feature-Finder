@@ -17,6 +17,7 @@ namespace FeatureFinder.Data
 
 		public float IMSScore { get; set; }
 		public float LCScore { get; set; }
+		public double DriftTime { get; set; }
 		public int OriginalIndex { get; set; }
 		public int MaxMemberCount { get; set; }
 		public int AbundanceMaxRaw { get; set; }
@@ -28,6 +29,7 @@ namespace FeatureFinder.Data
 			Charge = charge;
 			IMSScore = 0;
 			LCScore = 0;
+			DriftTime = 0;
 			MaxMemberCount = 0;
 			AbundanceMaxRaw = 0;
 			AbundanceSumRaw = 0;
