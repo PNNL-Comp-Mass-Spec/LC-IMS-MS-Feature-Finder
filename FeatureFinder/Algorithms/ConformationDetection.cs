@@ -39,7 +39,7 @@ namespace FeatureFinder.Algorithms
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
 				int scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
-				int frameIndex = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLC]);
+				int frameIndex = uimfReader.get_FrameIndex(scanLC);
 
 				FrameParameters frameParameters = uimfReader.GetFrameParameters(frameIndex);
 
