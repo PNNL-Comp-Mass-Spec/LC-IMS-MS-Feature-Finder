@@ -165,14 +165,13 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(averageInterferenceScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(averageDecon2lsFit.ToString("0.00000") + "\t");
 				stringBuilder.Append(msFeatureCount + "\t");
+				stringBuilder.Append(maxAbundance + "\t");
 				if (Settings.UseConformationDetection)
 				{
-					stringBuilder.Append(lcimsmsFeature.AbundanceMaxRaw + "\t");
 					stringBuilder.Append(lcimsmsFeature.AbundanceSumRaw + "\t");
 				}
 				else
 				{
-					stringBuilder.Append(maxAbundance + "\t");
 					stringBuilder.Append(totalAbundance + "\t");
 				}
 				stringBuilder.Append(msFeatureRep.Mz + "\t");
