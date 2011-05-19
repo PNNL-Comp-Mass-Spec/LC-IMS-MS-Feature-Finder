@@ -140,11 +140,14 @@ namespace FeatureFinder.Utilities
 				double averageInterferenceScore = (totalInterferenceScore / msFeatureCount);
 				double averageDecon2lsFit = (totalFit / msFeatureCount);
 
+				if (float.IsInfinity(lcimsmsFeature.IMSScore) || float.IsNaN(lcimsmsFeature.IMSScore)) lcimsmsFeature.IMSScore = 0;
+				if (float.IsInfinity(lcimsmsFeature.LCScore) || float.IsNaN(lcimsmsFeature.LCScore)) lcimsmsFeature.IMSScore = 0;
+
 				double memberPercentage = (double)msFeatureCount / (double)lcimsmsFeature.MaxMemberCount;
-				if (double.IsInfinity(memberPercentage)) memberPercentage = 0.0;
+				if (double.IsInfinity(memberPercentage) || double.IsNaN(memberPercentage)) memberPercentage = 0.0;
 
 				double combinedScore = (lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0;
-				if (double.IsInfinity(combinedScore)) combinedScore = 0.0;
+				if (double.IsInfinity(combinedScore) || double.IsNaN(combinedScore)) combinedScore = 0.0;
 
 				double driftTimeWeightedAverage = totalAbundanceTimesDriftTime / (double)totalAbundance;
 				double driftTimeUncorrectedWeightedAverage = totalAbundanceTimesDriftTimeUncorrected / (double)totalAbundance;
