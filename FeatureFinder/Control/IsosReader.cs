@@ -41,6 +41,7 @@ namespace FeatureFinder.Control
             string uimfRawdataFile = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
             if (!File.Exists(uimfRawdataFile))
             {
+				Logger.Log("File not found error. Could not find the file: " + uimfRawdataFile);
                 throw new FileNotFoundException("File not found error. Could not find the file: " + uimfRawdataFile);
             }
 

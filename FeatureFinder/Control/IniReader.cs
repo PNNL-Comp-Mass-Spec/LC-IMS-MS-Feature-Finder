@@ -20,6 +20,7 @@ namespace FeatureFinder.Control
 			}
 			else
 			{
+				Logger.Log("Could not find file '" + path + "'.");
 				throw new FileNotFoundException("Could not find file '" + path + "'.");
 			}
 		}

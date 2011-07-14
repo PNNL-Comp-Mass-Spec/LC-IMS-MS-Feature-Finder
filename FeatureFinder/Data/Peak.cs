@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FeatureFinder.Control;
 
 namespace FeatureFinder.Data
 {
@@ -19,6 +20,7 @@ namespace FeatureFinder.Data
 		{
 			if (xValues.Count != yValues.Count)
 			{
+				Logger.Log("The xValues and yValues Lists must be the same size to create a Peak");
 				throw new InvalidOperationException("The xValues and yValues Lists must be the same size to create a Peak");
 			}
 

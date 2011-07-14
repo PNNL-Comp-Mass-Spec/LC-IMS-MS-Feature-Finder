@@ -115,7 +115,6 @@ namespace LCMSFeatureFinder
 					//RunLCIMSMSFeatureFinder(isosReader, uimfReader);
 					RunLCIMSMSFeatureFinder(isosReader);
 				}
-
 				Logger.Log("Finished!");
 				Logger.CloseLog();
 			}
@@ -127,8 +126,16 @@ namespace LCMSFeatureFinder
 		/// <param name="isosReader">The IsosReader object</param>
 		private static void RunLCIMSMSFeatureFinder(IsosReader isosReader)
 		{
-            LCIMSMSFeatureFinderController controller = new LCIMSMSFeatureFinderController(isosReader);
-            controller.Execute();
+			try
+			{
+				LCIMSMSFeatureFinderController controller = new LCIMSMSFeatureFinderController(isosReader);
+				controller.Execute();
+			}
+			catch (Exception e)
+			{
+				Logger.Log(e.Message);
+				Logger.Log(e.StackTrace);
+			}
 		}
 
 		/// <summary>

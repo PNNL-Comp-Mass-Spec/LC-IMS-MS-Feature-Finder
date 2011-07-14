@@ -28,6 +28,7 @@ namespace FeatureFinder.Algorithms
 			DataReader uimfReader = new UIMFLibrary.DataReader();
 			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
 			{
+				Logger.Log("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
 				throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
 			}
 			Logger.Log("UIMF file has been opened.");
@@ -403,6 +404,7 @@ namespace FeatureFinder.Algorithms
 			DataReader uimfReader = new UIMFLibrary.DataReader();
 			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
 			{
+				Logger.Log("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
 				throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
 			}
 

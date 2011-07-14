@@ -18,6 +18,7 @@ namespace FeatureFinder.Control
             
             if (!File.Exists(filterTableTextFile))
             {
+				Logger.Log("File not found error. DeconTools filter settings could not be loaded.");
                 throw new FileNotFoundException("File not found error. DeconTools filter settings could not be loaded.");
             }
 
@@ -34,6 +35,7 @@ namespace FeatureFinder.Control
 
                     if (parsedLine == null || parsedLine.Length != 6)
                     {
+						Logger.Log("Error loading DeconTools filter settings file.");
                         throw new ArgumentException("Error loading DeconTools filter settings file.");
                     }
 
