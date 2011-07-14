@@ -130,7 +130,10 @@ namespace FeatureFinder.Control
 					int frameNum = int.Parse(columns[frameNumColumn]);
 					Settings.FrameType frameType = (Settings.FrameType)short.Parse(columns[frameTypeColumn]);
 
-					lcScanToFrameTypeMap.Add(frameNum, frameType);
+					if (!lcScanToFrameTypeMap.ContainsKey(frameNum))
+					{
+						lcScanToFrameTypeMap.Add(frameNum, frameType);
+					}
 				}
 			}
 			catch (FileNotFoundException)
