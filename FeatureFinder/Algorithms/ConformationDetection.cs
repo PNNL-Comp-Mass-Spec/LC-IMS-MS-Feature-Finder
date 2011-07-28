@@ -104,7 +104,7 @@ namespace FeatureFinder.Algorithms
 			//smoothedDriftProfilePeak.PrintPeakToConsole();
 			//Console.WriteLine("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-			IInterpolationMethod smoothedDriftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedDriftProfilePeak);
+			IInterpolation smoothedDriftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedDriftProfilePeak);
 
 			List<XYPair> xyPairList = new List<XYPair>();
 			List<Peak> peakList = new List<Peak>();
@@ -209,8 +209,8 @@ namespace FeatureFinder.Algorithms
 				normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList, 5);
 				Peak normalDistributionPeak = new Peak(normalDistributionXYPairList);
 
-				IInterpolationMethod peakInterpolation = PeakUtil.GetLinearInterpolationMethod(peak);
-				IInterpolationMethod normalDistribution = PeakUtil.GetLinearInterpolationMethod(normalDistributionPeak);
+				IInterpolation peakInterpolation = PeakUtil.GetLinearInterpolationMethod(peak);
+				IInterpolation normalDistribution = PeakUtil.GetLinearInterpolationMethod(normalDistributionPeak);
 
 				double fitScore = PeakUtil.CalculatePeakFit(peakInterpolation, normalDistribution, minimumXValue, maximumXValue, repIMSScan, 0);
 
@@ -218,8 +218,12 @@ namespace FeatureFinder.Algorithms
 				LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge);
 				newLCIMSMSFeature.OriginalIndex = lcimsmsFeature.OriginalIndex;
 				newLCIMSMSFeature.IMSScore = (float)fitScore;
-				newLCIMSMSFeature.AbundanceMaxRaw = (int)Math.Round(peak.GetMaximumYValue());
-				newLCIMSMSFeature.AbundanceSumRaw = (int)peakInterpolation.Integrate(maximumXValue);
+				newLCIMSMSFeature.AbundanceMaxRaw = Math.Round(peak.GetMaximumYValue());
+
+				// Using Math.Floor instaed of Math.Round because I used to cast this to an int which is esentially Math.Floor. 
+				// The difference is negligible, but OHSU would complain if results were the slightest bit different if the app was re-run on the same dataset.
+				newLCIMSMSFeature.AbundanceSumRaw = Math.Floor(peakInterpolation.Integrate(maximumXValue));
+
 				newLCIMSMSFeature.DriftTime = ConvertIMSScanToDriftTime(repIMSScan, averageTOFLength, framePressure);
 
 				// Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
@@ -363,7 +367,7 @@ namespace FeatureFinder.Algorithms
 				driftProfileXYPairList.Add(highXYPair);
 			}
 
-			return driftProfileXYPairList;
+			return sortByXValue.ToList();
 		}
 
 		private static double GetResolvingPower(int chargeState)

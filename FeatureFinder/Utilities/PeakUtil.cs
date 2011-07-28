@@ -5,8 +5,8 @@ using System.Text;
 using MathNet.Numerics.Interpolation;
 using MathNet.Numerics.Distributions;
 using FeatureFinder.Data;
-using MathNet.Numerics.Transformations;
 using FeatureFinder.Control;
+using MathNet.Numerics.Interpolation.Algorithms;
 
 namespace FeatureFinder.Utilities
 {
@@ -38,7 +38,7 @@ namespace FeatureFinder.Utilities
 			return xyPairList;
 		}
 
-		public static double CalculatePeakFit(IInterpolationMethod observedPeak, IInterpolationMethod theoreticalPeak, double minimumXValue, double maximumXValue, double xValueOfMaximumYValue, double minYValueFactor)
+		public static double CalculatePeakFit(IInterpolation observedPeak, IInterpolation theoreticalPeak, double minimumXValue, double maximumXValue, double xValueOfMaximumYValue, double minYValueFactor)
 		{
 			List<double> xValues = new List<double>();
 			List<double> yValues1 = new List<double>();
@@ -298,31 +298,14 @@ namespace FeatureFinder.Utilities
 			return newYValueList;
 		}
 
-		public static List<double> FFTSmooth(List<double> peak)
-		{
-			RealFourierTransformation fourierTransform = new RealFourierTransformation(TransformationConvention.Default);
-
-			return null;
-		}
-
-		public static NormalDistribution CreateNormalDistribution(double centerOfPeak, double peakFullWidthHalfMax)
-		{
-			double mu = centerOfPeak;
-			double sigma = peakFullWidthHalfMax / 2.35482;
-
-			NormalDistribution normalDistribution = new NormalDistribution(mu, sigma);
-
-			return normalDistribution;
-		}
-
-		public static IInterpolationMethod GetLinearInterpolationMethod(Peak peak)
+		public static IInterpolation GetLinearInterpolationMethod(Peak peak)
 		{
 			List<double> xValues = new List<double>();
 			List<double> yValues = new List<double>();
 
 			peak.GetXAndYValuesAsLists(out xValues, out yValues);
 
-			IInterpolationMethod interpolation = Interpolation.CreateLinearSpline(xValues, yValues);
+			IInterpolation interpolation = new LinearSplineInterpolation(xValues, yValues);
 
 			return interpolation;
 		}

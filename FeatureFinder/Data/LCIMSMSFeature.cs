@@ -20,8 +20,8 @@ namespace FeatureFinder.Data
 		public double DriftTime { get; set; }
 		public int OriginalIndex { get; set; }
 		public int MaxMemberCount { get; set; }
-		public int AbundanceMaxRaw { get; set; }
-		public int AbundanceSumRaw { get; set; }
+		public double AbundanceMaxRaw { get; set; }
+		public double AbundanceSumRaw { get; set; }
 
 		public LCIMSMSFeature(byte charge)
 		{
