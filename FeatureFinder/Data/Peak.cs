@@ -113,18 +113,24 @@ namespace FeatureFinder.Data
 				return double.NaN;
 			}
 
-			var sortByYValue = from xyPair in XYPairList
-							   orderby xyPair.YValue descending
-							   select xyPair;
+			int indexOfMaxIntensity = 0;
+			double maxIntensity = 0;
+			for (int i = 0; i < XYPairList.Count; i++)
+			{
+				XYPair xyPair = XYPairList[i];
+				if (xyPair.YValue > maxIntensity)
+				{
+					indexOfMaxIntensity = i;
+					maxIntensity = xyPair.YValue;
+				}
+			}
 
-			List<XYPair> xyPairList = sortByYValue.ToList();
-
-			double x1 = xyPairList[0].XValue;
-			double x2 = xyPairList[1].XValue;
-			double x3 = xyPairList[2].XValue;
-			double y1 = xyPairList[0].YValue;
-			double y2 = xyPairList[1].YValue;
-			double y3 = xyPairList[2].YValue;
+			double x1 = XYPairList[indexOfMaxIntensity - 1].XValue;
+			double x2 = XYPairList[indexOfMaxIntensity].XValue;
+			double x3 = XYPairList[indexOfMaxIntensity + 1].XValue;
+			double y1 = XYPairList[indexOfMaxIntensity - 1].YValue;
+			double y2 = XYPairList[indexOfMaxIntensity].YValue;
+			double y3 = XYPairList[indexOfMaxIntensity + 1].YValue;
 
 			double quadratic = (y2 - y1) * (x3 - x2) - (y3 - y2) * (x2 - x1);
 
