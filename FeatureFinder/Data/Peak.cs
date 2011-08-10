@@ -79,6 +79,15 @@ namespace FeatureFinder.Data
 			return sortByYValue.First().YValue;
 		}
 
+		public double GetMaximumXValue()
+		{
+			var sortByXValue = from xyPair in XYPairList
+							   orderby xyPair.XValue descending
+							   select xyPair;
+
+			return sortByXValue.First().XValue;
+		}
+
 		public void PrintPeakToConsole()
 		{
 			var sortByXValue = from xyPair in XYPairList

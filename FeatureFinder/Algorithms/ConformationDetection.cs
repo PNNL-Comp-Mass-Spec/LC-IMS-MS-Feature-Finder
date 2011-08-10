@@ -222,7 +222,7 @@ namespace FeatureFinder.Algorithms
 
 				// Using Math.Floor instaed of Math.Round because I used to cast this to an int which is esentially Math.Floor. 
 				// The difference is negligible, but OHSU would complain if results were the slightest bit different if the app was re-run on the same dataset.
-				newLCIMSMSFeature.AbundanceSumRaw = Math.Floor(peakInterpolation.Integrate(maximumXValue));
+				newLCIMSMSFeature.AbundanceSumRaw = Math.Floor(peakInterpolation.Integrate(peak.GetMaximumXValue()));
 
 				newLCIMSMSFeature.DriftTime = ConvertIMSScanToDriftTime(repIMSScan, averageTOFLength, framePressure);
 
