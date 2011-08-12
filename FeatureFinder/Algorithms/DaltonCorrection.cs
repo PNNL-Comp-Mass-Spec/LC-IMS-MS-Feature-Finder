@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FeatureFinder.Data;
 using FeatureFinder.Control;
 using FeatureFinder.Utilities;
@@ -24,10 +23,7 @@ namespace FeatureFinder.Algorithms
 				}
 
 				double averageMass = lcimsmsFeature.CalculateAverageMass();
-
-				double massTolerance = massToleranceBase * averageMass / 1000000;
-				double massToleranceHigh = averageMass + massTolerance;
-				double massToleranceLow = averageMass - massTolerance;
+				double massTolerance = massToleranceBase * averageMass / 1000000.0;
 
 				double errorFlagPercentage = lcimsmsFeature.GetFlaggedPercentage();
 
@@ -39,33 +35,28 @@ namespace FeatureFinder.Algorithms
 											orderby Math.Abs(errorFlagPercentage - otherLCIMSMSFeature.GetFlaggedPercentage()) descending
 											select otherLCIMSMSFeature;
 
-				foreach (LCIMSMSFeature lcimsmsFeatureToCheck in searchForDaErrorQuery.AsParallel())
+				foreach (LCIMSMSFeature lcimsmsFeatureToCheck in searchForDaErrorQuery.AsParallel().Where(lcimsmsFeatureToCheck => Math.Abs(errorFlagPercentage - lcimsmsFeatureToCheck.GetFlaggedPercentage()) > 0.3))
 				{
-					if (Math.Abs(errorFlagPercentage - lcimsmsFeatureToCheck.GetFlaggedPercentage()) > 0.3)
-					{
-						//bool featuresFitTogether = FeatureUtil.DoLCIMSMSFeaturesFitTogether(lcimsmsFeature, lcimsmsFeatureToCheck);
+					//bool featuresFitTogether = FeatureUtil.DoLCIMSMSFeaturesFitTogether(lcimsmsFeature, lcimsmsFeatureToCheck);
 
-						//if (featuresFitTogether)
-						//{
-							if (errorFlagPercentage > lcimsmsFeatureToCheck.GetFlaggedPercentage())
-							{
-								FeatureUtil.MergeLCIMSMSFeatures(lcimsmsFeatureToCheck, lcimsmsFeature);
-							}
-							else
-							{
-								FeatureUtil.MergeLCIMSMSFeatures(lcimsmsFeature, lcimsmsFeatureToCheck);
-							}
-							
-							totalFound++;
-							break;
-						//}
+					//if (featuresFitTogether)
+					//{
+					if (errorFlagPercentage > lcimsmsFeatureToCheck.GetFlaggedPercentage())
+					{
+						FeatureUtil.MergeLCIMSMSFeatures(lcimsmsFeatureToCheck, lcimsmsFeature);
 					}
+					else
+					{
+						FeatureUtil.MergeLCIMSMSFeatures(lcimsmsFeature, lcimsmsFeatureToCheck);
+					}
+							
+					totalFound++;
+					break;
+					//}
 				}
 			}
 
-			var newFeatureListQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
-									  where lcimsmsFeature.IMSMSFeatureList.Count > 0
-									  select lcimsmsFeature;
+			var newFeatureListQuery = lcimsmsFeatureEnumerable.Where(lcimsmsFeature => lcimsmsFeature.IMSMSFeatureList.Count > 0);
 
 			return newFeatureListQuery.AsEnumerable();
 		}

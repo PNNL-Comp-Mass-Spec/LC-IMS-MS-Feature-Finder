@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MathNet.Numerics.Interpolation;
-using MathNet.Numerics.Distributions;
 using FeatureFinder.Data;
-using FeatureFinder.Control;
 using MathNet.Numerics.Interpolation.Algorithms;
 
 namespace FeatureFinder.Utilities
@@ -59,21 +55,19 @@ namespace FeatureFinder.Utilities
 			{
 				double observedPeakValue = observedPeak.Interpolate(minimumXValue + i);
 
-				if (observedPeakValue >= minValueToTest)
-				{
-					double normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
-					double normalizedTheoreticalPeakValue = theoreticalPeak.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
+				if (observedPeakValue < minValueToTest) continue;
+				double normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
+				double normalizedTheoreticalPeakValue = theoreticalPeak.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
 
-					xValues.Add(minimumXValue + i);
-					yValues1.Add(normalizedObservedPeakValue);
-					yValues2.Add(normalizedTheoreticalPeakValue);
+				xValues.Add(minimumXValue + i);
+				yValues1.Add(normalizedObservedPeakValue);
+				yValues2.Add(normalizedTheoreticalPeakValue);
 
-					double residualDifference = normalizedObservedPeakValue - normalizedTheoreticalPeakValue;
+				double residualDifference = normalizedObservedPeakValue - normalizedTheoreticalPeakValue;
 
-					//sumOfSquaredResiduals += Math.Pow(residualDifference, 2);
-					sumOfSquaredResiduals += Math.Abs(residualDifference);
-					numPointsTested++;
-				}
+				//sumOfSquaredResiduals += Math.Pow(residualDifference, 2);
+				sumOfSquaredResiduals += Math.Abs(residualDifference);
+				numPointsTested++;
 			}
 
 			double fitScore = 1 - (sumOfSquaredResiduals / (double)numPointsTested);
@@ -87,7 +81,7 @@ namespace FeatureFinder.Utilities
 		public static double CalculatePeakFit(List<double> observedPeak, List<double> modelPeak, double minYValueFactor)
 		{
 			// If the Peaks are a different size, then transform the Test Peak to be the same size as the Fit Peak
-			if (modelPeak.Count != modelPeak.Count)
+			if (observedPeak.Count != modelPeak.Count)
 			{
 				observedPeak = TransformPeakToNewWidth(observedPeak, modelPeak.Count);
 			}
@@ -319,11 +313,9 @@ namespace FeatureFinder.Utilities
 			{
 				double point = peak[i];
 
-				if (point > maximum)
-				{
-					maximum = point;
-					position = i;
-				}
+				if (point <= maximum) continue;
+				maximum = point;
+				position = i;
 			}
 
 			return position;

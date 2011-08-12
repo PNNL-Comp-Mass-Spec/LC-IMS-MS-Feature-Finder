@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FeatureFinder.Data;
 using FeatureFinder.Utilities;
 using FeatureFinder.Data.Maps;
 using MathNet.Numerics.Interpolation;
-using MathNet.Numerics.Distributions;
 using UIMFLibrary;
 using System.IO;
 using FeatureFinder.Control;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace FeatureFinder.Algorithms
 {
@@ -108,7 +104,6 @@ namespace FeatureFinder.Algorithms
 
 			List<XYPair> xyPairList = new List<XYPair>();
 			List<Peak> peakList = new List<Peak>();
-			double imsScanMinimum = globalIMSScanMinimum;
 			double previousIntensity = double.MinValue;
 			bool movingUp = true;
 
@@ -145,7 +140,6 @@ namespace FeatureFinder.Algorithms
 
 							// Start over with a new Peak
 							xyPairList.Clear();
-							imsScanMinimum = i;
 							movingUp = true;
 						}
 					}
@@ -167,29 +161,21 @@ namespace FeatureFinder.Algorithms
 			}
 
 			// When you get to the end, end the last Peak, but only if it has a non-zero value
-			foreach (XYPair xyPair in xyPairList)
+			if (xyPairList.Any(xyPair => xyPair.YValue > minimumIntensityToConsider))
 			{
-				if (xyPair.YValue > minimumIntensityToConsider)
+				xyPairList = PadXYPairsWithZeros(xyPairList, 2);
+				//xyPairList = PadXYPairsWithZeros(xyPairList, imsScanMinimum, globalIMSScanMaximum, 1);
+				Peak lastPeak = new Peak(xyPairList);
+
+				if (lastPeak.XYPairList.Count >= 7)
 				{
-					xyPairList = PadXYPairsWithZeros(xyPairList, 2);
-					//xyPairList = PadXYPairsWithZeros(xyPairList, imsScanMinimum, globalIMSScanMaximum, 1);
-					Peak lastPeak = new Peak(xyPairList);
-
-					if (lastPeak.XYPairList.Count >= 7)
-					{
-						peakList.Add(lastPeak);
-					}
-
-					break;
+					peakList.Add(lastPeak);
 				}
 			}
 
 			double resolvingPower = GetResolvingPower(lcimsmsFeature.Charge);
 
 			List<LCIMSMSFeature> newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
-
-			int index = 0;
-			int conformationIndex = 0;
 
 			foreach (Peak peak in peakList)
 			{
@@ -203,7 +189,7 @@ namespace FeatureFinder.Algorithms
 				double maximumXValue = 0;
 				peak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
 
-				int numPoints = 100;
+				const int numPoints = 100;
 
 				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(repIMSScan, theoreticalFWHM, numPoints);
 				normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList, 5);
@@ -215,34 +201,31 @@ namespace FeatureFinder.Algorithms
 				double fitScore = PeakUtil.CalculatePeakFit(peakInterpolation, normalDistribution, minimumXValue, maximumXValue, repIMSScan, 0);
 
 				// Create a new LC-IMS-MS Feature
-				LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge);
-				newLCIMSMSFeature.OriginalIndex = lcimsmsFeature.OriginalIndex;
-				newLCIMSMSFeature.IMSScore = (float)fitScore;
-				newLCIMSMSFeature.AbundanceMaxRaw = Math.Round(peak.GetMaximumYValue());
-
-				// Using Math.Floor instaed of Math.Round because I used to cast this to an int which is esentially Math.Floor. 
-				// The difference is negligible, but OHSU would complain if results were the slightest bit different if the app was re-run on the same dataset.
-				newLCIMSMSFeature.AbundanceSumRaw = Math.Floor(peakInterpolation.Integrate(peak.GetMaximumXValue()));
-
-				newLCIMSMSFeature.DriftTime = ConvertIMSScanToDriftTime(repIMSScan, averageTOFLength, framePressure);
+				LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge)
+				                                   	{
+				                                   		OriginalIndex = lcimsmsFeature.OriginalIndex,
+				                                   		IMSScore = (float) fitScore,
+				                                   		AbundanceMaxRaw = Math.Round(peak.GetMaximumYValue()),
+														// Using Math.Floor instaed of Math.Round because I used to cast this to an int which is esentially Math.Floor. 
+														// The difference is negligible, but OHSU would complain if results were the slightest bit different if the app was re-run on the same dataset.
+				                                   		AbundanceSumRaw = Math.Floor(peakInterpolation.Integrate(peak.GetMaximumXValue())),
+				                                   		DriftTime = ConvertIMSScanToDriftTime(repIMSScan, averageTOFLength, framePressure)
+				                                   	};
 
 				// Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
 				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
 				{
 					IEnumerable<MSFeature> msFeatureEnumerable = imsmsFeature.FindMSFeaturesInScanIMSRange(minimumXValue, maximumXValue);
 
-					if (msFeatureEnumerable.Count() > 0)
-					{
-						IMSMSFeature newIMSMSFeature = new IMSMSFeature(imsmsFeature.ScanLC, imsmsFeature.Charge);
-						newIMSMSFeature.AddMSFeatureList(msFeatureEnumerable);
-						newLCIMSMSFeature.AddIMSMSFeature(newIMSMSFeature);
-					}
+					if (msFeatureEnumerable.Count() <= 0) continue;
+					IMSMSFeature newIMSMSFeature = new IMSMSFeature(imsmsFeature.ScanLC, imsmsFeature.Charge);
+					newIMSMSFeature.AddMSFeatureList(msFeatureEnumerable);
+					newLCIMSMSFeature.AddIMSMSFeature(newIMSMSFeature);
 				}
 
 				if (newLCIMSMSFeature.IMSMSFeatureList.Count > 0)
 				{
 					newLCIMSMSFeatureList.Add(newLCIMSMSFeature);
-					conformationIndex++;
 					/*
 					// TODO: Find LC Peaks
 					var sortByScanLC = from imsmsFeature in newLCIMSMSFeature.IMSMSFeatureList
@@ -295,22 +278,10 @@ namespace FeatureFinder.Algorithms
 					//peak.PrintPeakToConsole();
 					//Console.WriteLine("===============================================================");
 				}
-
-				index++;
 			}
 
 			// Find the Conformation that has the highest member count and store the value into all conformations of this LC-IMS-MS Feature
-			int maxMemberCount = int.MinValue;
-
-			foreach (LCIMSMSFeature feature in newLCIMSMSFeatureList)
-			{
-				int memberCount = feature.GetMemberCount();
-
-				if (memberCount > maxMemberCount)
-				{
-					maxMemberCount = memberCount;
-				}
-			}
+			int maxMemberCount = newLCIMSMSFeatureList.Select(feature => feature.GetMemberCount()).Max();
 
 			foreach (LCIMSMSFeature feature in newLCIMSMSFeatureList)
 			{
@@ -388,7 +359,7 @@ namespace FeatureFinder.Algorithms
 
 		public static double ConvertIMSScanToDriftTime(double imsScan, double averageTOFLength, double framePressure)
 		{
-			if (framePressure == double.NaN || framePressure == 0)
+			if (double.IsNaN(framePressure) || Math.Abs(framePressure - 0) < double.Epsilon)
 			{
 				return ConvertIMSScanToDriftTime(imsScan, averageTOFLength);
 			}
@@ -405,7 +376,7 @@ namespace FeatureFinder.Algorithms
 
 		public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
 		{
-			DataReader uimfReader = new UIMFLibrary.DataReader();
+			DataReader uimfReader = new DataReader();
 			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
 			{
 				Logger.Log("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");

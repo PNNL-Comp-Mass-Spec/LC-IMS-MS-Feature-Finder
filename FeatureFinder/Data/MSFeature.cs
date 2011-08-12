@@ -1,32 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace FeatureFinder.Data
 {
 	public class MSFeature : IComparable<MSFeature>
 	{
-		private byte m_charge;
-		private byte m_errorFlag;
-
-		private int m_id;
-		private int m_indexInFile;
-		private int m_filteredIndex;
-		private int m_abundance;
-		private int m_scanLC;
-		private int m_scanIMS;
-
-		private double m_mz;
-		private double m_massMonoisotopic;
-
-		private float m_fit;
-		private float m_interferenceScore;
-		private float m_fwhm;
-		private float m_driftTime;
-		private float m_driftTimeUncorrected;
-
 		public MSFeature()
 		{
-			m_filteredIndex = -1;
+			FilteredIndex = -1;
 		}
 
 		public int CompareTo(MSFeature otherMSFeature)
@@ -71,50 +51,22 @@ namespace FeatureFinder.Data
 
 		public static Comparison<MSFeature> ScanLCAndDriftComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
 		{
-			if (msFeature1.ScanLC != msFeature2.ScanLC)
-			{
-				return msFeature1.ScanLC.CompareTo(msFeature2.ScanLC);
-			}
-			else
-			{
-				return msFeature1.DriftTime.CompareTo(msFeature2.DriftTime);
-			}
+			return msFeature1.ScanLC != msFeature2.ScanLC ? msFeature1.ScanLC.CompareTo(msFeature2.ScanLC) : msFeature1.DriftTime.CompareTo(msFeature2.DriftTime);
 		};
 
 		public static Comparison<MSFeature> ScanLCAndMassComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
 		{
-			if (msFeature1.ScanLC != msFeature2.ScanLC)
-			{
-				return msFeature1.ScanLC.CompareTo(msFeature2.ScanLC);
-			}
-			else
-			{
-				return msFeature1.MassMonoisotopic.CompareTo(msFeature2.MassMonoisotopic);
-			}
+			return msFeature1.ScanLC != msFeature2.ScanLC ? msFeature1.ScanLC.CompareTo(msFeature2.ScanLC) : msFeature1.MassMonoisotopic.CompareTo(msFeature2.MassMonoisotopic);
 		};
 
 		public static Comparison<MSFeature> ChargeAndScanLCComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
 		{
-			if (msFeature1.Charge != msFeature2.Charge)
-			{
-				return msFeature1.Charge.CompareTo(msFeature2.Charge);
-			}
-			else
-			{
-				return msFeature1.ScanLC.CompareTo(msFeature2.ScanLC);
-			}
+			return msFeature1.Charge != msFeature2.Charge ? msFeature1.Charge.CompareTo(msFeature2.Charge) : msFeature1.ScanLC.CompareTo(msFeature2.ScanLC);
 		};
 
 		public static Comparison<MSFeature> ChargeAndMassComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
 		{
-			if (msFeature1.Charge != msFeature2.Charge)
-			{
-				return msFeature1.Charge.CompareTo(msFeature2.Charge);
-			}
-			else
-			{
-				return msFeature1.MassMonoisotopic.CompareTo(msFeature2.MassMonoisotopic);
-			}
+			return msFeature1.Charge != msFeature2.Charge ? msFeature1.Charge.CompareTo(msFeature2.Charge) : msFeature1.MassMonoisotopic.CompareTo(msFeature2.MassMonoisotopic);
 		};
 
 		public static Comparison<MSFeature> ScanLCAndScanIMSAndMassComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)
@@ -133,94 +85,23 @@ namespace FeatureFinder.Data
 			}
 		};
 
-		public byte Charge
-		{
-			get { return m_charge; }
-			set { m_charge = value; }
-		}
+		public byte Charge { get; set; }
+		public byte ErrorFlag { get; set; }
 
-		public byte ErrorFlag
-		{
-			get { return m_errorFlag; }
-			set { m_errorFlag = value; }
-		}
+		public int Id { get; set; }
+		public int IndexInFile { get; set; }
+		public int FilteredIndex { get; set; }
+		public int Abundance { get; set; }
+		public int ScanLC { get; set; }
+		public int ScanIMS { get; set; }
 
-		public int Id
-		{
-			get { return m_id; }
-			set { m_id = value; }
-		}
+		public float Fit { get; set; }
+		public float InterferenceScore { get; set; }
+		public float Fwhm { get; set; }
+		public float DriftTime { get; set; }
+		public float DriftTimeUncorrected { get; set; }
 
-		public int IndexInFile
-		{
-			get { return m_indexInFile; }
-			set { m_indexInFile = value; }
-		}
-
-		public int FilteredIndex
-		{
-			get { return m_filteredIndex; }
-			set { m_filteredIndex = value; }
-		}
-
-		public int Abundance
-		{
-			get { return m_abundance; }
-			set { m_abundance = value; }
-		}
-
-		public int ScanLC
-		{
-			get { return m_scanLC; }
-			set { m_scanLC = value; }
-		}
-
-		public int ScanIMS
-		{
-			get { return m_scanIMS; }
-			set { m_scanIMS = value; }
-		}
-
-		public float Fit
-		{
-			get { return m_fit; }
-			set { m_fit = value; }
-		}
-
-		public float InterferenceScore
-		{
-			get { return m_interferenceScore; }
-			set { m_interferenceScore = value; }
-		}
-
-		public float Fwhm
-		{
-			get { return m_fwhm; }
-			set { m_fwhm = value; }
-		}
-
-		public float DriftTime
-		{
-			get { return m_driftTime; }
-			set { m_driftTime = value; }
-		}
-
-		public float DriftTimeUncorrected
-		{
-			get { return m_driftTimeUncorrected; }
-			set { m_driftTimeUncorrected = value; }
-		}
-
-		public double Mz
-		{
-			get { return m_mz; }
-			set { m_mz = value; }
-		}
-
-		public double MassMonoisotopic
-		{
-			get { return m_massMonoisotopic; }
-			set { m_massMonoisotopic = value; }
-		}
+		public double Mz { get; set; }
+		public double MassMonoisotopic { get; set; }
 	}
 }

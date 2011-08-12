@@ -14,8 +14,7 @@ namespace FeatureFinder.Control
 		{
 			String baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
 
-			StreamWriter streamWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Peaks.txt");
-			streamWriter.AutoFlush = true;
+			StreamWriter streamWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Peaks.txt") {AutoFlush = true};
 			m_textWriter = streamWriter;
 		}
 

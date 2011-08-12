@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using FeatureFinder.Data;
 
@@ -29,7 +30,7 @@ namespace FeatureFinder.Control
 
 		private void WriteIsosFile()
 		{
-			String line = "";
+			String line;
 			int offset = 0;
 			int index = 0;
 			int previousFeatureId = int.MaxValue;
@@ -57,14 +58,8 @@ namespace FeatureFinder.Control
 					if (m_columnMap.ContainsKey("MSFeature.Mz")) columns[m_columnMap["MSFeature.Mz"]] = msFeature.Mz.ToString();
 					if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) columns[m_columnMap["MSFeature.MassMonoisotopic"]] = msFeature.MassMonoisotopic.ToString();
 
-					string newLine = "";
-
-					foreach (String column in columns)
-					{
-						newLine = newLine + column + ",";
-					}
-
-					newLine = newLine.Remove(newLine.Length - 1);
+					string newLine = columns.Aggregate((current, column) => current + (column + ","));
+					newLine = newLine.TrimEnd(',');
 
 					m_isosFileWriter.WriteLine(newLine);
 					previousFeatureId = msFeature.Id;

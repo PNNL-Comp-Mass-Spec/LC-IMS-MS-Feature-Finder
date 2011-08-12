@@ -15,16 +15,12 @@ namespace FeatureFinder.Control
 	{
 		private StreamReader m_isosFileReader;
 		private TextWriter m_isosFileWriter;
-		private Dictionary<String, int> m_columnMap;
-		private List<MSFeature> m_msFeatureList;
-		private int m_numOfUnfilteredMSFeatures;
 		private Dictionary<int, Settings.FrameType> m_lcScanToFrameTypeMap;
 
 		#region Constructors
 		/// <summary>
 		/// Constructor for passing in a String containing the location of the ISOS csv file
 		/// </summary>
-		/// <param name="Settings">Reference to the Settings object</param>
 		public IsosReader()
 		{
 			String baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
@@ -32,8 +28,8 @@ namespace FeatureFinder.Control
 			m_isosFileReader = new StreamReader(Settings.InputDirectory + Settings.InputFileName);
 			m_isosFileWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Filtered_isos.csv");
 			m_lcScanToFrameTypeMap = CreateLCScanToFrameTypeMapping(baseFileName);
-			m_columnMap = CreateColumnMapping();
-			m_msFeatureList = SaveDataToMSFeatureList();
+			ColumnMap = CreateColumnMapping();
+			MSFeatureList = SaveDataToMSFeatureList();
 
 			// Calculate the drift time for each MS Feature. We are choosing to not use the Decon2ls output.
 			DataReader uimfReader = new UIMFLibrary.DataReader();
@@ -54,29 +50,22 @@ namespace FeatureFinder.Control
 		#endregion
 
 		#region Public Methods
+
 		/// <summary>
 		/// Returns the MSFeatureList contained in this class
 		/// </summary>
-		public List<MSFeature> MSFeatureList
-		{
-			get { return m_msFeatureList; }
-		}
+		public List<MSFeature> MSFeatureList { get; private set; }
 
 		/// <summary>
 		/// Returns the Column Map contained in this class
 		/// </summary>
-		public Dictionary<String, int> ColumnMap
-		{
-			get { return m_columnMap; }
-		}
+		public Dictionary<string, int> ColumnMap { get; private set; }
 
 		/// <summary>
 		/// Returns the number of unfiltered MSFeatures that were read from the isos file
 		/// </summary>
-		public int NumOfUnfilteredMSFeatures
-		{
-			get { return m_numOfUnfilteredMSFeatures; }
-		}
+		public int NumOfUnfilteredMSFeatures { get; private set; }
+
 		#endregion
 
 		#region Private Methods
@@ -109,8 +98,6 @@ namespace FeatureFinder.Control
 							break;
 						case "type":
 							frameTypeColumn = i;
-							break;
-						default:
 							break;
 					}
 				}
@@ -149,6 +136,7 @@ namespace FeatureFinder.Control
 		/// Fills in the Column Map with the appropriate values.
 		/// The Map will have a Column Property (e.g. MSFeature.Frame) mapped to a Column Number.
 		/// </summary>
+		/// <exception cref="ApplicationException">Thrown when isos file does not contain column headers</exception>
 		/// <returns>The column map as a Dictionary object</returns>
 		private Dictionary<String, int> CreateColumnMapping()
 		{
@@ -231,9 +219,6 @@ namespace FeatureFinder.Control
 					case "flag":
 						columnMap.Add("MSFeature.ErrorFlag", i);
 						break;
-					default:
-						//Title not found.
-						break;
 				}
 			}
 
@@ -254,8 +239,7 @@ namespace FeatureFinder.Control
 		{
 			List<MSFeature> msFeatureList = new List<MSFeature>();
 			String line;
-			MSFeature msFeature;
-			m_numOfUnfilteredMSFeatures = 0;
+			NumOfUnfilteredMSFeatures = 0;
 			int msFeatureIndex = 0;
 			int currentFrame = 0;
 
@@ -265,21 +249,20 @@ namespace FeatureFinder.Control
 				try
 				{
 					String[] columns = line.Split(',', '\t', '\n');
-					
-					msFeature = new MSFeature();
-					msFeature.IndexInFile = i;
 
-					if (m_columnMap.ContainsKey("MSFeature.Frame"))
+					MSFeature msFeature = new MSFeature {IndexInFile = i};
+
+					if (ColumnMap.ContainsKey("MSFeature.Frame"))
 					{
-						int frame = Int32.Parse(columns[m_columnMap["MSFeature.Frame"]]);
+						int frame = Int32.Parse(columns[ColumnMap["MSFeature.Frame"]]);
 
 						Settings.FrameType frameType;
-						m_lcScanToFrameTypeMap.TryGetValue((int)frame, out frameType);
+						m_lcScanToFrameTypeMap.TryGetValue(frame, out frameType);
 
 						// Ignore this MS Feature if it belongsm to a Frame Type that is not correct
 						if (Settings.FrameTypeFilter != Settings.FrameType.NoFilter && frameType != Settings.FrameTypeFilter)
 						{
-							m_numOfUnfilteredMSFeatures++;
+							NumOfUnfilteredMSFeatures++;
 							continue;
 						}
 
@@ -298,16 +281,16 @@ namespace FeatureFinder.Control
 						msFeature.ScanLC = ScanLCMap.ScanLCIndex;
 					}
 
-					if (m_columnMap.ContainsKey("MSFeature.ScanIMS")) msFeature.ScanIMS = Int32.Parse(columns[m_columnMap["MSFeature.ScanIMS"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.Charge")) msFeature.Charge = (byte)Int16.Parse(columns[m_columnMap["MSFeature.Charge"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.Abundance")) msFeature.Abundance = Int32.Parse(columns[m_columnMap["MSFeature.Abundance"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.Mz")) msFeature.Mz = double.Parse(columns[m_columnMap["MSFeature.Mz"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.Fit")) msFeature.Fit = float.Parse(columns[m_columnMap["MSFeature.Fit"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.InterferenceScore")) msFeature.InterferenceScore = float.Parse(columns[m_columnMap["MSFeature.InterferenceScore"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) msFeature.MassMonoisotopic = double.Parse(columns[m_columnMap["MSFeature.MassMonoisotopic"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.Fwhm")) msFeature.Fwhm = float.Parse(columns[m_columnMap["MSFeature.Fwhm"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.DriftTimeIMS")) msFeature.DriftTime = float.Parse(columns[m_columnMap["MSFeature.DriftTimeIMS"]], System.Globalization.NumberStyles.Any);
-					if (m_columnMap.ContainsKey("MSFeature.ErrorFlag")) msFeature.ErrorFlag = (byte)(columns[m_columnMap["MSFeature.ErrorFlag"]].Equals("") ? 0 : Int16.Parse(columns[m_columnMap["MSFeature.ErrorFlag"]], System.Globalization.NumberStyles.Any));
+					if (ColumnMap.ContainsKey("MSFeature.ScanIMS")) msFeature.ScanIMS = Int32.Parse(columns[ColumnMap["MSFeature.ScanIMS"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.Charge")) msFeature.Charge = (byte)Int16.Parse(columns[ColumnMap["MSFeature.Charge"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.Abundance")) msFeature.Abundance = Int32.Parse(columns[ColumnMap["MSFeature.Abundance"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.Mz")) msFeature.Mz = double.Parse(columns[ColumnMap["MSFeature.Mz"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.Fit")) msFeature.Fit = float.Parse(columns[ColumnMap["MSFeature.Fit"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.InterferenceScore")) msFeature.InterferenceScore = float.Parse(columns[ColumnMap["MSFeature.InterferenceScore"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.MassMonoisotopic")) msFeature.MassMonoisotopic = double.Parse(columns[ColumnMap["MSFeature.MassMonoisotopic"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.Fwhm")) msFeature.Fwhm = float.Parse(columns[ColumnMap["MSFeature.Fwhm"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.DriftTimeIMS")) msFeature.DriftTime = float.Parse(columns[ColumnMap["MSFeature.DriftTimeIMS"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.ErrorFlag")) msFeature.ErrorFlag = (byte)(columns[ColumnMap["MSFeature.ErrorFlag"]].Equals("") ? 0 : Int16.Parse(columns[ColumnMap["MSFeature.ErrorFlag"]], System.Globalization.NumberStyles.Any));
 
 					if (PassesFilters(msFeature))
 					{
@@ -317,7 +300,7 @@ namespace FeatureFinder.Control
 						msFeatureIndex++;
 					}
 
-					m_numOfUnfilteredMSFeatures++;
+					NumOfUnfilteredMSFeatures++;
 				}
 				catch (Exception e)
 				{
@@ -334,22 +317,22 @@ namespace FeatureFinder.Control
 
 		private bool PassesFilters(MSFeature msFeature)
 		{
-			if (m_columnMap.ContainsKey("MSFeature.Frame"))
+			if (ColumnMap.ContainsKey("MSFeature.Frame"))
 			{
 				if (msFeature.ScanLC < Settings.ScanLCMin || msFeature.ScanLC > Settings.ScanLCMax) return false;
 			}
 
-			if (m_columnMap.ContainsKey("MSFeature.ScanIMS"))
+			if (ColumnMap.ContainsKey("MSFeature.ScanIMS"))
 			{
 				if (msFeature.ScanIMS < Settings.ScanIMSMin || msFeature.ScanIMS > Settings.ScanIMSMax) return false;
 			}
 
-			if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic"))
+			if (ColumnMap.ContainsKey("MSFeature.MassMonoisotopic"))
 			{
 				if (msFeature.MassMonoisotopic < Settings.MassMonoisotopicStart || msFeature.MassMonoisotopic > Settings.MassMonoisotopicEnd) return false;
 			}
 
-			if (m_columnMap.ContainsKey("MSFeature.ErrorFlag"))
+			if (ColumnMap.ContainsKey("MSFeature.ErrorFlag"))
 			{
 				if (msFeature.ErrorFlag == 1) return false;
 			}
@@ -365,17 +348,17 @@ namespace FeatureFinder.Control
             }
 			else
 			{
-				if (m_columnMap.ContainsKey("MSFeature.Fit"))
+				if (ColumnMap.ContainsKey("MSFeature.Fit"))
 				{
 					if (msFeature.Fit > Settings.FitMax) return false;
 				}
 
-				if (m_columnMap.ContainsKey("MSFeature.InterferenceScore"))
+				if (ColumnMap.ContainsKey("MSFeature.InterferenceScore"))
 				{
 					if (msFeature.InterferenceScore > Settings.InterferenceScoreMax) return false;
 				}
 
-				if (m_columnMap.ContainsKey("MSFeature.Abundance"))
+				if (ColumnMap.ContainsKey("MSFeature.Abundance"))
 				{
 					if (msFeature.Abundance < Settings.IntensityMin) return false;
 				}
@@ -391,7 +374,7 @@ namespace FeatureFinder.Control
 		/// <param name="uimfReader">The UIMF file DataReader object</param>
 		private void FixDriftTimeValues(DataReader uimfReader)
 		{
-			var groupByScanLCQuery = from msFeature in m_msFeatureList
+			var groupByScanLCQuery = from msFeature in MSFeatureList
 									 group msFeature by msFeature.ScanLC into newGroup
 									 select newGroup;
 

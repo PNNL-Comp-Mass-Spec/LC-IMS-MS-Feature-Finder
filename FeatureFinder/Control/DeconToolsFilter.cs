@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FeatureFinder.Control
+﻿namespace FeatureFinder.Control
 {
 	public class DeconToolsFilter
 	{

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FeatureFinder.Control;
 
 namespace FeatureFinder.Data
@@ -10,13 +9,13 @@ namespace FeatureFinder.Data
 	{
 		public List<XYPair> XYPairList { get; set; }
 
-		public Peak(List<XYPair> xyPairList)
+		public Peak(IEnumerable<XYPair> xyPairList)
 		{
 			this.XYPairList = new List<XYPair>();
 			this.XYPairList.AddRange(xyPairList);
 		}
 
-		public Peak(List<double> xValues, List<double> yValues)
+		public Peak(IList<double> xValues, IList<double> yValues)
 		{
 			if (xValues.Count != yValues.Count)
 			{
@@ -144,7 +143,7 @@ namespace FeatureFinder.Data
 			double quadratic = (y2 - y1) * (x3 - x2) - (y3 - y2) * (x2 - x1);
 
 			// no good.  Just return the known peak
-			if (quadratic == 0)
+			if (Math.Abs(quadratic - 0) < double.Epsilon)
 			{
 				return x2;  
 			}

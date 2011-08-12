@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
-using FeatureFinder.Control;
 
 namespace FeatureFinder.Control
 {
@@ -31,24 +29,25 @@ namespace FeatureFinder.Control
 
                     string line = sr.ReadLine();
 
-                    string[] parsedLine = line.Split('\t');
+                	if (line == null) continue;
+                	string[] parsedLine = line.Split('\t');
 
-                    if (parsedLine == null || parsedLine.Length != 6)
-                    {
-						Logger.Log("Error loading DeconTools filter settings file.");
-                        throw new ArgumentException("Error loading DeconTools filter settings file.");
-                    }
+                	if (parsedLine.Length != 6)
+                	{
+                		Logger.Log("Error loading DeconTools filter settings file.");
+                		throw new ArgumentException("Error loading DeconTools filter settings file.");
+                	}
 
-                    int zMin = Convert.ToInt32(parsedLine[0]);
-                    int zMax = Convert.ToInt32(parsedLine[1]);
-                    int abundanceMin = Convert.ToInt32(parsedLine[2]);
-                    int abundanceMax = Convert.ToInt32(parsedLine[3]);
+                	int zMin = Convert.ToInt32(parsedLine[0]);
+                	int zMax = Convert.ToInt32(parsedLine[1]);
+                	int abundanceMin = Convert.ToInt32(parsedLine[2]);
+                	int abundanceMax = Convert.ToInt32(parsedLine[3]);
 
-                    double iscoreCutoff = Convert.ToDouble(parsedLine[4]);
-                    double fitScoreCutoff = Convert.ToDouble(parsedLine[5]);
+                	double iscoreCutoff = Convert.ToDouble(parsedLine[4]);
+                	double fitScoreCutoff = Convert.ToDouble(parsedLine[5]);
 
-                    DeconToolsFilter f = new DeconToolsFilter(zMin, zMax, abundanceMin, abundanceMax, fitScoreCutoff, iscoreCutoff);
-                    DeconToolsFilterList.Add(f);
+                	DeconToolsFilter f = new DeconToolsFilter(zMin, zMax, abundanceMin, abundanceMax, fitScoreCutoff, iscoreCutoff);
+                	DeconToolsFilterList.Add(f);
                 }
             }
 

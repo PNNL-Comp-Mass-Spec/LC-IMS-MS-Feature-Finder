@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -14,8 +12,7 @@ namespace FeatureFinder.Control
 		{
 			String baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
 
-			StreamWriter streamWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_FeatureFinder_Log.txt");
-			streamWriter.AutoFlush = true;
+			StreamWriter streamWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_FeatureFinder_Log.txt") {AutoFlush = true};
 			m_textWriter = streamWriter;
 		}
 
@@ -30,8 +27,7 @@ namespace FeatureFinder.Control
 		public static void ChangeLogFileLocation(string fileLocation)
 		{
 			CloseLog();
-			StreamWriter streamWriter = new StreamWriter(fileLocation);
-			streamWriter.AutoFlush = true;
+			StreamWriter streamWriter = new StreamWriter(fileLocation) {AutoFlush = true};
 			m_textWriter = streamWriter;
 		}
 

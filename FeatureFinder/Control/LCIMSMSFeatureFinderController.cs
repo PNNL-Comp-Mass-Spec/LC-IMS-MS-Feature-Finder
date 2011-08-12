@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FeatureFinder.Data;
 using FeatureFinder.Algorithms;
 using System.Collections.Concurrent;
@@ -12,29 +10,22 @@ namespace FeatureFinder.Control
 {
     public class LCIMSMSFeatureFinderController
     {
-        private IsosReader isosReader;
+        private IsosReader m_isosReader;
 
         #region Constructors
         public LCIMSMSFeatureFinderController(IsosReader isosReader)
         {
-            this.isosReader = isosReader;
-
+            m_isosReader = isosReader;
         }
-
-        #endregion
-
-        #region Properties
-
         #endregion
 
         #region Public Methods
-
         public void Execute()
         {
             {
                 Logger.Log("Creating IMS-MS Features...");
 
-                List<MSFeature> filteredMSFeatureList = isosReader.MSFeatureList;
+                List<MSFeature> filteredMSFeatureList = m_isosReader.MSFeatureList;
 
                 ConcurrentBag<IMSMSFeature> imsmsfeatureBag = new ConcurrentBag<IMSMSFeature>();
 
@@ -209,20 +200,13 @@ namespace FeatureFinder.Control
                     }
                 }
 
-                IsosWriter isosWriter = new IsosWriter(msFeatureListOutput, isosReader.ColumnMap);
+                IsosWriter isosWriter = new IsosWriter(msFeatureListOutput, m_isosReader.ColumnMap);
 
                 Logger.Log("Writing output files...");
                 FeatureUtil.WriteLCIMSMSFeatureToFile(lcimsmsFeatureEnumerable);
             }
         }
 
-      
-
         #endregion
-
-        #region Private Methods
-
-        #endregion
-
     }
 }

@@ -7,8 +7,6 @@ using FeatureFinder.Control;
 using System.IO;
 using System.Text.RegularExpressions;
 using FeatureFinder.Data.Maps;
-using UIMFLibrary;
-using FeatureFinder.Algorithms;
 
 namespace FeatureFinder.Utilities
 {
@@ -64,7 +62,6 @@ namespace FeatureFinder.Utilities
 
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
-				IMSMSFeature imsmsFeatureRep = null;
 				MSFeature msFeatureRep = null;
 
 				int maxAbundance = int.MinValue;
@@ -89,12 +86,6 @@ namespace FeatureFinder.Utilities
 
 				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
 				{
-					int scanLC = ScanLCMap.Mapping[imsmsFeature.ScanLC];
-				}
-
-				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
-				{
-					int scanLC = ScanLCMap.Mapping[imsmsFeature.ScanLC];
 					int minIMSScan = int.MaxValue;
 					int maxIMSScan = int.MinValue;
 
@@ -107,7 +98,6 @@ namespace FeatureFinder.Utilities
 
 						if (msFeature.Abundance > maxAbundance)
 						{
-							imsmsFeatureRep = imsmsFeature;
 							msFeatureRep = msFeature;
 							maxAbundance = msFeature.Abundance;
 							isFeatureRep = true;
@@ -230,13 +220,9 @@ namespace FeatureFinder.Utilities
 			{
 				int referenceScanLC = lcimsmsFeature.IMSMSFeatureList[0].ScanLC;
 
-				foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
+				if (lcimsmsFeature.IMSMSFeatureList.Any(imsmsFeature => imsmsFeature.ScanLC != referenceScanLC))
 				{
-					if (imsmsFeature.ScanLC != referenceScanLC)
-					{
-						lcimsmsFeatureList.Add(lcimsmsFeature);
-						break;
-					}
+					lcimsmsFeatureList.Add(lcimsmsFeature);
 				}
 			}
 
@@ -276,13 +262,9 @@ namespace FeatureFinder.Utilities
 
 				IMSMSFeature imsmsFeature1 = null;
 
-				if (lcScanToIMSMSFeatureMap1.TryGetValue(lcScan, out imsmsFeature1))
-				{
-					if (!DoIMSMSFeaturesFitTogether(imsmsFeature1, imsmsFeature2))
-					{
-						return false;
-					}
-				}
+				if (!lcScanToIMSMSFeatureMap1.TryGetValue(lcScan, out imsmsFeature1)) continue;
+				if (DoIMSMSFeaturesFitTogether(imsmsFeature1, imsmsFeature2)) continue;
+				return false;
 			}
 
 			if (minLCScan1 - maxLCScan2 - 1 > Settings.LCGapSizeMax)
@@ -300,22 +282,9 @@ namespace FeatureFinder.Utilities
 
 		public static bool DoIMSMSFeaturesFitTogether(IMSMSFeature feature1, IMSMSFeature feature2)
 		{
-			List<int> imsScanList1 = new List<int>();
+			List<int> imsScanList1 = feature1.MSFeatureList.Select(msFeature1 => msFeature1.ScanIMS).ToList();
 
-			foreach (MSFeature msFeature1 in feature1.MSFeatureList)
-			{
-				imsScanList1.Add(msFeature1.ScanIMS);
-			}
-
-			foreach (MSFeature msFeature2 in feature2.MSFeatureList)
-			{
-				if (imsScanList1.Contains(msFeature2.ScanIMS))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return feature2.MSFeatureList.All(msFeature2 => !imsScanList1.Contains(msFeature2.ScanIMS));
 		}
 
 		public static void MergeIMSMSFeatures(IMSMSFeature dominantFeature, IMSMSFeature recessiveFeature)
@@ -332,12 +301,7 @@ namespace FeatureFinder.Utilities
 
 			int massChange = (int)Math.Round(referenceMass - massToChange);
 
-			Dictionary<int, IMSMSFeature> scanLCToIMSMSFeatureMap = new Dictionary<int, IMSMSFeature>();
-
-			foreach (IMSMSFeature dominantIMSMSFeature in dominantFeature.IMSMSFeatureList)
-			{
-				scanLCToIMSMSFeatureMap.Add(dominantIMSMSFeature.ScanLC, dominantIMSMSFeature);
-			}
+			Dictionary<int, IMSMSFeature> scanLCToIMSMSFeatureMap = dominantFeature.IMSMSFeatureList.ToDictionary(dominantIMSMSFeature => dominantIMSMSFeature.ScanLC);
 
 			foreach (IMSMSFeature recessiveIMSMSFeature in recessiveFeature.IMSMSFeatureList)
 			{

@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Linq;
 using FeatureFinder.Control;
-using FeatureFinder.Algorithms;
-using FeatureFinder.Data;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using FeatureFinder.Utilities;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
@@ -82,25 +76,24 @@ namespace LCMSFeatureFinder
 				Logger.Log("Unknown type of Isos file. Exiting.");
 				return;
 			}
-			else
+
+			IsosReader isosReader = new IsosReader();
+			Logger.Log("Total number of MS Features in _isos.csv file = " + isosReader.NumOfUnfilteredMSFeatures);
+			Logger.Log("Total number of MS Features we'll consider = " + isosReader.MSFeatureList.Count);
+
+			if (dataType == LC_DATA || Settings.IgnoreIMSDriftTime)
 			{
-				IsosReader isosReader = new IsosReader();
-				Logger.Log("Total number of MS Features in _isos.csv file = " + isosReader.NumOfUnfilteredMSFeatures);
-				Logger.Log("Total number of MS Features we'll consider = " + isosReader.MSFeatureList.Count);
+				Logger.Log("Processing LC-MS Data...");
+				Logger.Log("Currently not implemented. Exiting...");
+				//RunLCMSFeatureFinder(isosReader);
+			}
+			else if (dataType == IMS_DATA)
+			{
+				Logger.Log("Processing LC-IMS-MS Data...");
 
-				if (dataType == LC_DATA || Settings.IgnoreIMSDriftTime)
-				{
-					Logger.Log("Processing LC-MS Data...");
-					Logger.Log("Currently not implemented. Exiting...");
-					//RunLCMSFeatureFinder(isosReader);
-				}
-				else if (dataType == IMS_DATA)
-				{
-					Logger.Log("Processing LC-IMS-MS Data...");
+				//DataReader uimfReader = null;
 
-					//DataReader uimfReader = null;
-
-					/*
+				/*
 					if (settings.UseConformationDetection)
 					{
 						uimfReader = new UIMFLibrary.DataReader();
@@ -112,12 +105,11 @@ namespace LCMSFeatureFinder
 					}
 					*/ 
 
-					//RunLCIMSMSFeatureFinder(isosReader, uimfReader);
-					RunLCIMSMSFeatureFinder(isosReader);
-				}
-				Logger.Log("Finished!");
-				Logger.CloseLog();
+				//RunLCIMSMSFeatureFinder(isosReader, uimfReader);
+				RunLCIMSMSFeatureFinder(isosReader);
 			}
+			Logger.Log("Finished!");
+			Logger.CloseLog();
 		}
 
 		/// <summary>
@@ -144,7 +136,6 @@ namespace LCMSFeatureFinder
 		/// <returns>LC_DATA if LC Data is being processed, IMS_DATA if IMS Data is being processed, -1 if error</returns>
 		private static int PeekAtIsosFile()
 		{
-			String baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
 			StreamReader isosFileReader = new StreamReader(Settings.InputDirectory + Settings.InputFileName);
 
 			String firstLine = isosFileReader.ReadLine();
@@ -155,13 +146,10 @@ namespace LCMSFeatureFinder
 			}
 
 			String[] columnTitles = firstLine.Split('\t', ',', '\n');
-			foreach (String column in columnTitles)
+			if (columnTitles.Any(column => column.Equals("ims_scan_num")))
 			{
-				if (column.Equals("ims_scan_num"))
-				{
-					isosFileReader.Close();
-					return IMS_DATA;
-				}
+				isosFileReader.Close();
+				return IMS_DATA;
 			}
 
 			isosFileReader.Close();
@@ -171,7 +159,7 @@ namespace LCMSFeatureFinder
 		/// <summary>
 		/// Formats the file location into a usable format.
 		/// </summary>
-		/// <param name="filename">Original file location</param>
+		/// <param name="fileLocation">Original file location</param>
 		/// <returns>Processed file location</returns>
 		private static string ProcessFileLocation(string fileLocation)
 		{
@@ -186,11 +174,9 @@ namespace LCMSFeatureFinder
 				{
 					return "." + fileLocation;
 				}
+
 				// Append ".\" to the front of the string if in the form of "blabla"
-				else
-				{
-					return ".\\" + fileLocation;
-				}
+				return ".\\" + fileLocation;
 			}
 
 			// filename is in the form of "C:\blabla" or "\\blabla"

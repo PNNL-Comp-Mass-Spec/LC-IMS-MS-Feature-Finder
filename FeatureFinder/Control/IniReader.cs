@@ -35,7 +35,8 @@ namespace FeatureFinder.Control
 			value = IniReadValue("Files", "InputFileName");
 			if (!value.Equals(String.Empty))
 			{
-				if (!Path.GetDirectoryName(value).Equals(string.Empty))
+				string directoryName = Path.GetDirectoryName(value);
+				if (directoryName != null && !directoryName.Equals(string.Empty))
 				{
 					Settings.InputDirectory = Path.GetDirectoryName(value) + "\\";
 				}
@@ -193,14 +194,7 @@ namespace FeatureFinder.Control
 			{
 				int readValue = short.Parse(value);
 
-				if (readValue < 0)
-				{
-					Settings.IMSDaCorrectionMax = 0;
-				}
-				else
-				{
-					Settings.IMSDaCorrectionMax = readValue;
-				}
+				Settings.IMSDaCorrectionMax = readValue < 0 ? 0 : readValue;
 			}
 
 			value = IniReadValue("UMCCreationOptions", "UMCFitScoreMinimum");
@@ -252,7 +246,7 @@ namespace FeatureFinder.Control
 		private String IniReadValue(String Section, String Key)
 		{
 			StringBuilder stringBuilder = new StringBuilder(255);
-			int i = GetPrivateProfileString(Section, Key, "", stringBuilder, 255, this.m_path);
+			GetPrivateProfileString(Section, Key, "", stringBuilder, 255, this.m_path);
 			return stringBuilder.ToString();
 		}
 	}

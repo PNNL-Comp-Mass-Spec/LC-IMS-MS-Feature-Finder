@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FeatureFinder.Utilities;
 using UIMFLibrary;
 using FeatureFinder.Data.Maps;
@@ -39,15 +38,12 @@ namespace FeatureFinder.Data
 		{
 			int lcScan = imsmsFeature.ScanLC;
 
-			foreach (IMSMSFeature otherIMSMSFeature in IMSMSFeatureList)
+			foreach (IMSMSFeature otherIMSMSFeature in IMSMSFeatureList.Where(otherIMSMSFeature => otherIMSMSFeature.ScanLC == lcScan))
 			{
-				if (otherIMSMSFeature.ScanLC == lcScan)
-				{
-					FeatureUtil.MergeIMSMSFeatures(imsmsFeature, otherIMSMSFeature);
-					IMSMSFeatureList.Add(imsmsFeature);
-					IMSMSFeatureList.Remove(otherIMSMSFeature);
-					return;
-				}
+				FeatureUtil.MergeIMSMSFeatures(imsmsFeature, otherIMSMSFeature);
+				IMSMSFeatureList.Add(imsmsFeature);
+				IMSMSFeatureList.Remove(otherIMSMSFeature);
+				return;
 			}
 
 			IMSMSFeatureList.Add(imsmsFeature);
@@ -55,14 +51,7 @@ namespace FeatureFinder.Data
 
 		public int GetMemberCount()
 		{
-			int count = 0;
-
-			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
-			{
-				count += imsmsFeature.MSFeatureList.Count;
-			}
-
-			return count;
+			return IMSMSFeatureList.Sum(imsmsFeature => imsmsFeature.MSFeatureList.Count);
 		}
 
 		public double CalculateAverageMass()
@@ -87,17 +76,14 @@ namespace FeatureFinder.Data
 			int numFlagged = 0;
 			int numTotal = 0;
 
-			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
+			foreach (MSFeature msFeature in IMSMSFeatureList.SelectMany(imsmsFeature => imsmsFeature.MSFeatureList))
 			{
-				foreach (MSFeature msFeature in imsmsFeature.MSFeatureList)
+				if (msFeature.ErrorFlag == 1)
 				{
-					if (msFeature.ErrorFlag == 1)
-					{
-						numFlagged++;
-					}
-
-					numTotal++;
+					numFlagged++;
 				}
+
+				numTotal++;
 			}
 
 			double percentage = (double)numFlagged / (double)numTotal;
@@ -202,9 +188,7 @@ namespace FeatureFinder.Data
             //int globalEndBin = (int)Math.Ceiling(((Math.Sqrt(maxMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth));
 
 
-            List<XYPair> imsScanProfile = new List<XYPair>();
-
-            //[gord] added May 11 2011
+			//[gord] added May 11 2011
             int frameIndexMinimum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMinimum]);
             int frameIndexMaximum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMaximum]);
             int[] scanValues = null;
@@ -216,17 +200,10 @@ namespace FeatureFinder.Data
 
             uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, toleranceInMZ, ref scanValues, ref intensityVals);
 
-            for (int i = 0; i < intensityVals.Length; i++)
-            {
-                XYPair xyPair = new XYPair(scanIMSMinimum + i, intensityVals[i]);
-
-                imsScanProfile.Add(xyPair);
-
-            }
+			List<XYPair> imsScanProfile = intensityVals.Select((t, i) => new XYPair(scanIMSMinimum + i, t)).ToList();
 
 
-
-            //int[][] intensityValues = uimfReader.GetIntensityBlock(ScanLCMap.Mapping[scanLCMinimum], ScanLCMap.Mapping[scanLCMaximum], frameType, scanIMSMinimum, scanIMSMaximum, globalStartBin, globalEndBin);
+			//int[][] intensityValues = uimfReader.GetIntensityBlock(ScanLCMap.Mapping[scanLCMinimum], ScanLCMap.Mapping[scanLCMaximum], frameType, scanIMSMinimum, scanIMSMaximum, globalStartBin, globalEndBin);
 
 
             //for (int i = 0; i < intensityValues.Length; i++)

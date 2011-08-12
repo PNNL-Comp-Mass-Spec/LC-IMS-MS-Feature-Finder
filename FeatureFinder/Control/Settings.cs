@@ -1,78 +1,81 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FeatureFinder.Control
 {
 	public static class Settings
 	{
-		private static string inputDirectory;
-		private static string inputFileName;
-		private static string outputDirectory;
-
-		private static short featureLengthMin;
-		private static short minimumDifferenceInMedianPpmMassToSplit;
-		private static short lcGapSizeMax;
-
-		private static int imsDaCorrectionMax;
-		private static int scanIMSMin;
-		private static int scanIMSMax;
-		private static int scanLCMin;
-		private static int scanLCMax;
-
-		private static float fitMax;
-		private static float interferenceScoreMax;
-		private static float intensityMin;
-		private static float massMonoisotopicConstraint;
-		private static float umcFitScoreMinimum;
-		private static float massMonoisotopicStart;
-		private static float massMonoisotopicEnd;
-		private static float smoothingStDev;
-
-		private static bool massMonoisotopicConstraintIsPPM;
-		private static bool useGenericNET;
-		private static bool useCharge;
-		private static bool split;
-		private static bool useConformationDetection;
-		private static bool ignoreIMSDriftTime;
-		private static bool filterIsosToSinglePoint;
-		private static bool filterUsingHardCodedFilters;
-		private static bool filterFlaggedData;
-
-		private static FrameType frameTypeFilter;
-
 		public enum FrameType { NoFilter = -1, Prescan = 0, MS, MSMS }
+
+		public static string InputDirectory { get; set; }
+		public static string InputFileName { get; set; }
+		public static string OutputDirectory { get; set; }
+		public static string DeconToolsFilterFileName { get; set; }
+
+		public static short FeatureLengthMin { get; set; }
+		public static short MinimumDifferenceInMedianPpmMassToSplit { get; set; }
+		public static short LCGapSizeMax { get; set; }
+
+		public static int ScanIMSMin { get; set; }
+		public static int ScanIMSMax { get; set; }
+		public static int ScanLCMin { get; set; }
+		public static int ScanLCMax { get; set; }
+		public static int IMSDaCorrectionMax { get; set; }
+
+		public static float FitMax { get; set; }
+		public static float InterferenceScoreMax { get; set; }
+		public static float IntensityMin { get; set; }
+		public static float MassMonoisotopicConstraint { get; set; }
+		public static float UMCFitScoreMinimum { get; set; }
+		public static float MassMonoisotopicStart { get; set; }
+		public static float MassMonoisotopicEnd { get; set; }
+		public static float SmoothingStDev { get; set; }
+
+		public static bool MassMonoisotopicConstraintIsPPM { get; set; }
+		public static bool UseGenericNET { get; set; }
+		public static bool UseCharge { get; set; }
+		public static bool Split { get; set; }
+		public static bool UseConformationDetection { get; set; }
+		public static bool IgnoreIMSDriftTime { get; set; }
+		public static bool FilterIsosToSinglePoint { get; set; }
+		public static bool FilterUsingHardCodedFilters { get; set; }
+		public static bool FilterFlaggedData { get; set; }
+
+		public static FrameType FrameTypeFilter { get; set; }
+		public static List<DeconToolsFilter> DeconToolsFilterList { get; set; }
 
 		static Settings()
 		{
 			// Default Settings
-			inputDirectory = "";
-			inputFileName = "";
-			outputDirectory = "";
-			fitMax = 0.15f;
-			interferenceScoreMax = 0.3f;
-			intensityMin = 2500;
-			scanIMSMin = 0;
-			scanIMSMax = int.MaxValue;
-			scanLCMin = 0;
-			scanLCMax = int.MaxValue;
-			massMonoisotopicStart = 0;
-			massMonoisotopicEnd = 15000;
-			massMonoisotopicConstraint = 20f;
-			massMonoisotopicConstraintIsPPM = true;
-			featureLengthMin = 3;
-			useGenericNET = true;
-			useCharge = false;
-			lcGapSizeMax = 5;
-			minimumDifferenceInMedianPpmMassToSplit = 4;
-			split = true;
-			imsDaCorrectionMax = 1;
-			smoothingStDev = 1.5f;
-			umcFitScoreMinimum = 0f;
-			useConformationDetection = true;
-			ignoreIMSDriftTime = false;
-			filterIsosToSinglePoint = true;
-			frameTypeFilter = FrameType.NoFilter;
-			filterUsingHardCodedFilters = false;
-			filterFlaggedData = false;
+			InputDirectory = "";
+			InputFileName = "";
+			OutputDirectory = "";
+			FitMax = 0.15f;
+			InterferenceScoreMax = 0.3f;
+			IntensityMin = 2500;
+			ScanIMSMin = 0;
+			ScanIMSMax = int.MaxValue;
+			ScanLCMin = 0;
+			ScanLCMax = int.MaxValue;
+			MassMonoisotopicStart = 0;
+			MassMonoisotopicEnd = 15000;
+			MassMonoisotopicConstraint = 20f;
+			MassMonoisotopicConstraintIsPPM = true;
+			FeatureLengthMin = 3;
+			UseGenericNET = true;
+			UseCharge = false;
+			LCGapSizeMax = 5;
+			MinimumDifferenceInMedianPpmMassToSplit = 4;
+			Split = true;
+			IMSDaCorrectionMax = 1;
+			SmoothingStDev = 1.5f;
+			UMCFitScoreMinimum = 0f;
+			UseConformationDetection = true;
+			IgnoreIMSDriftTime = false;
+			FilterIsosToSinglePoint = true;
+			FrameTypeFilter = FrameType.NoFilter;
+			FilterUsingHardCodedFilters = false;
+			FilterFlaggedData = false;
 		}
 
 		public static void PrintExampleSettings()
@@ -113,183 +116,5 @@ namespace FeatureFinder.Control
 			Console.WriteLine("[PostCreationFilteringOptions]");
 			Console.WriteLine("FilterIsosToSinglePoint=True");
 		}
-
-		public static string InputDirectory
-		{
-			get { return inputDirectory; }
-			set { inputDirectory = value; }
-		}
-
-		public static string InputFileName
-		{
-			get { return inputFileName; }
-			set { inputFileName = value; }
-		}
-
-		public static string OutputDirectory
-		{
-			get { return outputDirectory; }
-			set { outputDirectory = value; }
-		}
-
-		public static short FeatureLengthMin
-		{
-			get { return featureLengthMin; }
-			set { featureLengthMin = value; }
-		}
-
-		public static short MinimumDifferenceInMedianPpmMassToSplit
-		{
-			get { return minimumDifferenceInMedianPpmMassToSplit; }
-			set { minimumDifferenceInMedianPpmMassToSplit = value; }
-		}
-
-		public static short LCGapSizeMax
-		{
-			get { return lcGapSizeMax; }
-			set { lcGapSizeMax = value; }
-		}
-
-		public static int ScanIMSMin
-		{
-			get { return scanIMSMin; }
-			set { scanIMSMin = value; }
-		}
-
-		public static int ScanIMSMax
-		{
-			get { return scanIMSMax; }
-			set { scanIMSMax = value; }
-		}
-
-		public static int ScanLCMin
-		{
-			get { return scanLCMin; }
-			set { scanLCMin = value; }
-		}
-
-		public static int ScanLCMax
-		{
-			get { return scanLCMax; }
-			set { scanLCMax = value; }
-		}
-
-		public static int IMSDaCorrectionMax
-		{
-			get { return imsDaCorrectionMax; }
-			set { imsDaCorrectionMax = value; }
-		}
-
-		public static float FitMax
-		{
-			get { return fitMax; }
-			set { fitMax = value; }
-		}
-
-		public static float InterferenceScoreMax
-		{
-			get { return interferenceScoreMax; }
-			set { interferenceScoreMax = value; }
-		}
-
-		public static float IntensityMin
-		{
-			get { return intensityMin; }
-			set { intensityMin = value; }
-		}
-
-		public static float MassMonoisotopicConstraint
-		{
-			get { return massMonoisotopicConstraint; }
-			set { massMonoisotopicConstraint = value; }
-		}
-
-		public static float UMCFitScoreMinimum
-		{
-			get { return umcFitScoreMinimum; }
-			set { umcFitScoreMinimum = value; }
-		}
-
-		public static float MassMonoisotopicStart
-		{
-			get { return massMonoisotopicStart; }
-			set { massMonoisotopicStart = value; }
-		}
-
-		public static float MassMonoisotopicEnd
-		{
-			get { return massMonoisotopicEnd; }
-			set { massMonoisotopicEnd = value; }
-		}
-
-		public static float SmoothingStDev
-        {
-            get { return smoothingStDev; }
-            set { smoothingStDev = value; }
-        }
-
-		public static bool MassMonoisotopicConstraintIsPPM
-		{
-			get { return massMonoisotopicConstraintIsPPM; }
-			set { massMonoisotopicConstraintIsPPM = value; }
-		}
-
-		public static bool UseGenericNET
-		{
-			get { return useGenericNET; }
-			set { useGenericNET = value; }
-		}
-
-		public static bool UseCharge
-		{
-			get { return useCharge; }
-			set { useCharge = value; }
-		}
-
-		public static bool Split
-		{
-			get { return split; }
-			set { split = value; }
-		}
-
-		public static bool UseConformationDetection
-		{
-			get { return useConformationDetection; }
-			set { useConformationDetection = value; }
-		}
-
-		public static bool IgnoreIMSDriftTime
-		{
-			get { return ignoreIMSDriftTime; }
-			set { ignoreIMSDriftTime = value; }
-		}
-
-		public static bool FilterIsosToSinglePoint
-		{
-			get { return filterIsosToSinglePoint; }
-			set { filterIsosToSinglePoint = value; }
-		}
-
-		public static bool FilterUsingHardCodedFilters
-		{
-			get { return filterUsingHardCodedFilters; }
-			set { filterUsingHardCodedFilters = value; }
-		}
-
-		public static bool FilterFlaggedData
-		{
-			get { return filterFlaggedData; }
-			set { filterFlaggedData = value; }
-		}
-
-		public static FrameType FrameTypeFilter
-		{
-			get { return frameTypeFilter; }
-			set { frameTypeFilter = value; }
-		}
-
-        public static System.Collections.Generic.List<DeconToolsFilter> DeconToolsFilterList { get; set; }
-
-        public static string DeconToolsFilterFileName { get; set; }
     }
 }

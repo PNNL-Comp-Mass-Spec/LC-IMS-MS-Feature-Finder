@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace FeatureFinder.Data
 {
@@ -31,27 +29,12 @@ namespace FeatureFinder.Data
 
 		public double CalculateAverageMass()
 		{
-			double totalMass = 0;
-
-			foreach (MSFeature msFeature in MSFeatureList)
-			{
-				totalMass += msFeature.MassMonoisotopic;
-			}
-
-			double averageMass = totalMass / MSFeatureList.Count;
-			return averageMass;
+			return MSFeatureList.Average(msFeature => msFeature.MassMonoisotopic);
 		}
 
 		public double GetIntensity()
 		{
-			double totalIntensity = 0;
-
-			foreach (MSFeature msFeature in MSFeatureList)
-			{
-				totalIntensity += msFeature.Abundance;
-			}
-
-			return totalIntensity;
+			return MSFeatureList.Sum(msFeature => msFeature.Abundance);
 		}
 
 		public Dictionary<double, double> GetIntensityValues()
