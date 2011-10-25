@@ -281,11 +281,14 @@ namespace FeatureFinder.Algorithms
 			}
 
 			// Find the Conformation that has the highest member count and store the value into all conformations of this LC-IMS-MS Feature
-			int maxMemberCount = newLCIMSMSFeatureList.Select(feature => feature.GetMemberCount()).Max();
-
-			foreach (LCIMSMSFeature feature in newLCIMSMSFeatureList)
+			if (newLCIMSMSFeatureList.Count > 0)
 			{
-				feature.MaxMemberCount = maxMemberCount;
+				int maxMemberCount = newLCIMSMSFeatureList.Select(feature => feature.GetMemberCount()).Max();
+
+				foreach (LCIMSMSFeature feature in newLCIMSMSFeatureList)
+				{
+					feature.MaxMemberCount = maxMemberCount;
+				}
 			}
 
 			return newLCIMSMSFeatureList;
