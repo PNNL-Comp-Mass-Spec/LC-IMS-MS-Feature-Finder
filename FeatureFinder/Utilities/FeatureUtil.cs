@@ -41,6 +41,7 @@ namespace FeatureFinder.Utilities
 			labelStringBuilder.Append("Avg_Interference_Score" + "\t");
 			labelStringBuilder.Append("Decon2ls_Fit_Score" + "\t");
 			labelStringBuilder.Append("UMC_Member_Count" + "\t");
+			labelStringBuilder.Append("Saturated_Member_Count" + "\t");
 			labelStringBuilder.Append("Max_Abundance" + "\t");
 			labelStringBuilder.Append("Abundance" + "\t");
 			labelStringBuilder.Append("Class_Rep_MZ" + "\t");
@@ -66,6 +67,7 @@ namespace FeatureFinder.Utilities
 
 				int maxAbundance = int.MinValue;
 				int msFeatureCount = 0;
+				int saturatedMSFeatureCount = 0;
 				int repMinIMSScan = 0;
 				int repMaxIMSScan = 0;
 				long totalAbundance = 0;
@@ -108,6 +110,8 @@ namespace FeatureFinder.Utilities
 
 						if (msFeature.ScanIMS < minIMSScan) minIMSScan = msFeature.ScanIMS;
 						if (msFeature.ScanIMS > maxIMSScan) maxIMSScan = msFeature.ScanIMS;
+
+						if (msFeature.IsSaturated) saturatedMSFeatureCount++;
 
 						totalAbundance += msFeature.Abundance;
 						totalAbundanceTimesDriftTime += ((double)msFeature.Abundance * msFeature.DriftTime);
@@ -158,6 +162,7 @@ namespace FeatureFinder.Utilities
 				stringBuilder.Append(averageInterferenceScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(averageDecon2lsFit.ToString("0.00000") + "\t");
 				stringBuilder.Append(msFeatureCount + "\t");
+				stringBuilder.Append(saturatedMSFeatureCount + "\t");
 				stringBuilder.Append(maxAbundance + "\t");
 				if (Settings.UseConformationDetection)
 				{

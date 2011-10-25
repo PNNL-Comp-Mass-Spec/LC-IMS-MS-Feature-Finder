@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using FeatureFinder.Data;
 using FeatureFinder.Data.Maps;
-using UIMFLibrary;
+//using UIMFLibrary;
 using System.Linq;
 using FeatureFinder.Algorithms;
 using FeatureFinder.Utilities;
@@ -32,20 +32,20 @@ namespace FeatureFinder.Control
 			MSFeatureList = SaveDataToMSFeatureList();
 
 			// Calculate the drift time for each MS Feature. We are choosing to not use the Decon2ls output.
-			DataReader uimfReader = new UIMFLibrary.DataReader();
+			//DataReader uimfReader = new UIMFLibrary.DataReader();
 
-            string uimfRawdataFile = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
-            if (!File.Exists(uimfRawdataFile))
-            {
-				Logger.Log("File not found error. Could not find the file: " + uimfRawdataFile);
-                throw new FileNotFoundException("File not found error. Could not find the file: " + uimfRawdataFile);
-            }
+			//string uimfRawdataFile = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
+			//if (!File.Exists(uimfRawdataFile))
+			//{
+			//    Logger.Log("File not found error. Could not find the file: " + uimfRawdataFile);
+			//    throw new FileNotFoundException("File not found error. Could not find the file: " + uimfRawdataFile);
+			//}
 
-			if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
-			{
-				FixDriftTimeValues(uimfReader);
-			}
-			uimfReader.CloseUIMF();
+			//if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+			//{
+			//    FixDriftTimeValues(uimfReader);
+			//}
+			//uimfReader.CloseUIMF();
 		}
 		#endregion
 
@@ -205,7 +205,10 @@ namespace FeatureFinder.Control
 						columnMap.Add("MSFeature.AbundancePlus2", i);
 						break;
 					case "orig_intensity":
-						columnMap.Add("MSFeature.IntensityOriginal", i);
+						columnMap.Add("MSFeature.IntensityUnSummed", i);
+						break;
+					case "unsummed_intensity":
+						columnMap.Add("MSFeature.IntensityUnSummed", i);
 						break;
 					case "tia_orig_intensity":
 						columnMap.Add("MSFeature.IntensityOriginalTIA", i);
@@ -218,6 +221,9 @@ namespace FeatureFinder.Control
 						break;
 					case "flag":
 						columnMap.Add("MSFeature.ErrorFlag", i);
+						break;
+					case "saturation_flag":
+						columnMap.Add("MSFeature.IsSaturated", i);
 						break;
 				}
 			}
@@ -284,6 +290,7 @@ namespace FeatureFinder.Control
 					if (ColumnMap.ContainsKey("MSFeature.ScanIMS")) msFeature.ScanIMS = Int32.Parse(columns[ColumnMap["MSFeature.ScanIMS"]], System.Globalization.NumberStyles.Any);
 					if (ColumnMap.ContainsKey("MSFeature.Charge")) msFeature.Charge = (byte)Int16.Parse(columns[ColumnMap["MSFeature.Charge"]], System.Globalization.NumberStyles.Any);
 					if (ColumnMap.ContainsKey("MSFeature.Abundance")) msFeature.Abundance = Int32.Parse(columns[ColumnMap["MSFeature.Abundance"]], System.Globalization.NumberStyles.Any);
+					if (ColumnMap.ContainsKey("MSFeature.IntensityUnSummed")) msFeature.IntensityUnSummed = Int32.Parse(columns[ColumnMap["MSFeature.IntensityUnSummed"]], System.Globalization.NumberStyles.Any);
 					if (ColumnMap.ContainsKey("MSFeature.Mz")) msFeature.Mz = double.Parse(columns[ColumnMap["MSFeature.Mz"]], System.Globalization.NumberStyles.Any);
 					if (ColumnMap.ContainsKey("MSFeature.Fit")) msFeature.Fit = float.Parse(columns[ColumnMap["MSFeature.Fit"]], System.Globalization.NumberStyles.Any);
 					if (ColumnMap.ContainsKey("MSFeature.InterferenceScore")) msFeature.InterferenceScore = float.Parse(columns[ColumnMap["MSFeature.InterferenceScore"]], System.Globalization.NumberStyles.Any);
@@ -291,6 +298,7 @@ namespace FeatureFinder.Control
 					if (ColumnMap.ContainsKey("MSFeature.Fwhm")) msFeature.Fwhm = float.Parse(columns[ColumnMap["MSFeature.Fwhm"]], System.Globalization.NumberStyles.Any);
 					if (ColumnMap.ContainsKey("MSFeature.DriftTimeIMS")) msFeature.DriftTime = float.Parse(columns[ColumnMap["MSFeature.DriftTimeIMS"]], System.Globalization.NumberStyles.Any);
 					if (ColumnMap.ContainsKey("MSFeature.ErrorFlag")) msFeature.ErrorFlag = (byte)(columns[ColumnMap["MSFeature.ErrorFlag"]].Equals("") ? 0 : Int16.Parse(columns[ColumnMap["MSFeature.ErrorFlag"]], System.Globalization.NumberStyles.Any));
+					if (ColumnMap.ContainsKey("MSFeature.IsSaturated")) msFeature.IsSaturated = Convert.ToBoolean(Int16.Parse(columns[ColumnMap["MSFeature.IsSaturated"]], System.Globalization.NumberStyles.Any));
 
 					if (PassesFilters(msFeature))
 					{
@@ -372,29 +380,29 @@ namespace FeatureFinder.Control
 		/// The drift time value will be calculated assuming that frame pressure is normal and not varying.
 		/// </summary>
 		/// <param name="uimfReader">The UIMF file DataReader object</param>
-		private void FixDriftTimeValues(DataReader uimfReader)
-		{
-			var groupByScanLCQuery = from msFeature in MSFeatureList
-									 group msFeature by msFeature.ScanLC into newGroup
-									 select newGroup;
+		//private void FixDriftTimeValues(DataReader uimfReader)
+		//{
+		//    var groupByScanLCQuery = from msFeature in MSFeatureList
+		//                             group msFeature by msFeature.ScanLC into newGroup
+		//                             select newGroup;
 
-			foreach (IEnumerable<MSFeature> msFeatureGroup in groupByScanLCQuery)
-			{
-				int lcScan = ScanLCMap.Mapping[msFeatureGroup.First().ScanLC];
+		//    foreach (IEnumerable<MSFeature> msFeatureGroup in groupByScanLCQuery)
+		//    {
+		//        int lcScan = ScanLCMap.Mapping[msFeatureGroup.First().ScanLC];
 
-                int frameIndex = uimfReader.get_FrameIndex(lcScan);
+		//        int frameIndex = uimfReader.get_FrameIndex(lcScan);
 
 
-                FrameParameters frameParameters = uimfReader.GetFrameParameters(frameIndex);
-				double averageTOFLength = frameParameters.AverageTOFLength;
+		//        FrameParameters frameParameters = uimfReader.GetFrameParameters(frameIndex);
+		//        double averageTOFLength = frameParameters.AverageTOFLength;
 
-				foreach(MSFeature msFeature in msFeatureGroup)
-				{
-					double driftTime = ConformationDetection.ConvertIMSScanToDriftTime(msFeature.ScanIMS, averageTOFLength);
-					msFeature.DriftTimeUncorrected = (float)driftTime;
-				}
-			}
-		}
+		//        foreach(MSFeature msFeature in msFeatureGroup)
+		//        {
+		//            double driftTime = ConformationDetection.ConvertIMSScanToDriftTime(msFeature.ScanIMS, averageTOFLength);
+		//            msFeature.DriftTimeUncorrected = (float)driftTime;
+		//        }
+		//    }
+		//}
 		#endregion
 	}
 }

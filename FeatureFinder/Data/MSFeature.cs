@@ -94,6 +94,7 @@ namespace FeatureFinder.Data
 		public int Abundance { get; set; }
 		public int ScanLC { get; set; }
 		public int ScanIMS { get; set; }
+		public int IntensityUnSummed { get; set; }
 
 		public float Fit { get; set; }
 		public float InterferenceScore { get; set; }
@@ -103,5 +104,7 @@ namespace FeatureFinder.Data
 
 		public double Mz { get; set; }
 		public double MassMonoisotopic { get; set; }
+
+		public bool IsSaturated { get; set; }
 	}
 }
