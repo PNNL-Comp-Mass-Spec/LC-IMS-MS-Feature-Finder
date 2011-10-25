@@ -71,6 +71,28 @@ namespace FeatureFinder.Data
 			return averageMass;
 		}
 
+		public double CalculateAverageMz()
+		{
+			int totalMemberCount = 0;
+			double mzTotal = 0.0;
+
+			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
+			{
+				int memberCount = imsmsFeature.MSFeatureList.Count;
+				mzTotal += imsmsFeature.CalculateAverageMz() * memberCount;
+				totalMemberCount += memberCount;
+			}
+
+			double averageMz = mzTotal / totalMemberCount;
+
+			return averageMz;
+		}
+
+		public double GetIntensity()
+		{
+			return IMSMSFeatureList.Sum(imsmsFeature => imsmsFeature.GetIntensity());
+		}
+
 		public double GetFlaggedPercentage()
 		{
 			int numFlagged = 0;
@@ -129,6 +151,36 @@ namespace FeatureFinder.Data
 
 			scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
 			scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
+
+			var sortByAbundanceQuery = from msFeature in msFeatureList
+									   orderby msFeature.Abundance descending
+									   select msFeature;
+
+			msFeatureRep = sortByAbundanceQuery.First();
+		}
+
+		public void GetMinAndMaxScanLCAndDriftTimeAndMSFeatureRep(out int scanLCMinimum, out int scanLCMaximum, out double driftTimeMinimum, out double driftTimeMaximum, out MSFeature msFeatureRep)
+		{
+			List<MSFeature> msFeatureList = new List<MSFeature>();
+
+			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
+			{
+				msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+			}
+
+			var sortByScanLCQuery = from msFeature in msFeatureList
+									orderby msFeature.ScanLC ascending
+									select msFeature;
+
+			scanLCMinimum = sortByScanLCQuery.First().ScanLC;
+			scanLCMaximum = sortByScanLCQuery.Last().ScanLC;
+
+			var sortByScanIMSQuery = from msFeature in msFeatureList
+									 orderby msFeature.DriftTime ascending
+									 select msFeature;
+
+			driftTimeMinimum = sortByScanIMSQuery.First().DriftTime;
+			driftTimeMaximum = sortByScanIMSQuery.Last().DriftTime;
 
 			var sortByAbundanceQuery = from msFeature in msFeatureList
 									   orderby msFeature.Abundance descending

@@ -32,6 +32,11 @@ namespace FeatureFinder.Data
 			return MSFeatureList.Average(msFeature => msFeature.MassMonoisotopic);
 		}
 
+		public double CalculateAverageMz()
+		{
+			return MSFeatureList.Average(msFeature => msFeature.Mz);
+		}
+
 		public double GetIntensity()
 		{
 			return MSFeatureList.Sum(msFeature => msFeature.Abundance);
