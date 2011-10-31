@@ -100,7 +100,6 @@ namespace FeatureFinder.Data
 		public float InterferenceScore { get; set; }
 		public float Fwhm { get; set; }
 		public float DriftTime { get; set; }
-		public float DriftTimeUncorrected { get; set; }
 
 		public double Mz { get; set; }
 		public double MassMonoisotopic { get; set; }

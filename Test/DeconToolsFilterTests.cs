@@ -22,7 +22,6 @@ namespace Test
             MSFeature testfeature1 = new MSFeature();
             testfeature1.Abundance = 16117;
             testfeature1.DriftTime = 20.584f;
-            testfeature1.DriftTimeUncorrected = 20.584f;
             testfeature1.Fit = 0.0264f;
             testfeature1.Fwhm = 0.0689f;
             testfeature1.InterferenceScore = 0;

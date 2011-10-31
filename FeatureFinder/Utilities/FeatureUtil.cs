@@ -48,7 +48,6 @@ namespace FeatureFinder.Utilities
 			labelStringBuilder.Append("Class_Rep_Charge" + "\t");
 			labelStringBuilder.Append("Charge_Max" + "\t");
 			labelStringBuilder.Append("Drift_Time" + "\t");
-			labelStringBuilder.Append("Drift_Time_Uncorrected" + "\t");
 			labelStringBuilder.Append("Conformation_Fit_Score" + "\t");
 			labelStringBuilder.Append("LC_Fit_Score" + "\t");
 			labelStringBuilder.Append("Average_Isotopic_Fit" + "\t");
@@ -77,7 +76,6 @@ namespace FeatureFinder.Utilities
 				double totalFit = 0;
 				double totalInterferenceScore = 0;
 				double totalAbundanceTimesDriftTime = 0;
-				double totalAbundanceTimesDriftTimeUncorrected = 0;
 
 				var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
 										orderby imsmsFeature.ScanLC ascending
@@ -115,7 +113,6 @@ namespace FeatureFinder.Utilities
 
 						totalAbundance += msFeature.Abundance;
 						totalAbundanceTimesDriftTime += ((double)msFeature.Abundance * msFeature.DriftTime);
-						totalAbundanceTimesDriftTimeUncorrected += ((double)msFeature.Abundance * msFeature.DriftTimeUncorrected);
 						totalMass += msFeature.MassMonoisotopic;
 						totalFit += msFeature.Fit;
 						totalInterferenceScore += msFeature.InterferenceScore;
@@ -144,7 +141,6 @@ namespace FeatureFinder.Utilities
 				if (double.IsInfinity(combinedScore) || double.IsNaN(combinedScore)) combinedScore = 0.0;
 
 				double driftTimeWeightedAverage = totalAbundanceTimesDriftTime / (double)totalAbundance;
-				double driftTimeUncorrectedWeightedAverage = totalAbundanceTimesDriftTimeUncorrected / (double)totalAbundance;
 
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.Append(index + "\t");
@@ -183,7 +179,6 @@ namespace FeatureFinder.Utilities
 				{
 					stringBuilder.Append(driftTimeWeightedAverage.ToString("0.00000") + "\t");
 				}
-				stringBuilder.Append(driftTimeUncorrectedWeightedAverage.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.IMSScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(lcimsmsFeature.LCScore.ToString("0.00000") + "\t");
 				stringBuilder.Append(averageFit.ToString("0.00000") + "\t");

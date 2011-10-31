@@ -374,35 +374,6 @@ namespace FeatureFinder.Control
 
 			return true;
 		}
-
-		/// <summary>
-		/// This method will alter the Drift Time values of the MS Features.
-		/// The drift time value will be calculated assuming that frame pressure is normal and not varying.
-		/// </summary>
-		/// <param name="uimfReader">The UIMF file DataReader object</param>
-		//private void FixDriftTimeValues(DataReader uimfReader)
-		//{
-		//    var groupByScanLCQuery = from msFeature in MSFeatureList
-		//                             group msFeature by msFeature.ScanLC into newGroup
-		//                             select newGroup;
-
-		//    foreach (IEnumerable<MSFeature> msFeatureGroup in groupByScanLCQuery)
-		//    {
-		//        int lcScan = ScanLCMap.Mapping[msFeatureGroup.First().ScanLC];
-
-		//        int frameIndex = uimfReader.get_FrameIndex(lcScan);
-
-
-		//        FrameParameters frameParameters = uimfReader.GetFrameParameters(frameIndex);
-		//        double averageTOFLength = frameParameters.AverageTOFLength;
-
-		//        foreach(MSFeature msFeature in msFeatureGroup)
-		//        {
-		//            double driftTime = ConformationDetection.ConvertIMSScanToDriftTime(msFeature.ScanIMS, averageTOFLength);
-		//            msFeature.DriftTimeUncorrected = (float)driftTime;
-		//        }
-		//    }
-		//}
 		#endregion
 	}
 }
