@@ -206,7 +206,7 @@ namespace FeatureFinder.Data
 			return msFeatureRep;
 		}
 
-		public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, int frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
+		public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, DataReader.FrameType frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
 		{
 			int scanLCMinimum = 0;
 			int scanLCMaximum = 0;
@@ -241,8 +241,8 @@ namespace FeatureFinder.Data
 
 
 			//[gord] added May 11 2011
-            int frameIndexMinimum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMinimum]);
-            int frameIndexMaximum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMaximum]);
+            int frameIndexMinimum = ScanLCMap.Mapping[scanLCMinimum];
+            int frameIndexMaximum = ScanLCMap.Mapping[scanLCMaximum];
             int[] scanValues = null;
             int[] intensityVals = null;
 

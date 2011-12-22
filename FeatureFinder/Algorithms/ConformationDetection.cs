@@ -21,48 +21,42 @@ namespace FeatureFinder.Algorithms
 		{
 			List<LCIMSMSFeature> newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
 
-			DataReader uimfReader = new UIMFLibrary.DataReader();
-			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+			using (DataReader uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
 			{
-				Logger.Log("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
-				throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
-			}
-			Logger.Log("UIMF file has been opened.");
+				Logger.Log("UIMF file has been opened.");
 
-			GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
+				GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
 
-			double binWidth = globalParameters.BinWidth;
+				double binWidth = globalParameters.BinWidth;
 
-			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
-			{
-				int scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
-				int frameIndex = uimfReader.get_FrameIndex(scanLC);
-
-				FrameParameters frameParameters = uimfReader.GetFrameParameters(frameIndex);
-
-				double calibrationSlope = frameParameters.CalibrationSlope;
-				double calibrationIntercept = frameParameters.CalibrationIntercept;
-				double averageTOFLength = frameParameters.AverageTOFLength;
-				double framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(frameIndex);
-				int frameType = frameParameters.FrameType;
-
-				List<XYPair> imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth, calibrationSlope, calibrationIntercept);
-
-				// Convert IMS Scan # to Drift Time values
-				foreach (XYPair xyPair in imsScanProfile)
+				foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 				{
-					double imsScan = xyPair.XValue;
-					//double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
-					//xyPair.XValue = driftTime;
+					int scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
+
+					FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
+
+					double calibrationSlope = frameParameters.CalibrationSlope;
+					double calibrationIntercept = frameParameters.CalibrationIntercept;
+					double averageTOFLength = frameParameters.AverageTOFLength;
+					double framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(scanLC);
+					DataReader.FrameType frameType = frameParameters.FrameType;
+
+					List<XYPair> imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth, calibrationSlope, calibrationIntercept);
+
+					// Convert IMS Scan # to Drift Time values
+					foreach (XYPair xyPair in imsScanProfile)
+					{
+						double imsScan = xyPair.XValue;
+						//double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
+						//xyPair.XValue = driftTime;
+					}
+
+					Peak driftProfilePeak = new Peak(imsScanProfile);
+
+					IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature, averageTOFLength, framePressure);
+					newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
 				}
-
-				Peak driftProfilePeak = new Peak(imsScanProfile);
-
-				IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature, averageTOFLength, framePressure);
-				newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
 			}
-
-			uimfReader.CloseUIMF();
 
 			return newLCIMSMSFeatureList;
 		}
@@ -379,12 +373,7 @@ namespace FeatureFinder.Algorithms
 
 		public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
 		{
-			DataReader uimfReader = new DataReader();
-			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
-			{
-				Logger.Log("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
-				throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
-			}
+			DataReader uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf"));
 
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
