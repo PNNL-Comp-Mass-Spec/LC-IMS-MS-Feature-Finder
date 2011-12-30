@@ -23,9 +23,9 @@ namespace FeatureFinder.Algorithms
 
 			using (DataReader uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
 			{
-				Logger.Log("UIMF file has been opened.");
+			Logger.Log("UIMF file has been opened.");
 
-				GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
+			GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
 
 				double binWidth = globalParameters.BinWidth;
 
@@ -41,22 +41,72 @@ namespace FeatureFinder.Algorithms
 					double framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(scanLC);
 					DataReader.FrameType frameType = frameParameters.FrameType;
 
-					List<XYPair> imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth, calibrationSlope, calibrationIntercept);
+                
+                //For saturated Features, will extract the imsScan profile from the MSFeature data (which contains the adjusted intensities)
+                //For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
+                //We need to do the normalization and scaling so the two approaches give comparable intensity outputs
+                
+                bool containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
+                List<XYPair> imsScanProfileFromMSFeatures = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
 
-					// Convert IMS Scan # to Drift Time values
-					foreach (XYPair xyPair in imsScanProfile)
-					{
-						double imsScan = xyPair.XValue;
-						//double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
-						//xyPair.XValue = driftTime;
-					}
+                ////TODO: gord -remove this!!
+                //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
 
-					Peak driftProfilePeak = new Peak(imsScanProfile);
+                //foreach (var xyPair in imsScanProfileFromMSFeatures)
+                //{
+                //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
+                //}
 
-					IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature, averageTOFLength, framePressure);
-					newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
+
+			    List<XYPair> imsScanProfile;
+                if (containsSaturatedFeatures)
+                {
+                    imsScanProfile = imsScanProfileFromMSFeatures;
+                }
+                else
+                {
+                    imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth, calibrationSlope, calibrationIntercept);
+                }
+
+                //now need to normalize and scale the intensity values based on the max intensity of the ims profile from MSFeature data
+                //this is needed so that intensities from both IMSScanProfile extraction algorithms are comparable
+
+			    var msfeature = lcimsmsFeature.GetMSFeatureRep();
+			    var maxIntensity = msfeature.Abundance;
+
+                var maxIntensityFromProfile = imsScanProfile.Select(p => p.YValue).Max();
+
+                foreach (XYPair xyPair in imsScanProfile)
+                {
+                    xyPair.YValue = xyPair.YValue / maxIntensityFromProfile *
+                                    maxIntensity;
+                }
+
+            
+
+                ////TODO: gord -remove this!!
+                //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
+
+                //foreach (var xyPair in imsScanProfile)
+                //{
+                //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
+                //}
+
+				// Convert IMS Scan # to Drift Time values
+				foreach (XYPair xyPair in imsScanProfile)
+				{
+					double imsScan = xyPair.XValue;
+					//double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
+					//xyPair.XValue = driftTime;
 				}
+
+				Peak driftProfilePeak = new Peak(imsScanProfile);
+
+				IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature, averageTOFLength, framePressure);
+				newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
 			}
+
+			uimfReader.CloseUIMF();
 
 			return newLCIMSMSFeatureList;
 		}
@@ -373,7 +423,12 @@ namespace FeatureFinder.Algorithms
 
 		public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
 		{
-			DataReader uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf"));
+			DataReader uimfReader = new DataReader();
+			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+			{
+				Logger.Log("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
+				throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
+			}
 
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{

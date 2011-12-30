@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
-using FeatureFinder.Data;
-using FeatureFinder.Algorithms;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using FeatureFinder.Algorithms;
+using FeatureFinder.Data;
 using FeatureFinder.Utilities;
 
 namespace FeatureFinder.Control
@@ -20,6 +20,10 @@ namespace FeatureFinder.Control
         #endregion
 
         #region Public Methods
+
+        public IEnumerable<LCIMSMSFeature> LCimsmsFeatures { get; set; }
+
+
         public void Execute()
         {
             {
@@ -204,6 +208,8 @@ namespace FeatureFinder.Control
 
                 Logger.Log("Writing output files...");
                 FeatureUtil.WriteLCIMSMSFeatureToFile(lcimsmsFeatureEnumerable);
+
+                LCimsmsFeatures = lcimsmsFeatureEnumerable;
             }
         }
 

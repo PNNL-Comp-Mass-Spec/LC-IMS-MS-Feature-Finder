@@ -27,6 +27,7 @@ namespace FeatureFinder.Data
 			MSFeatureList.AddRange(msFeatureEnumerable);
 		}
 
+        //TODO:  gord suggests 'CalculateAverageMonoisotopicMass' to avoid confusion
 		public double CalculateAverageMass()
 		{
 			return MSFeatureList.Average(msFeature => msFeature.MassMonoisotopic);

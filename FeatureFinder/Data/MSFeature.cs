@@ -103,6 +103,9 @@ namespace FeatureFinder.Data
 
 		public double Mz { get; set; }
 		public double MassMonoisotopic { get; set; }
+	    public double MassMostAbundantIsotope { get; set; }
+
+	
 
 		public bool IsSaturated { get; set; }
 	}
