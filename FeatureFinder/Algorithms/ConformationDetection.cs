@@ -48,15 +48,6 @@ namespace FeatureFinder.Algorithms
                     bool containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
                     List<XYPair> imsScanProfileFromMSFeatures = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
 
-                    ////TODO: gord -remove this!!
-                    //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
-
-                    //foreach (var xyPair in imsScanProfileFromMSFeatures)
-                    //{
-                    //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
-                    //}
-
-
                     List<XYPair> imsScanProfile;
                     if (containsSaturatedFeatures)
                     {
@@ -82,16 +73,6 @@ namespace FeatureFinder.Algorithms
                         xyPair.YValue = xyPair.YValue/maxIntensityFromProfile*
                                         maxIntensity;
                     }
-
-
-
-                    ////TODO: gord -remove this!!
-                    //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
-
-                    //foreach (var xyPair in imsScanProfile)
-                    //{
-                    //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
-                    //}
 
                     // Convert IMS Scan # to Drift Time values
                     foreach (XYPair xyPair in imsScanProfile)
