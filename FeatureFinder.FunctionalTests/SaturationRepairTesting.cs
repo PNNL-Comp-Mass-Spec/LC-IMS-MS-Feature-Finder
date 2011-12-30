@@ -169,7 +169,7 @@ namespace FeatureFinder.FunctionalTests
         public void processEntireIsosSaturationRepairedTest1()
         {
             string sourceIsosFile =
-                @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_saturationRepaired_2011_12_12_isos.csv";
+                @"D:\Data\UIMF\Sarc_Main_Study_Controls\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_2011_12_29_isos.csv";
 
             string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 

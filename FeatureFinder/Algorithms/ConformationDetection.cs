@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FeatureFinder.Control;
 using FeatureFinder.Data;
-using FeatureFinder.Utilities;
 using FeatureFinder.Data.Maps;
+using FeatureFinder.Utilities;
 using MathNet.Numerics.Interpolation;
 using UIMFLibrary;
-using System.IO;
-using FeatureFinder.Control;
 
 namespace FeatureFinder.Algorithms
 {
@@ -21,94 +20,98 @@ namespace FeatureFinder.Algorithms
 		{
 			List<LCIMSMSFeature> newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
 
-			using (DataReader uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
-			{
-			Logger.Log("UIMF file has been opened.");
+            using (DataReader uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+            {
+                Logger.Log("UIMF file has been opened.");
 
-			GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
+                GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
 
-				double binWidth = globalParameters.BinWidth;
+                double binWidth = globalParameters.BinWidth;
 
-				foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
-				{
-					int scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
-
-					FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
-
-					double calibrationSlope = frameParameters.CalibrationSlope;
-					double calibrationIntercept = frameParameters.CalibrationIntercept;
-					double averageTOFLength = frameParameters.AverageTOFLength;
-					double framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(scanLC);
-					DataReader.FrameType frameType = frameParameters.FrameType;
-
-                
-                //For saturated Features, will extract the imsScan profile from the MSFeature data (which contains the adjusted intensities)
-                //For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
-                //We need to do the normalization and scaling so the two approaches give comparable intensity outputs
-                
-                bool containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
-                List<XYPair> imsScanProfileFromMSFeatures = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
-
-                ////TODO: gord -remove this!!
-                //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
-
-                //foreach (var xyPair in imsScanProfileFromMSFeatures)
-                //{
-                //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
-                //}
-
-
-			    List<XYPair> imsScanProfile;
-                if (containsSaturatedFeatures)
+                foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
                 {
-                    imsScanProfile = imsScanProfileFromMSFeatures;
+                    int scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
+
+                    FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
+
+                    double calibrationSlope = frameParameters.CalibrationSlope;
+                    double calibrationIntercept = frameParameters.CalibrationIntercept;
+                    double averageTOFLength = frameParameters.AverageTOFLength;
+                    double framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(scanLC);
+                    DataReader.FrameType frameType = frameParameters.FrameType;
+
+
+                    //For saturated Features, will extract the imsScan profile from the MSFeature data (which contains the adjusted intensities)
+                    //For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
+                    //We need to do the normalization and scaling so the two approaches give comparable intensity outputs
+
+                    bool containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
+                    List<XYPair> imsScanProfileFromMSFeatures = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
+
+                    ////TODO: gord -remove this!!
+                    //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
+
+                    //foreach (var xyPair in imsScanProfileFromMSFeatures)
+                    //{
+                    //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
+                    //}
+
+
+                    List<XYPair> imsScanProfile;
+                    if (containsSaturatedFeatures)
+                    {
+                        imsScanProfile = imsScanProfileFromMSFeatures;
+                    }
+                    else
+                    {
+                        imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth,
+                                                                                     calibrationSlope,
+                                                                                     calibrationIntercept);
+                    }
+
+                    //now need to normalize and scale the intensity values based on the max intensity of the ims profile from MSFeature data
+                    //this is needed so that intensities from both IMSScanProfile extraction algorithms are comparable
+
+                    var msfeature = lcimsmsFeature.GetMSFeatureRep();
+                    var maxIntensity = msfeature.Abundance;
+
+                    var maxIntensityFromProfile = imsScanProfile.Select(p => p.YValue).Max();
+
+                    foreach (XYPair xyPair in imsScanProfile)
+                    {
+                        xyPair.YValue = xyPair.YValue/maxIntensityFromProfile*
+                                        maxIntensity;
+                    }
+
+
+
+                    ////TODO: gord -remove this!!
+                    //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
+
+                    //foreach (var xyPair in imsScanProfile)
+                    //{
+                    //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
+                    //}
+
+                    // Convert IMS Scan # to Drift Time values
+                    foreach (XYPair xyPair in imsScanProfile)
+                    {
+                        double imsScan = xyPair.XValue;
+                        //double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
+                        //xyPair.XValue = driftTime;
+                    }
+
+                    Peak driftProfilePeak = new Peak(imsScanProfile);
+
+                    IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak,
+                                                                                                   lcimsmsFeature,
+                                                                                                   averageTOFLength,
+                                                                                                   framePressure);
+                    newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
                 }
-                else
-                {
-                    imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromRawData(uimfReader, frameType, binWidth, calibrationSlope, calibrationIntercept);
-                }
 
-                //now need to normalize and scale the intensity values based on the max intensity of the ims profile from MSFeature data
-                //this is needed so that intensities from both IMSScanProfile extraction algorithms are comparable
-
-			    var msfeature = lcimsmsFeature.GetMSFeatureRep();
-			    var maxIntensity = msfeature.Abundance;
-
-                var maxIntensityFromProfile = imsScanProfile.Select(p => p.YValue).Max();
-
-                foreach (XYPair xyPair in imsScanProfile)
-                {
-                    xyPair.YValue = xyPair.YValue / maxIntensityFromProfile *
-                                    maxIntensity;
-                }
-
-            
-
-                ////TODO: gord -remove this!!
-                //Console.WriteLine("FeatureChargeState = " + lcimsmsFeature.Charge);
-
-                //foreach (var xyPair in imsScanProfile)
-                //{
-                //    Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
-                //}
-
-				// Convert IMS Scan # to Drift Time values
-				foreach (XYPair xyPair in imsScanProfile)
-				{
-					double imsScan = xyPair.XValue;
-					//double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
-					//xyPair.XValue = driftTime;
-				}
-
-				Peak driftProfilePeak = new Peak(imsScanProfile);
-
-				IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak, lcimsmsFeature, averageTOFLength, framePressure);
-				newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
-			}
-
-			uimfReader.CloseUIMF();
-
-			return newLCIMSMSFeatureList;
+            }
+		    return newLCIMSMSFeatureList;
 		}
 
 		public static IEnumerable<LCIMSMSFeature> FindDriftTimePeaks(Peak driftProfilePeak, LCIMSMSFeature lcimsmsFeature, double averageTOFLength, double framePressure)
@@ -423,13 +426,11 @@ namespace FeatureFinder.Algorithms
 
 		public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
 		{
-			DataReader uimfReader = new DataReader();
-			if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
-			{
-				Logger.Log("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
-				throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
-			}
+		    string expectedFilename = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
 
+
+			DataReader uimfReader = new DataReader(expectedFilename);
+			
 			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
 				Console.WriteLine("**************************************************************");
