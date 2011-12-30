@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FeatureFinder.Algorithms;
+using FeatureFinder.Data.Maps;
 using FeatureFinder.Utilities;
 using UIMFLibrary;
-using FeatureFinder.Data.Maps;
-using FeatureFinder.Algorithms;
 
 namespace FeatureFinder.Data
 {
@@ -53,6 +53,25 @@ namespace FeatureFinder.Data
 		{
 			return IMSMSFeatureList.Sum(imsmsFeature => imsmsFeature.MSFeatureList.Count);
 		}
+
+        public int GetSaturatedMemberCount()
+        {
+            int numSaturated = 0;
+            foreach (var imsmsFeature in IMSMSFeatureList)
+            {
+                foreach (var msFeature in imsmsFeature.MSFeatureList)
+                {
+                    if (msFeature.IsSaturated)
+                    {
+                        numSaturated++;
+                    }
+                }
+            }
+
+            return numSaturated;
+
+        }
+
 
 		public double CalculateAverageMass()
 		{
@@ -206,7 +225,47 @@ namespace FeatureFinder.Data
 			return msFeatureRep;
 		}
 
-		public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, DataReader.FrameType frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
+
+        public List<XYPair>  GetIMSScanProfileFromMSFeatures()
+        {
+            int scanLCMinimum = 0;
+            int scanLCMaximum = 0;
+            int scanIMSMinimum = 0;
+            int scanIMSMaximum = 0;
+
+            MSFeature msFeatureRep = null;
+            GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
+
+            List<XYPair> xyPairs = new List<XYPair>();
+
+            for (int imsScan = scanIMSMinimum; imsScan <= scanIMSMaximum; imsScan++)
+            {
+                int summedIntensityForIMSScan = 0;
+
+                foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
+                {
+                    summedIntensityForIMSScan +=
+                        imsmsFeature.MSFeatureList.Where(p => p.ScanIMS == imsScan).Select(p => p.IntensityUnSummed).Sum
+                            ();
+                }
+
+                var pair = new XYPair(imsScan,summedIntensityForIMSScan);
+
+                xyPairs.Add(pair);
+            }
+
+
+            xyPairs = ConformationDetection.PadXYPairsWithZeros(xyPairs, 5);
+
+            return xyPairs;
+
+
+
+
+        }
+
+
+		public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, int frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
 		{
 			int scanLCMinimum = 0;
 			int scanLCMaximum = 0;
@@ -215,25 +274,32 @@ namespace FeatureFinder.Data
 
 			MSFeature msFeatureRep = null;
 
+            //TODO: raw data profile needs to be based on the single most abundant isotope. Not a wide m/z range as it is done here
+
 			GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
 
 			double currentFWHM = msFeatureRep.Fwhm;
-			double currentMonoMZ = msFeatureRep.MassMonoisotopic / msFeatureRep.Charge + 1.00727649;
+		    double currentMonoMZ = msFeatureRep.MassMonoisotopic/msFeatureRep.Charge + 1.0072649;
+			double mzMostAbundantIsotope = msFeatureRep.MassMostAbundantIsotope / msFeatureRep.Charge + 1.00727649;
 
-			List<double> startMZ = new List<double>();
-			List<double> endMZ = new List<double>();
 
-			// Set ranges over which to look for the original data in the UIMF.
-			double charge = Convert.ToDouble(this.Charge);
-			for (int i = 0; i < 3; i++)
-			{
-				startMZ.Add(currentMonoMZ + (1.003 * i / charge) - (0.5 * currentFWHM));
-				endMZ.Add(currentMonoMZ + (1.003 * i / charge) + (0.5 * currentFWHM));
-			}
+            //[gord] the following commented-out code sets the m/z range too wide. Can be removed later
+            List<double> startMZ = new List<double>();
+            List<double> endMZ = new List<double>();
 
-			double minMZ = startMZ[0];
-			double maxMZ = endMZ[endMZ.Count - 1];
+            // Set ranges over which to look for the original data in the UIMF.
+            double charge = Convert.ToDouble(this.Charge);
+            for (int i = 0; i < 3; i++)
+            {
+                startMZ.Add(currentMonoMZ + (1.003 * i / charge) - (0.5 * currentFWHM));
+                endMZ.Add(currentMonoMZ + (1.003 * i / charge) + (0.5 * currentFWHM));
+            }
 
+            double minMZ = startMZ[0];
+            double maxMZ = endMZ[endMZ.Count - 1];
+
+            double midPointMZ = (maxMZ + minMZ) / 2;
+            double toleranceInMZ = midPointMZ - minMZ;
 
 
             //int globalStartBin = (int)((Math.Sqrt(minMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth);
@@ -241,16 +307,19 @@ namespace FeatureFinder.Data
 
 
 			//[gord] added May 11 2011
-            int frameIndexMinimum = ScanLCMap.Mapping[scanLCMinimum];
-            int frameIndexMaximum = ScanLCMap.Mapping[scanLCMaximum];
+            int frameIndexMinimum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMinimum]);
+            int frameIndexMaximum = uimfReader.get_FrameIndex(ScanLCMap.Mapping[scanLCMaximum]);
+
+           
             int[] scanValues = null;
             int[] intensityVals = null;
 
 
-            double midPointMZ = (maxMZ + minMZ) / 2;
-            double toleranceInMZ = midPointMZ - minMZ;
+		    //double toleranceInMZ = msFeatureRep.Fwhm;    // tolerance is a +/- value, so will take half the FWHM
 
-            uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, toleranceInMZ, ref scanValues, ref intensityVals);
+            //uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, toleranceInMZ, ref scanValues, ref intensityVals);
+
+            uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, mzMostAbundantIsotope, toleranceInMZ, ref scanValues, ref intensityVals);
 
 			List<XYPair> imsScanProfile = intensityVals.Select((t, i) => new XYPair(scanIMSMinimum + i, t)).ToList();
 
