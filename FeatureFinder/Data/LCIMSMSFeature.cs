@@ -73,10 +73,10 @@ namespace FeatureFinder.Data
         }
 
         /// <summary>
-        /// Calculates the representative monoisotopic mass for the LC-IMS-MSFeature. 
+        /// Calculates the average monoisotopic mass for the LC-IMS-MSFeature. 
         /// </summary>
         /// <returns></returns>
-		public double CalculateMonoIsotopicMass()
+		public double CalculateAverageMonoisotopicMass()
 		{
 			int totalMemberCount = 0;
 			double massTotal = 0.0;
@@ -84,7 +84,7 @@ namespace FeatureFinder.Data
 			foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
 			{
 				int memberCount = imsmsFeature.MSFeatureList.Count;
-				massTotal += imsmsFeature.CalculateMonoisotopicMass() * memberCount;
+				massTotal += imsmsFeature.CalculateAverageMonoisotopicMass() * memberCount;
 				totalMemberCount += memberCount;
 			}
 

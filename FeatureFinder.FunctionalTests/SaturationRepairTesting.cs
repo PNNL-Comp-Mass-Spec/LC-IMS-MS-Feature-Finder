@@ -200,7 +200,7 @@ namespace FeatureFinder.FunctionalTests
             StringBuilder sb = new StringBuilder();
             sb.Append("OrigIndex= \t" + testFeature1.OriginalIndex);
             sb.Append(Environment.NewLine);
-            sb.Append("monoMass = \t" + testFeature1.CalculateMonoIsotopicMass().ToString("0.0000"));
+            sb.Append("monoMass = \t" + testFeature1.CalculateAverageMonoisotopicMass().ToString("0.0000"));
             sb.Append(Environment.NewLine);
             sb.Append("maxAbundance = \t" + testFeature1.AbundanceMaxRaw);
             sb.Append(Environment.NewLine);

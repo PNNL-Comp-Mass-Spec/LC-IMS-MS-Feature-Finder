@@ -15,7 +15,7 @@ namespace FeatureFinder.Algorithms
 			float massToleranceBase = Settings.MassMonoisotopicConstraint;
 
 			var sortByMassQuery = from imsmsFeature in imsmsFeatureEnumerable
-								  orderby imsmsFeature.CalculateMonoisotopicMass()
+								  orderby imsmsFeature.CalculateAverageMonoisotopicMass()
 								  select imsmsFeature;
 
 			LCIMSMSFeature lcimsmsFeature = null;
@@ -23,7 +23,7 @@ namespace FeatureFinder.Algorithms
 
 			foreach (IMSMSFeature imsmsFeature in sortByMassQuery)
 			{
-				double mass = imsmsFeature.CalculateMonoisotopicMass();
+				double mass = imsmsFeature.CalculateAverageMonoisotopicMass();
 
 				double massTolerance = massToleranceBase * massReference / 1000000;
 				double massToleranceHigh = massReference + massTolerance;

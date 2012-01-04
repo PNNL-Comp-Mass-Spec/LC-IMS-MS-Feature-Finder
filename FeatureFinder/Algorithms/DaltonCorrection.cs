@@ -22,15 +22,15 @@ namespace FeatureFinder.Algorithms
 					continue;
 				}
 
-				double averageMass = lcimsmsFeature.CalculateMonoIsotopicMass();
+				double averageMass = lcimsmsFeature.CalculateAverageMonoisotopicMass();
 				double massTolerance = massToleranceBase * averageMass / 1000000.0;
 
 				double errorFlagPercentage = lcimsmsFeature.GetFlaggedPercentage();
 
 				var searchForDaErrorQuery = from otherLCIMSMSFeature in lcimsmsFeatureEnumerable
 											where 
-												Math.Abs(averageMass - otherLCIMSMSFeature.CalculateMonoIsotopicMass()) >= (1 - massTolerance) 
-												&& Math.Abs(averageMass - otherLCIMSMSFeature.CalculateMonoIsotopicMass()) <= (1 + massTolerance)
+												Math.Abs(averageMass - otherLCIMSMSFeature.CalculateAverageMonoisotopicMass()) >= (1 - massTolerance) 
+												&& Math.Abs(averageMass - otherLCIMSMSFeature.CalculateAverageMonoisotopicMass()) <= (1 + massTolerance)
 												&& otherLCIMSMSFeature.IMSMSFeatureList.Count > 0
 											orderby Math.Abs(errorFlagPercentage - otherLCIMSMSFeature.GetFlaggedPercentage()) descending
 											select otherLCIMSMSFeature;

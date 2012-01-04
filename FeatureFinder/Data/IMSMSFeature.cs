@@ -28,7 +28,7 @@ namespace FeatureFinder.Data
 		}
 
     
-		public double CalculateMonoisotopicMass()
+		public double CalculateAverageMonoisotopicMass()
 		{
 			return MSFeatureList.Average(msFeature => msFeature.MassMonoisotopic);
 		}
