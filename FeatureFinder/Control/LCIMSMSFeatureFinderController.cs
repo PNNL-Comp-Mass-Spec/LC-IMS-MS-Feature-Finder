@@ -27,6 +27,8 @@ namespace FeatureFinder.Control
         public void Execute()
         {
             {
+                Logger.Log("Total number of MS Features in _isos.csv file = " + m_isosReader.NumOfUnfilteredMSFeatures);
+                Logger.Log("Total number of MS Features we'll consider = " + m_isosReader.MSFeatureList.Count);
                 Logger.Log("Creating IMS-MS Features...");
 
                 List<MSFeature> filteredMSFeatureList = m_isosReader.MSFeatureList;

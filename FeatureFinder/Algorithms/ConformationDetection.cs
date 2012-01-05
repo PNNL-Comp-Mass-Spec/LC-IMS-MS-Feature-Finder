@@ -44,14 +44,12 @@ namespace FeatureFinder.Algorithms
                     //For saturated Features, will extract the imsScan profile from the MSFeature data (which contains the adjusted intensities)
                     //For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
                     //We need to do the normalization and scaling so the two approaches give comparable intensity outputs
-
                     bool containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
-                    List<XYPair> imsScanProfileFromMSFeatures = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
-
+ 
                     List<XYPair> imsScanProfile;
                     if (containsSaturatedFeatures)
                     {
-                        imsScanProfile = imsScanProfileFromMSFeatures;
+                        imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
                     }
                     else
                     {
@@ -60,14 +58,13 @@ namespace FeatureFinder.Algorithms
                                                                                      calibrationIntercept);
                     }
 
-                    //now need to normalize and scale the intensity values based on the max intensity of the ims profile from MSFeature data
-                    //this is needed so that intensities from both IMSScanProfile extraction algorithms are comparable
-
+                    
                     var msfeature = lcimsmsFeature.GetMSFeatureRep();
                     var maxIntensity = msfeature.Abundance;
-
                     var maxIntensityFromProfile = imsScanProfile.Select(p => p.YValue).Max();
 
+                    //normalize and scale the intensity values based on the max intensity of the ims profile from MSFeature data
+                    //this is needed so that intensities from both IMSScanProfile extraction algorithms are comparable
                     foreach (XYPair xyPair in imsScanProfile)
                     {
                         xyPair.YValue = xyPair.YValue/maxIntensityFromProfile*

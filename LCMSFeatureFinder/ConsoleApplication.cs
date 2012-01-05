@@ -78,11 +78,12 @@ namespace LCMSFeatureFinder
 			}
 
 			IsosReader isosReader = new IsosReader();
-			Logger.Log("Total number of MS Features in _isos.csv file = " + isosReader.NumOfUnfilteredMSFeatures);
-			Logger.Log("Total number of MS Features we'll consider = " + isosReader.MSFeatureList.Count);
+			
 
 			if (dataType == LC_DATA || Settings.IgnoreIMSDriftTime)
 			{
+                Logger.Log("Total number of MS Features in _isos.csv file = " + isosReader.NumOfUnfilteredMSFeatures);
+                Logger.Log("Total number of MS Features we'll consider = " + isosReader.MSFeatureList.Count);
 				Logger.Log("Processing LC-MS Data...");
 				Logger.Log("Currently not implemented. Exiting...");
 				//RunLCMSFeatureFinder(isosReader);
