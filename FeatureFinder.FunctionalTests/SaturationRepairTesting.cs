@@ -141,54 +141,54 @@ namespace FeatureFinder.FunctionalTests
 
 
 
-        [Test]
-        public void processEntireIsosTraditionalTest1()
-        {
-            string sourceIsosFile =
-                @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_DMSVersion_isos.csv";
+        //[Test]
+        //public void processEntireIsosTraditionalTest1()
+        //{
+        //    string sourceIsosFile =
+        //        @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_DMSVersion_isos.csv";
 
 
 
-            string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
+        //    string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 
-            File.Copy(sourceIsosFile, copiedIsosFileName, true);
-
-
-            string testfile =
-                @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
-
-            var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
-
-            var isosReader = new IsosReader();
-
-            var controller = new LCIMSMSFeatureFinderController(isosReader);
-            controller.Execute();
-        }
+        //    File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-        [Test]
-        public void processEntireIsosSaturationRepairedTest1()
-        {
-            string sourceIsosFile =
-                @"D:\Data\UIMF\Sarc_Main_Study_Controls\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_saturationFixed_all_2011_12_30_isos.csv";
+        //    string testfile =
+        //        @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
-            string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
+        //    var iniReader = new IniReader(testfile);
+        //    iniReader.CreateSettings();
 
-            File.Copy(sourceIsosFile, copiedIsosFileName, true);
+        //    var isosReader = new IsosReader();
+
+        //    var controller = new LCIMSMSFeatureFinderController(isosReader);
+        //    controller.Execute();
+        //}
 
 
-            string testfile =
-                @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
+        //[Test]
+        //public void processEntireIsosSaturationRepairedTest1()
+        //{
+        //    string sourceIsosFile =
+        //        @"D:\Data\UIMF\Sarc_Main_Study_Controls\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_saturationFixed_all_2011_12_30_isos.csv";
 
-            var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
+        //    string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 
-            var isosReader = new IsosReader();
+        //    File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
-            var controller = new LCIMSMSFeatureFinderController(isosReader);
-            controller.Execute();
-        }
+
+        //    string testfile =
+        //        @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
+
+        //    var iniReader = new IniReader(testfile);
+        //    iniReader.CreateSettings();
+
+        //    var isosReader = new IsosReader();
+
+        //    var controller = new LCIMSMSFeatureFinderController(isosReader);
+        //    controller.Execute();
+        //}
 
 
 
