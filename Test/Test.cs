@@ -17,5 +17,10 @@ namespace Test
 		{
 			Settings.PrintExampleSettings();
 		}
+
+		[Test]
+		public void RunFeatureFinder()
+		{
+		}
 	}
 }
