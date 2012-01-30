@@ -243,12 +243,12 @@ namespace FeatureFinder.Data
 
             for (int imsScan = scanIMSMinimum; imsScan <= scanIMSMaximum; imsScan++)
             {
-                int summedIntensityForIMSScan = 0;
+                float summedIntensityForIMSScan = 0;
 
                 foreach (IMSMSFeature imsmsFeature in IMSMSFeatureList)
                 {
                     summedIntensityForIMSScan +=
-                        imsmsFeature.MSFeatureList.Where(p => p.ScanIMS == imsScan).Select(p => p.IntensityUnSummed).Sum
+                        imsmsFeature.MSFeatureList.Where(p => p.ScanIMS == imsScan).Select(p =>(float)p.IntensityUnSummed).Sum       //note: need float due overflow exception from value exceeding int32
                             ();
                 }
 
