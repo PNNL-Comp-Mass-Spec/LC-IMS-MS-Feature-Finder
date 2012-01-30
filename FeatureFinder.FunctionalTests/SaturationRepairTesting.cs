@@ -141,56 +141,56 @@ namespace FeatureFinder.FunctionalTests
 
 
 
-        [Test]
-        public void processEntireIsosTraditionalTest1()
-        {
-            string sourceIsosFile =
-                @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_DMSVersion_isos.csv";
+        //[Test]
+        //public void processEntireIsosTraditionalTest1()
+        //{
+        //    string sourceIsosFile =
+        //        @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_DMSVersion_isos.csv";
 
-            sourceIsosFile =
-                @"C:\Users\d3x720\Documents\PNNL\My_DataAnalysis\2012\IMS_related\2012_01_27_Saturation_threshold_analysis\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_Sat90000_isos.csv";
+        //    sourceIsosFile =
+        //        @"C:\Users\d3x720\Documents\PNNL\My_DataAnalysis\2012\IMS_related\2012_01_27_Saturation_threshold_analysis\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_Sat90000_isos.csv";
 
-            sourceIsosFile =
-                @"C:\Users\d3x720\Documents\PNNL\My_DataAnalysis\2012\IMS_related\2012_01_27_Saturation_threshold_analysis\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_Original_isos.csv";
+        //    sourceIsosFile =
+        //        @"C:\Users\d3x720\Documents\PNNL\My_DataAnalysis\2012\IMS_related\2012_01_27_Saturation_threshold_analysis\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_Original_isos.csv";
 
-            //sourceIsosFile =
-            //    @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\temp\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_mass1064_repaired_isos.csv";
-
-
-
-            string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
-
-            File.Copy(sourceIsosFile, copiedIsosFileName, true);
+        //    //sourceIsosFile =
+        //    //    @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\temp\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_mass1064_repaired_isos.csv";
 
 
-            string testfile =
-                @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
-            var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
 
-            var isosReader = new IsosReader();
+        //    string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 
-            var controller = new LCIMSMSFeatureFinderController(isosReader);
-            controller.Execute();
+        //    File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
-            FileInfo fileInfo = new FileInfo(sourceIsosFile);
-            var directoryInfo = fileInfo.Directory;
+
+        //    string testfile =
+        //        @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
+        //    var iniReader = new IniReader(testfile);
+        //    iniReader.CreateSettings();
+
+        //    var isosReader = new IsosReader();
+
+        //    var controller = new LCIMSMSFeatureFinderController(isosReader);
+        //    controller.Execute();
+
+        //    FileInfo fileInfo = new FileInfo(sourceIsosFile);
+        //    var directoryInfo = fileInfo.Directory;
 
             
-            string sourceFeaturesFile = copiedIsosFileName.Replace("_isos.csv", "_LCMSFeatures.txt");
-            string sourceLogFile = copiedIsosFileName.Replace("_isos.csv", "_FeatureFinder_Log.txt");
+        //    string sourceFeaturesFile = copiedIsosFileName.Replace("_isos.csv", "_LCMSFeatures.txt");
+        //    string sourceLogFile = copiedIsosFileName.Replace("_isos.csv", "_FeatureFinder_Log.txt");
 
-            string copiedFeaturesFile = directoryInfo.FullName + "\\" +
-                                        fileInfo.Name.Replace("_isos.csv", "_LCMSFeatures.txt");
-            string copiedFeaturesLogFile = directoryInfo.FullName + "\\" +
-                                        fileInfo.Name.Replace("_isos.csv", "_FeatureFinder_Log.txt");
+        //    string copiedFeaturesFile = directoryInfo.FullName + "\\" +
+        //                                fileInfo.Name.Replace("_isos.csv", "_LCMSFeatures.txt");
+        //    string copiedFeaturesLogFile = directoryInfo.FullName + "\\" +
+        //                                fileInfo.Name.Replace("_isos.csv", "_FeatureFinder_Log.txt");
 
-            //copy the LCMSFeatures file back to my working folder
-            File.Copy(sourceFeaturesFile, copiedFeaturesFile);
-            File.Copy(sourceLogFile, copiedFeaturesLogFile);
+        //    //copy the LCMSFeatures file back to my working folder
+        //    File.Copy(sourceFeaturesFile, copiedFeaturesFile);
+        //    File.Copy(sourceLogFile, copiedFeaturesLogFile);
 
 
-        }
+        //}
 
 
         //[Test]
