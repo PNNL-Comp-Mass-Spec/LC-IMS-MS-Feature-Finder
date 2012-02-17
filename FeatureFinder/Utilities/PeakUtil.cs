@@ -34,14 +34,21 @@ namespace FeatureFinder.Utilities
 			return xyPairList;
 		}
 
-		public static double CalculatePeakFit(IInterpolation observedPeak, IInterpolation theoreticalPeak, double minimumXValue, double maximumXValue, double xValueOfMaximumYValue, double minYValueFactor)
+		public static double CalculatePeakFit(Peak observedPeak, Peak theoreticalPeak, double minYValueFactor)
 		{
 			List<double> xValues = new List<double>();
 			List<double> yValues1 = new List<double>();
 			List<double> yValues2 = new List<double>();
 
-			double maxObservedPeakValue = observedPeak.Interpolate(xValueOfMaximumYValue);
-			double maxTheoreticalPeakValue = theoreticalPeak.Interpolate(xValueOfMaximumYValue);
+			double minimumXValue = 0;
+			double maximumXValue = 0;
+			observedPeak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
+
+			IInterpolation observedInterpolation = PeakUtil.GetLinearInterpolationMethod(observedPeak);
+			IInterpolation theoreticalInterpolation = PeakUtil.GetLinearInterpolationMethod(theoreticalPeak);
+
+			double maxObservedPeakValue = observedInterpolation.Interpolate(observedPeak.GetQuadraticFit());
+			double maxTheoreticalPeakValue = theoreticalInterpolation.Interpolate(theoreticalPeak.GetQuadraticFit());
 
 			double totalWidth = maximumXValue - minimumXValue;
 			double pointWidth = totalWidth / 1000.0;
@@ -53,11 +60,11 @@ namespace FeatureFinder.Utilities
 
 			for (double i = 0; i < totalWidth; i += pointWidth)
 			{
-				double observedPeakValue = observedPeak.Interpolate(minimumXValue + i);
+				double observedPeakValue = observedInterpolation.Interpolate(minimumXValue + i);
 
 				if (observedPeakValue < minValueToTest) continue;
 				double normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
-				double normalizedTheoreticalPeakValue = theoreticalPeak.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
+				double normalizedTheoreticalPeakValue = theoreticalInterpolation.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
 
 				xValues.Add(minimumXValue + i);
 				yValues1.Add(normalizedObservedPeakValue);

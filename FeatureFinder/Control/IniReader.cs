@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using System.IO;
+using UIMFLibrary;
 
 namespace FeatureFinder.Control
 {
@@ -141,7 +142,7 @@ namespace FeatureFinder.Control
 			value = IniReadValue("DataFilters", "FrameType");
 			if (!value.Equals(String.Empty))
 			{
-				Settings.FrameTypeFilter = (Settings.FrameType)short.Parse(value);
+				Settings.FrameTypeFilter = (DataReader.FrameType)short.Parse(value);
 			}
 
 			/*

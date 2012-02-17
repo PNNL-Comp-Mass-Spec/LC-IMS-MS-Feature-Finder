@@ -1,4 +1,5 @@
 ﻿using System;
+using UIMFLibrary;
 
 namespace FeatureFinder.Data
 {
@@ -105,8 +106,8 @@ namespace FeatureFinder.Data
 		public double MassMonoisotopic { get; set; }
 	    public double MassMostAbundantIsotope { get; set; }
 
-	
-
 		public bool IsSaturated { get; set; }
+
+		public DataReader.FrameType FrameType { get; set; }
 	}
 }

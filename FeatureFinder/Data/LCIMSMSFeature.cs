@@ -258,7 +258,7 @@ namespace FeatureFinder.Data
             }
 
 
-            xyPairs = ConformationDetection.PadXYPairsWithZeros(xyPairs, 5);
+            ConformationDetection.PadXYPairsWithZeros(ref xyPairs, 5);
 
             return xyPairs;
 
@@ -345,7 +345,7 @@ namespace FeatureFinder.Data
             //}
 
 			// Add "0" intensity values to the left and right of the Peak
-			imsScanProfile = ConformationDetection.PadXYPairsWithZeros(imsScanProfile, 5);
+			ConformationDetection.PadXYPairsWithZeros(ref imsScanProfile, 5);
 
 			return imsScanProfile;
 		}

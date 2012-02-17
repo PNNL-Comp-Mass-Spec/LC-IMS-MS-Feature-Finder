@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UIMFLibrary;
 
 namespace FeatureFinder.Control
 {
@@ -41,7 +42,7 @@ namespace FeatureFinder.Control
 		public static bool FilterUsingHardCodedFilters { get; set; }
 		public static bool FilterFlaggedData { get; set; }
 
-		public static FrameType FrameTypeFilter { get; set; }
+		public static DataReader.FrameType FrameTypeFilter { get; set; }
 		public static List<DeconToolsFilter> DeconToolsFilterList { get; set; }
 
 		static Settings()
@@ -52,7 +53,7 @@ namespace FeatureFinder.Control
 			OutputDirectory = "";
 			FitMax = 0.15f;
 			InterferenceScoreMax = 0.3f;
-			IntensityMin = 2500;
+			IntensityMin = 500;
 			ScanIMSMin = 0;
 			ScanIMSMax = int.MaxValue;
 			ScanLCMin = 0;
@@ -67,13 +68,13 @@ namespace FeatureFinder.Control
 			LCGapSizeMax = 5;
 			MinimumDifferenceInMedianPpmMassToSplit = 4;
 			Split = true;
-			IMSDaCorrectionMax = 1;
-			SmoothingStDev = 1.5f;
+			IMSDaCorrectionMax = 0;
+			SmoothingStDev = 2f;
 			UMCFitScoreMinimum = 0f;
 			UseConformationDetection = true;
 			IgnoreIMSDriftTime = false;
 			FilterIsosToSinglePoint = true;
-			FrameTypeFilter = FrameType.NoFilter;
+			FrameTypeFilter = DataReader.FrameType.Calibration;
 			FilterUsingHardCodedFilters = false;
 			FilterFlaggedData = false;
 		}

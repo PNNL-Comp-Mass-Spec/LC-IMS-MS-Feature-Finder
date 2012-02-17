@@ -154,7 +154,7 @@ namespace FeatureFinder.Algorithms
 						// End of Peak
 						if (!movingUp && xyPairList.Count > 0)
 						{
-							xyPairList = PadXYPairsWithZeros(xyPairList, 2);
+							PadXYPairsWithZeros(ref xyPairList, 2);
 							//xyPairList = PadXYPairsWithZeros(xyPairList, imsScanMinimum, i - DRIFT_TIME_SLICE_WIDTH, 1);
 							Peak peak = new Peak(xyPairList);
 
@@ -188,7 +188,7 @@ namespace FeatureFinder.Algorithms
 			// When you get to the end, end the last Peak, but only if it has a non-zero value
 			if (xyPairList.Any(xyPair => xyPair.YValue > minimumIntensityToConsider))
 			{
-				xyPairList = PadXYPairsWithZeros(xyPairList, 2);
+				PadXYPairsWithZeros(ref xyPairList, 2);
 				//xyPairList = PadXYPairsWithZeros(xyPairList, imsScanMinimum, globalIMSScanMaximum, 1);
 				Peak lastPeak = new Peak(xyPairList);
 
@@ -217,13 +217,12 @@ namespace FeatureFinder.Algorithms
 				const int numPoints = 100;
 
 				List<XYPair> normalDistributionXYPairList = PeakUtil.CreateTheoreticalGaussianPeak(repIMSScan, theoreticalFWHM, numPoints);
-				normalDistributionXYPairList = PadXYPairsWithZeros(normalDistributionXYPairList, 5);
+				PadXYPairsWithZeros(ref normalDistributionXYPairList, 5);
 				Peak normalDistributionPeak = new Peak(normalDistributionXYPairList);
 
 				IInterpolation peakInterpolation = PeakUtil.GetLinearInterpolationMethod(peak);
-				IInterpolation normalDistribution = PeakUtil.GetLinearInterpolationMethod(normalDistributionPeak);
 
-				double fitScore = PeakUtil.CalculatePeakFit(peakInterpolation, normalDistribution, minimumXValue, maximumXValue, repIMSScan, 0);
+				double fitScore = PeakUtil.CalculatePeakFit(peak, normalDistributionPeak, 0);
 
 				// Create a new LC-IMS-MS Feature
 				LCIMSMSFeature newLCIMSMSFeature = new LCIMSMSFeature(lcimsmsFeature.Charge)
@@ -319,7 +318,7 @@ namespace FeatureFinder.Algorithms
 			return newLCIMSMSFeatureList;
 		}
 
-		public static List<XYPair> PadXYPairsWithZeros(List<XYPair> driftProfileXYPairList, double globalDriftTimeMinimum, double globalDriftTimeMaximum, int numZeros)
+		public static void PadXYPairsWithZeros(ref List<XYPair> driftProfileXYPairList, double globalDriftTimeMinimum, double globalDriftTimeMaximum, int numZeros)
 		{
 			double lowDriftTime = globalDriftTimeMinimum - (DRIFT_TIME_SLICE_WIDTH / 1000);
 			double highDriftTime = globalDriftTimeMaximum + (DRIFT_TIME_SLICE_WIDTH / 1000);
@@ -338,14 +337,12 @@ namespace FeatureFinder.Algorithms
 				lowXYPair = new XYPair(lowDriftTime, 0);
 				highXYPair = new XYPair(highDriftTime, 0);
 
-				driftProfileXYPairList.Add(lowXYPair);
-				driftProfileXYPairList.Add(highXYPair);
+				driftProfileXYPairList.Insert(0, lowXYPair);
+				driftProfileXYPairList.Insert(driftProfileXYPairList.Count, highXYPair);
 			}
-
-			return driftProfileXYPairList;
 		}
 
-		public static List<XYPair> PadXYPairsWithZeros(List<XYPair> driftProfileXYPairList, int numZeros)
+		public static void PadXYPairsWithZeros(ref List<XYPair> driftProfileXYPairList, int numZeros)
 		{
 			var sortByXValue = from xyPair in driftProfileXYPairList
 							   orderby xyPair.XValue ascending
@@ -362,11 +359,9 @@ namespace FeatureFinder.Algorithms
 				XYPair lowXYPair = new XYPair(lowDriftTime, 0);
 				XYPair highXYPair = new XYPair(highDriftTime, 0);
 
-				driftProfileXYPairList.Add(lowXYPair);
-				driftProfileXYPairList.Add(highXYPair);
+				driftProfileXYPairList.Insert(0, lowXYPair);
+				driftProfileXYPairList.Insert(driftProfileXYPairList.Count, highXYPair);
 			}
-
-			return sortByXValue.ToList();
 		}
 
 		private static double GetResolvingPower(int chargeState)

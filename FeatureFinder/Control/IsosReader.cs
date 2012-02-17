@@ -6,6 +6,7 @@ using FeatureFinder.Data;
 using FeatureFinder.Data.Maps;
 //using UIMFLibrary;
 using FeatureFinder.Utilities;
+using UIMFLibrary;
 
 namespace FeatureFinder.Control
 {
@@ -13,7 +14,6 @@ namespace FeatureFinder.Control
 	{
 		private StreamReader m_isosFileReader;
 		private TextWriter m_isosFileWriter;
-		private Dictionary<int, Settings.FrameType> m_lcScanToFrameTypeMap;
 
 		#region Constructors
 		/// <summary>
@@ -25,7 +25,7 @@ namespace FeatureFinder.Control
 
 			m_isosFileReader = new StreamReader(Settings.InputDirectory + Settings.InputFileName);
 			m_isosFileWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Filtered_isos.csv");
-			m_lcScanToFrameTypeMap = CreateLCScanToFrameTypeMapping(baseFileName);
+			CreateLCScanToFrameTypeMapping(baseFileName);
 			ColumnMap = CreateColumnMapping();
 			MSFeatureList = SaveDataToMSFeatureList();
 
@@ -67,9 +67,8 @@ namespace FeatureFinder.Control
 		#endregion
 
 		#region Private Methods
-		private Dictionary<int, Settings.FrameType> CreateLCScanToFrameTypeMapping(String baseFileName)
+		private void CreateLCScanToFrameTypeMapping(String baseFileName)
 		{
-			Dictionary<int, Settings.FrameType> lcScanToFrameTypeMap = new Dictionary<int, Settings.FrameType>();
 			StreamReader scansFileReader = null;
 
 			try
@@ -79,7 +78,7 @@ namespace FeatureFinder.Control
 
 				if (firstLine == null)
 				{
-					return null;
+					return;
 				}
 
 				String[] columnTitles = firstLine.Split('\t', ',', '\n');
@@ -103,7 +102,7 @@ namespace FeatureFinder.Control
 				// If the frame Number or Frame Type column was not found, return an empty dictionary
 				if (frameTypeColumn == -1 || frameNumColumn == -1)
 				{
-					return new Dictionary<int, Settings.FrameType>();
+					return;
 				}
 
 				// Add each Frame Number and its corresponding Frame Type to the Map
@@ -113,21 +112,19 @@ namespace FeatureFinder.Control
 					String[] columns = line.Split(',', '\t', '\n');
 
 					int frameNum = int.Parse(columns[frameNumColumn]);
-					Settings.FrameType frameType = (Settings.FrameType)short.Parse(columns[frameTypeColumn]);
+					DataReader.FrameType frameType = (DataReader.FrameType)short.Parse(columns[frameTypeColumn]);
 
-					if (!lcScanToFrameTypeMap.ContainsKey(frameNum))
+					if (!ScanLCToFrameTypeMap.Mapping.ContainsKey(frameNum))
 					{
-						lcScanToFrameTypeMap.Add(frameNum, frameType);
+						ScanLCToFrameTypeMap.Mapping.Add(frameNum, frameType);
 					}
 				}
 			}
 			catch (FileNotFoundException)
 			{
 				// If the Scans file is not found, return an empty dictionary
-				return new Dictionary<int, Settings.FrameType>();
+				return;
 			}
-
-			return lcScanToFrameTypeMap;
 		}
 
 		/// <summary>
@@ -260,13 +257,12 @@ namespace FeatureFinder.Control
 					{
 						int frame = Int32.Parse(columns[ColumnMap["MSFeature.Frame"]]);
 
-						Settings.FrameType frameType;
-						m_lcScanToFrameTypeMap.TryGetValue(frame, out frameType);
+						DataReader.FrameType frameType;
+						ScanLCToFrameTypeMap.Mapping.TryGetValue(frame, out frameType);
 
 						// Ignore this MS Feature if it belongsm to a Frame Type that is not correct
-						if (Settings.FrameTypeFilter != Settings.FrameType.NoFilter && frameType != Settings.FrameTypeFilter)
+						if (Settings.FrameTypeFilter != DataReader.FrameType.Calibration && frameType != Settings.FrameTypeFilter)
 						{
-							NumOfUnfilteredMSFeatures++;
 							continue;
 						}
 
