@@ -10,5 +10,11 @@
 			this.XValue = xValue;
 			this.YValue = yValue;
 		}
+
+
+        public override string ToString()
+        {
+            return XValue + "; " + YValue;
+        }
 	}
 }

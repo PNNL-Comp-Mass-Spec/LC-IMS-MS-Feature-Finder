@@ -45,11 +45,18 @@ namespace FeatureFinder.Algorithms
                     //For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
                     //We need to do the normalization and scaling so the two approaches give comparable intensity outputs
                     bool containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
+
+                    var msfeature = lcimsmsFeature.GetMSFeatureRep();
+                    var maxIntensity = msfeature.Abundance;
+
+                    //Some features are barely saturated. We want to go to the raw data for those. (We miss these if we don't!)
+                    bool isAboveIntensityThreshold = msfeature.IntensityUnSummed > 25000;     //note that Unsummed MS is considered saturated at 50000;
  
                     List<XYPair> imsScanProfile;
-                    if (containsSaturatedFeatures)
+                    if (containsSaturatedFeatures && isAboveIntensityThreshold)
                     {
                         imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
+                        
                     }
                     else
                     {
@@ -58,28 +65,33 @@ namespace FeatureFinder.Algorithms
                                                                                      calibrationIntercept);
                     }
 
-                    
-                    var msfeature = lcimsmsFeature.GetMSFeatureRep();
-                    var maxIntensity = msfeature.Abundance;
                     var maxIntensityFromProfile = imsScanProfile.Select(p => p.YValue).Max();
-
+                    
                     //normalize and scale the intensity values based on the max intensity of the ims profile from MSFeature data
                     //this is needed so that intensities from both IMSScanProfile extraction algorithms are comparable
                     foreach (XYPair xyPair in imsScanProfile)
                     {
+                        //double uncorrectedYValue = xyPair.YValue;
+
                         xyPair.YValue = xyPair.YValue/maxIntensityFromProfile*
                                         maxIntensity;
+
+                        //Console.WriteLine(xyPair.XValue + "\t" + uncorrectedYValue + "\t" + xyPair.YValue);
                     }
 
-                    // Convert IMS Scan # to Drift Time values
-                    foreach (XYPair xyPair in imsScanProfile)
-                    {
-                        double imsScan = xyPair.XValue;
-                        //double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
-                        //xyPair.XValue = driftTime;
-                    }
+
+                    //TODO: delete this commented out code if no longer used
+                    //// Convert IMS Scan # to Drift Time values
+                    //foreach (XYPair xyPair in imsScanProfile)
+                    //{
+                    //    double imsScan = xyPair.XValue;
+                    //    //double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
+                    //    //xyPair.XValue = driftTime;
+                    //}
 
                     Peak driftProfilePeak = new Peak(imsScanProfile);
+
+                    //DisplayPeakXYData(driftProfilePeak);
 
                     IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak,
                                                                                                    lcimsmsFeature,
@@ -137,7 +149,9 @@ namespace FeatureFinder.Algorithms
 			lcimsmsFeature.GetMinAndMaxScanLC(out minScanLC, out maxScanLC);
 
 			double minimumIntensityToConsider = smoothedDriftProfilePeak.GetMaximumYValue() * 0.05;
-			
+
+		    //DisplayPeakXYData(smoothedDriftProfilePeak);
+
 			//Console.WriteLine("Global IMS Scan Min = " + globalIMSScanMinimum + "\tGlobal IMS Scan Max = " + globalIMSScanMaximum);
 
 			for (double i = globalIMSScanMinimum; i <= globalIMSScanMaximum; i += 1)
@@ -318,7 +332,16 @@ namespace FeatureFinder.Algorithms
 			return newLCIMSMSFeatureList;
 		}
 
-		public static void PadXYPairsWithZeros(ref List<XYPair> driftProfileXYPairList, double globalDriftTimeMinimum, double globalDriftTimeMaximum, int numZeros)
+	    private static void DisplayPeakXYData(Peak smoothedDriftProfilePeak)
+	    {
+	        foreach (var xypair in smoothedDriftProfilePeak.XYPairList)
+	        {
+	            Console.WriteLine(xypair.XValue + "\t" + xypair.YValue);
+
+	        }
+	    }
+
+	    public static void PadXYPairsWithZeros(ref List<XYPair> driftProfileXYPairList, double globalDriftTimeMinimum, double globalDriftTimeMaximum, int numZeros)
 		{
 			double lowDriftTime = globalDriftTimeMinimum - (DRIFT_TIME_SLICE_WIDTH / 1000);
 			double highDriftTime = globalDriftTimeMaximum + (DRIFT_TIME_SLICE_WIDTH / 1000);

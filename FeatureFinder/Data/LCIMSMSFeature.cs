@@ -277,74 +277,49 @@ namespace FeatureFinder.Data
 
 			MSFeature msFeatureRep = null;
 
-            //TODO: raw data profile needs to be based on the single most abundant isotope. Not a wide m/z range as it is done here
-
-			GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
+            GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
 
 			double currentFWHM = msFeatureRep.Fwhm;
 		    double currentMonoMZ = msFeatureRep.MassMonoisotopic/msFeatureRep.Charge + 1.0072649;
 			double mzMostAbundantIsotope = msFeatureRep.MassMostAbundantIsotope / msFeatureRep.Charge + 1.00727649;
 
 
-            //[gord] the following commented-out code sets the m/z range too wide. Can be removed later
-            List<double> startMZ = new List<double>();
-            List<double> endMZ = new List<double>();
+                    ////[gord] the following commented-out code sets the m/z range too wide. Can be removed later
+                    //List<double> startMZ = new List<double>();
+                    //List<double> endMZ = new List<double>();
 
-            // Set ranges over which to look for the original data in the UIMF.
-            double charge = Convert.ToDouble(this.Charge);
-            for (int i = 0; i < 3; i++)
-            {
-                startMZ.Add(currentMonoMZ + (1.003 * i / charge) - (0.5 * currentFWHM));
-                endMZ.Add(currentMonoMZ + (1.003 * i / charge) + (0.5 * currentFWHM));
-            }
+                    //// Set ranges over which to look for the original data in the UIMF.
+                    //double charge = Convert.ToDouble(this.Charge);
+                    //for (int i = 0; i < 3; i++)
+                    //{
+                    //    startMZ.Add(currentMonoMZ + (1.003 * i / charge) - (0.5 * currentFWHM));
+                    //    endMZ.Add(currentMonoMZ + (1.003 * i / charge) + (0.5 * currentFWHM));
+                    //}
 
-            double minMZ = startMZ[0];
-            double maxMZ = endMZ[endMZ.Count - 1];
+                    //double minMZ = startMZ[0];
+                    //double maxMZ = endMZ[endMZ.Count - 1];
 
-            double midPointMZ = (maxMZ + minMZ) / 2;
-            double toleranceInMZ = midPointMZ - minMZ;
-
-
-            //int globalStartBin = (int)((Math.Sqrt(minMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth);
-            //int globalEndBin = (int)Math.Ceiling(((Math.Sqrt(maxMZ) / calibrationSlope + calibrationIntercept) * 1000 / binWidth));
-
-
-			//[gord] added May 11 2011
-            int frameIndexMinimum = ScanLCMap.Mapping[scanLCMinimum];
-		    int frameIndexMaximum = ScanLCMap.Mapping[scanLCMaximum];
+                    //double midPointMZ = (maxMZ + minMZ) / 2;
+                    //double wideToleranceInMZ = midPointMZ - minMZ;
+            
+            int frameMinimum = ScanLCMap.Mapping[scanLCMinimum];
+		    int frameMaximum = ScanLCMap.Mapping[scanLCMaximum];
 
            
             int[] scanValues = null;
             int[] intensityVals = null;
 
+            double sigma = msFeatureRep.Fwhm / 2.35;
+		    double toleranceInMZ = 2 * sigma ;    //  this is a +/- value;  so    4* sigma = 95% of a normal distribution
 
-		    //double toleranceInMZ = msFeatureRep.Fwhm;    // tolerance is a +/- value, so will take half the FWHM
+            //Before: a wide m/z was used when generating the drift time profile. 
+            //uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, wideToleranceInMZ, ref scanValues, ref intensityVals);
 
-            //uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, toleranceInMZ, ref scanValues, ref intensityVals);
-
-            uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, mzMostAbundantIsotope, toleranceInMZ, ref scanValues, ref intensityVals);
+            //now:  a narrow m/z range is used when generating the drift time profile
+            uimfReader.GetDriftTimeProfile(frameMinimum, frameMaximum, frameType, scanIMSMinimum, scanIMSMaximum, mzMostAbundantIsotope, toleranceInMZ, ref scanValues, ref intensityVals);
 
 			List<XYPair> imsScanProfile = intensityVals.Select((t, i) => new XYPair(scanIMSMinimum + i, t)).ToList();
 
-
-			//int[][] intensityValues = uimfReader.GetIntensityBlock(ScanLCMap.Mapping[scanLCMinimum], ScanLCMap.Mapping[scanLCMaximum], frameType, scanIMSMinimum, scanIMSMaximum, globalStartBin, globalEndBin);
-
-
-            //for (int i = 0; i < intensityValues.Length; i++)
-            //{
-            //    int[] intensityArray = intensityValues[i];
-            //    int intensitySum = 0;
-
-            //    foreach (int intensity in intensityArray)
-            //    {
-            //        intensitySum += intensity;
-            //    }
-
-            //    XYPair xyPair = new XYPair(scanIMSMinimum + i, intensitySum);
-            //    imsScanProfile.Add(xyPair);
-            //}
-
-			// Add "0" intensity values to the left and right of the Peak
 			ConformationDetection.PadXYPairsWithZeros(ref imsScanProfile, 5);
 
 			return imsScanProfile;
