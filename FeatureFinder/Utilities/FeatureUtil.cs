@@ -370,7 +370,7 @@ namespace FeatureFinder.Utilities
 								   select imsmsFeature;
 
 				LCIMSMSFeature newLCIMSMSFeature = null;
-				int referenceScanLC = -99;
+				int referenceScanLC = int.MinValue;
 
 				foreach (IMSMSFeature imsmsFeature in sortByScanLC)
 				{

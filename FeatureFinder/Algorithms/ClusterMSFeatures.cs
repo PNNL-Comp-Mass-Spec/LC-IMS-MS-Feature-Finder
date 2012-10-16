@@ -19,7 +19,7 @@ namespace FeatureFinder.Algorithms
 								  select msFeature;
 
 			IMSMSFeature imsmsFeature = null;
-			double massReference = -99;
+			double massReference = double.MinValue;
 
 			foreach (MSFeature msFeature in sortByMassQuery)
 			{
@@ -44,6 +44,35 @@ namespace FeatureFinder.Algorithms
 			}
 
 			return imsmsFeatureList;
+		}
+
+		public static IEnumerable<IMSMSFeature> SplitByIMSScan(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable, int maxGap)
+		{
+			List<IMSMSFeature> newIMSMSFeatureList = new List<IMSMSFeature>();
+			foreach (IMSMSFeature imsmsFeature in imsmsFeatureEnumerable)
+			{
+				IEnumerable<MSFeature> msFeatureList = imsmsFeature.MSFeatureList.OrderBy(x => x.ScanIMS);
+				IMSMSFeature newIMSMSFeature = null;
+				int scanIMSReference = -99;
+
+				foreach (var msFeature in msFeatureList)
+				{
+					if (msFeature.ScanIMS - scanIMSReference > maxGap)
+					{
+						newIMSMSFeature = new IMSMSFeature(imsmsFeature.ScanLC, imsmsFeature.Charge);
+						newIMSMSFeature.AddMSFeature(msFeature);
+						newIMSMSFeatureList.Add(newIMSMSFeature);
+					}
+					else
+					{
+						newIMSMSFeature.AddMSFeature(msFeature);
+					}
+
+					scanIMSReference = msFeature.ScanIMS;
+				}
+			}
+
+			return newIMSMSFeatureList;
 		}
 	}
 }
