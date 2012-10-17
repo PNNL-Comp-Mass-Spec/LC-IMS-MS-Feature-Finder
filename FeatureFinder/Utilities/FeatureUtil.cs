@@ -376,8 +376,6 @@ namespace FeatureFinder.Utilities
 				{
 					int scanLC = imsmsFeature.ScanLC;
 
-					Console.WriteLine(scanLC - referenceScanLC + " > " + Settings.LCGapSizeMax);
-
 					if (scanLC - referenceScanLC > Settings.LCGapSizeMax)
 					{
 						newLCIMSMSFeature = new LCIMSMSFeature(imsmsFeature.Charge);
@@ -388,7 +386,6 @@ namespace FeatureFinder.Utilities
 					}
 					else
 					{
-						Console.WriteLine("Scan LC = " + scanLC + "\tReference LC = " + referenceScanLC);
 						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
 					}
 
