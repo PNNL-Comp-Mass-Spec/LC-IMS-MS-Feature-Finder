@@ -53,7 +53,7 @@ namespace FeatureFinder.Algorithms
 			{
 				IEnumerable<MSFeature> msFeatureList = imsmsFeature.MSFeatureList.OrderBy(x => x.ScanIMS);
 				IMSMSFeature newIMSMSFeature = null;
-				int scanIMSReference = -99;
+				int scanIMSReference = -99999;
 
 				foreach (var msFeature in msFeatureList)
 				{

@@ -370,11 +370,13 @@ namespace FeatureFinder.Utilities
 								   select imsmsFeature;
 
 				LCIMSMSFeature newLCIMSMSFeature = null;
-				int referenceScanLC = int.MinValue;
+				int referenceScanLC = -99999;
 
 				foreach (IMSMSFeature imsmsFeature in sortByScanLC)
 				{
 					int scanLC = imsmsFeature.ScanLC;
+
+					Console.WriteLine(scanLC - referenceScanLC + " > " + Settings.LCGapSizeMax);
 
 					if (scanLC - referenceScanLC > Settings.LCGapSizeMax)
 					{
@@ -386,7 +388,7 @@ namespace FeatureFinder.Utilities
 					}
 					else
 					{
-						//Console.WriteLine("Scan LC = " + scanLC + "\tReference LC = " + referenceScanLC);
+						Console.WriteLine("Scan LC = " + scanLC + "\tReference LC = " + referenceScanLC);
 						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
 					}
 
