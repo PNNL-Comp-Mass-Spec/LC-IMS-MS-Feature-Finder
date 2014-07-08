@@ -27,6 +27,9 @@ namespace FeatureFinder.Algorithms
                 GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
 
                 double binWidth = globalParameters.BinWidth;
+	            int featureCount = lcimsmsFeatureEnumerable.Count();
+	            int featuresProcessed = 0;
+	            DateTime lastProgressUpdate = DateTime.UtcNow;
 
                 foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
                 {
@@ -80,15 +83,6 @@ namespace FeatureFinder.Algorithms
                     }
 
 
-                    //TODO: delete this commented out code if no longer used
-                    //// Convert IMS Scan # to Drift Time values
-                    //foreach (XYPair xyPair in imsScanProfile)
-                    //{
-                    //    double imsScan = xyPair.XValue;
-                    //    //double driftTime = ConvertIMSScanToDriftTime((int)imsScan, averageTOFLength);
-                    //    //xyPair.XValue = driftTime;
-                    //}
-
                     Peak driftProfilePeak = new Peak(imsScanProfile);
 
                     //DisplayPeakXYData(driftProfilePeak);
@@ -98,6 +92,17 @@ namespace FeatureFinder.Algorithms
                                                                                                    averageTOFLength,
                                                                                                    framePressure);
                     newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
+					
+	                featuresProcessed++;
+
+	                if (DateTime.UtcNow.Subtract(lastProgressUpdate).TotalSeconds >= 30)
+	                {
+		                lastProgressUpdate = DateTime.UtcNow;
+						double percentComplete = (double)featuresProcessed / featureCount * 100;
+		                Logger.Log("  " + percentComplete.ToString("0.0") + "% complete");
+	                }
+	                
+
                 }
 
             }
@@ -126,16 +131,7 @@ namespace FeatureFinder.Algorithms
 				if (localIMSScanMaximum > globalIMSScanMaximum) globalIMSScanMaximum = localIMSScanMaximum;
 			}
 
-			double driftTimeHalfWindow = DRIFT_TIME_WINDOW_WIDTH / 2.0;
-
 			Peak smoothedDriftProfilePeak = PeakUtil.KDESmooth(driftProfilePeak, Settings.SmoothingStDev); // TODO: Find a good value. 0.15? Less smooth = more conformations!
-
-			// TODO: Remove
-			//Console.WriteLine("**********************************************************************");
-			//driftProfilePeak.PrintPeakToConsole();
-			//Console.WriteLine("======================================================================");
-			//smoothedDriftProfilePeak.PrintPeakToConsole();
-			//Console.WriteLine("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 			IInterpolation smoothedDriftProfileInterpolation = PeakUtil.GetLinearInterpolationMethod(smoothedDriftProfilePeak);
 
