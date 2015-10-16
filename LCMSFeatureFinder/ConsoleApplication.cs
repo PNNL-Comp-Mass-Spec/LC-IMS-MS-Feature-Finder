@@ -191,7 +191,7 @@ namespace LCMSFeatureFinder
 		{
 			Console.WriteLine("");
 			Console.WriteLine("Syntax: LCMSFeatureFinder.exe SettingsFile.ini\n");
-			Console.WriteLine("The settings file defines the input file path and the outputdirectory.");
+			Console.WriteLine("The settings file defines the input file path and the output directory.");
 			Console.WriteLine("It also defines a series of settings used to aid the Feature Finder.\n");
 			Console.WriteLine("To see an example settings file, use LCMSFeatureFinder.exe /X");
 		}

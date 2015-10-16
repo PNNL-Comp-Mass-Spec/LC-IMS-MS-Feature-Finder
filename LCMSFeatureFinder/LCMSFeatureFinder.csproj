@@ -118,6 +118,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>SubWCRev.exe ..\..\..\..\ ..\..\..\Properties\AssemblyInfoTemplate.cs ..\..\..\Properties\AssemblyInfo.cs</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
