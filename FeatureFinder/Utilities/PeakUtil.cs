@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using MathNet.Numerics.Interpolation;
 using FeatureFinder.Data;
-using MathNet.Numerics.Interpolation.Algorithms;
 
 namespace FeatureFinder.Utilities
 {
@@ -306,7 +305,7 @@ namespace FeatureFinder.Utilities
 
 			peak.GetXAndYValuesAsLists(out xValues, out yValues);
 
-			IInterpolation interpolation = new LinearSplineInterpolation(xValues, yValues);
+            IInterpolation interpolation = LinearSpline.Interpolate(xValues, yValues);
 
 			return interpolation;
 		}
