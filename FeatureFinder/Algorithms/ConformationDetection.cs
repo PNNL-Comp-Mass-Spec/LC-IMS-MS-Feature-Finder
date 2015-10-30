@@ -18,42 +18,42 @@ namespace FeatureFinder.Algorithms
 
 		public static IEnumerable<LCIMSMSFeature> DetectConformationsUsingRawData(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
 		{
-			List<LCIMSMSFeature> newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
+			var newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
 
-            using (DataReader uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+            using (var uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
             {
                 Logger.Log("UIMF file has been opened.");
 
-                GlobalParameters globalParameters = uimfReader.GetGlobalParameters();
+                var globalParams = uimfReader.GetGlobalParams();
 
-                double binWidth = globalParameters.BinWidth;
-	            int featureCount = lcimsmsFeatureEnumerable.Count();
-	            int featuresProcessed = 0;
-	            DateTime lastProgressUpdate = DateTime.UtcNow;
+                var binWidth = globalParams.BinWidth;
+	            var featureCount = lcimsmsFeatureEnumerable.Count();
+	            var featuresProcessed = 0;
+	            var lastProgressUpdate = DateTime.UtcNow;
 
-                foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+                foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
                 {
-                    int scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
+                    var scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
 
-                    FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
+                    var frameParams= uimfReader.GetFrameParams(scanLC);
 
-                    double calibrationSlope = frameParameters.CalibrationSlope;
-                    double calibrationIntercept = frameParameters.CalibrationIntercept;
-                    double averageTOFLength = frameParameters.AverageTOFLength;
-                    double framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(scanLC);
-                    DataReader.FrameType frameType = frameParameters.FrameType;
+                    var calibrationSlope = frameParams.CalibrationSlope;
+                    var calibrationIntercept = frameParams.CalibrationIntercept;
+                    var averageTOFLength = frameParams.GetValueDouble(FrameParamKeyType.AverageTOFLength);
+                    var framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(scanLC);
+                    var frameType = frameParams.FrameType;
 
 
                     //For saturated Features, will extract the imsScan profile from the MSFeature data (which contains the adjusted intensities)
                     //For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
                     //We need to do the normalization and scaling so the two approaches give comparable intensity outputs
-                    bool containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
+                    var containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
 
                     var msfeature = lcimsmsFeature.GetMSFeatureRep();
                     var maxIntensity = msfeature.Abundance;
 
                     //Some features are barely saturated. We want to go to the raw data for those. (We miss these if we don't!)
-                    bool isAboveIntensityThreshold = msfeature.IntensityUnSummed > 25000;     //note that Unsummed MS is considered saturated at 50000;
+                    var isAboveIntensityThreshold = msfeature.IntensityUnSummed > 25000;     //note that Unsummed MS is considered saturated at 50000;
  
                     List<XYPair> imsScanProfile;
                     if (containsSaturatedFeatures && isAboveIntensityThreshold)
@@ -87,10 +87,10 @@ namespace FeatureFinder.Algorithms
 
                     //DisplayPeakXYData(driftProfilePeak);
 
-                    IEnumerable<LCIMSMSFeature> lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak,
-                                                                                                   lcimsmsFeature,
-                                                                                                   averageTOFLength,
-                                                                                                   framePressure);
+                    var lcimsmsFeaturesWithDriftTimes = FindDriftTimePeaks(driftProfilePeak,
+                                                                           lcimsmsFeature,
+                                                                           averageTOFLength,
+                                                                           framePressure);
                     newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
 					
 	                featuresProcessed++;
@@ -418,12 +418,12 @@ namespace FeatureFinder.Algorithms
 
 		public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
 		{
-		    string expectedFilename = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
+		    var expectedFilename = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
 
 
-			DataReader uimfReader = new DataReader(expectedFilename);
+			var uimfReader = new DataReader(expectedFilename);
 			
-			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+			foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
 			{
 				Console.WriteLine("**************************************************************");
 
@@ -431,17 +431,17 @@ namespace FeatureFinder.Algorithms
 										orderby imsmsFeature.ScanLC ascending
 										select imsmsFeature;
 
-				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
+				foreach (var imsmsFeature in sortByScanLCQuery)
 				{
-					int scanLC = ScanLCMap.Mapping[imsmsFeature.ScanLC];
-					FrameParameters frameParameters = uimfReader.GetFrameParameters(scanLC);
-					double averageTOFLength = frameParameters.AverageTOFLength;
-					double framePressure = frameParameters.PressureBack;
+					var scanLC = ScanLCMap.Mapping[imsmsFeature.ScanLC];
+					var frameParams = uimfReader.GetFrameParams(scanLC);
+                    var averageTOFLength = frameParams.GetValueDouble(FrameParamKeyType.AverageTOFLength);
+                    var framePressure = frameParams.GetValueDouble(FrameParamKeyType.PressureBack);
 
-					MSFeature msFeatureRep = imsmsFeature.FindRepMSFeature();
+					var msFeatureRep = imsmsFeature.FindRepMSFeature();
 
-					double driftTime = (averageTOFLength * msFeatureRep.ScanIMS / 1e6);
-					double correctedDriftTime = ConvertIMSScanToDriftTime(msFeatureRep.ScanIMS, averageTOFLength, framePressure);
+					var driftTime = (averageTOFLength * msFeatureRep.ScanIMS / 1e6);
+					var correctedDriftTime = ConvertIMSScanToDriftTime(msFeatureRep.ScanIMS, averageTOFLength, framePressure);
 
 					Console.WriteLine("Drift Time = " + driftTime + "\tCorrected = " + correctedDriftTime);
 				}
