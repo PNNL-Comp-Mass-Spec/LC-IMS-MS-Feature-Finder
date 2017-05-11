@@ -10,10 +10,10 @@ namespace FeatureFinder.Control
     {
         private StreamReader m_isosFileReader;
         private TextWriter m_isosFileWriter;
-        private Dictionary<String, int> m_columnMap;
+        private Dictionary<string, int> m_columnMap;
         private List<MSFeature> m_msFeatureList;
 
-        public IsosWriter(List<MSFeature> msFeatureList, Dictionary<String, int> columnMap)
+        public IsosWriter(List<MSFeature> msFeatureList, Dictionary<string, int> columnMap)
         {
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
             m_isosFileReader = new StreamReader(Settings.OutputDirectory + baseFileName + "_Filtered_isos.csv");

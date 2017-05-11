@@ -110,9 +110,9 @@ namespace FeatureFinder.FunctionalTests
             Assert.AreEqual(22, testFeature1.GetMemberCount());
             Assert.AreEqual(0, testFeature1.GetSaturatedMemberCount());
 
-            Assert.AreEqual(18.82, (decimal) Math.Round(testFeature1.DriftTime, 2));
+            Assert.AreEqual(18.82, (decimal)Math.Round(testFeature1.DriftTime, 2));
 
-           
+
 
             DisplayFeatureStats(testFeature1);
         }
@@ -144,7 +144,7 @@ namespace FeatureFinder.FunctionalTests
             var testFeature1 = controller.LCimsmsFeatures.ElementAt(1);
 
             Assert.IsNotNull(testFeature1);
-            Assert.AreEqual(20,testFeature1.GetMemberCount());
+            Assert.AreEqual(20, testFeature1.GetMemberCount());
             Assert.AreEqual(0, testFeature1.GetSaturatedMemberCount());
 
             DisplayFeatureStats(testFeature1);

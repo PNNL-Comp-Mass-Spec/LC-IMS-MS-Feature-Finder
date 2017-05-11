@@ -34,7 +34,7 @@ namespace FeatureFinder.Control
              * Files Settings
              */
             value = IniReadValue("Files", "InputFileName");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 var directoryName = Path.GetDirectoryName(value);
                 if (directoryName != null && !directoryName.Equals(string.Empty))
@@ -46,7 +46,7 @@ namespace FeatureFinder.Control
             }
 
             value = IniReadValue("Files", "OutputDirectory");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.OutputDirectory = value + "\\";
             }
@@ -56,7 +56,7 @@ namespace FeatureFinder.Control
             }
 
             value = IniReadValue("Files", "DeconToolsFilterFileName");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.DeconToolsFilterFileName = value;
                 var loader = new DeconToolsFilterLoader(value);
@@ -65,82 +65,82 @@ namespace FeatureFinder.Control
             else
             {
                 Settings.DeconToolsFilterList = new System.Collections.Generic.List<DeconToolsFilter>();
-                
+
             }
 
             /*
              * DataFilters Settings
              */
             value = IniReadValue("DataFilters", "MaxIsotopicFit");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.FitMax = float.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "MaxIScore");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.InterferenceScoreMax = float.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "MinimumIntensity");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.IntensityMin = float.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "UseHardCodedFilters");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.FilterUsingHardCodedFilters = bool.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "FilterFlaggedData");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.FilterFlaggedData = bool.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "IMSMinScan");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.ScanIMSMin = int.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "IMSMaxScan");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.ScanIMSMax = int.Parse(value);
                 if (Settings.ScanIMSMax <= 0) Settings.ScanIMSMax = int.MaxValue;
             }
 
             value = IniReadValue("DataFilters", "LCMinScan");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.ScanLCMin = int.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "LCMaxScan");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.ScanLCMax = int.Parse(value);
                 if (Settings.ScanLCMax <= 0) Settings.ScanLCMax = int.MaxValue;
             }
 
             value = IniReadValue("DataFilters", "MonoMassStart");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.MassMonoisotopicStart = float.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "MonoMassEnd");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.MassMonoisotopicEnd = float.Parse(value);
             }
 
             value = IniReadValue("DataFilters", "FrameType");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.FrameTypeFilter = (DataReader.FrameType)short.Parse(value);
             }
@@ -149,49 +149,49 @@ namespace FeatureFinder.Control
              * UMCCreationOptions Settings
              */
             value = IniReadValue("UMCCreationOptions", "IgnoreIMSDriftTime");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.IgnoreIMSDriftTime = bool.Parse(value);
             }
 
             value = IniReadValue("UMCCreationOptions", "MonoMassConstraint");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.MassMonoisotopicConstraint = float.Parse(value);
             }
 
             value = IniReadValue("UMCCreationOptions", "MonoMassConstraintIsPPM");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.MassMonoisotopicConstraintIsPPM = bool.Parse(value);
             }
 
             value = IniReadValue("UMCCreationOptions", "UseGenericNET");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.UseGenericNET = bool.Parse(value);
             }
 
             value = IniReadValue("UMCCreationOptions", "UseCharge");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.UseCharge = bool.Parse(value);
             }
 
             value = IniReadValue("UMCCreationOptions", "MinFeatureLengthPoints");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.FeatureLengthMin = short.Parse(value);
             }
 
             value = IniReadValue("UMCCreationOptions", "LCGapMaxSize");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.LCGapSizeMax = short.Parse(value);
             }
 
             value = IniReadValue("UMCCreationOptions", "IMSMaxDaCorrection");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 int readValue = short.Parse(value);
 
@@ -199,7 +199,7 @@ namespace FeatureFinder.Control
             }
 
             value = IniReadValue("UMCCreationOptions", "UMCFitScoreMinimum");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.UMCFitScoreMinimum = float.Parse(value);
             }
@@ -208,13 +208,13 @@ namespace FeatureFinder.Control
              * UMCSplittingOptions Settings
              */
             value = IniReadValue("UMCSplittingOptions", "Split");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.Split = bool.Parse(value);
             }
 
             value = IniReadValue("UMCSplittingOptions", "MinimumDifferenceInMedianPpmMassToSplit");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.MinimumDifferenceInMedianPpmMassToSplit = short.Parse(value);
             }
@@ -223,13 +223,13 @@ namespace FeatureFinder.Control
              * DriftProfile Settings
              */
             value = IniReadValue("DriftProfileOptions", "UseConformationDetection");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.UseConformationDetection = bool.Parse(value);
             }
 
             value = IniReadValue("DriftProfileOptions", "SmoothingStDev");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.SmoothingStDev = float.Parse(value);
             }
@@ -238,13 +238,13 @@ namespace FeatureFinder.Control
              * PostCreationFiltering Settings
              */
             value = IniReadValue("PostCreationFilteringOptions", "FilterIsosToSinglePoint");
-            if (!value.Equals(String.Empty))
+            if (!value.Equals(string.Empty))
             {
                 Settings.FilterIsosToSinglePoint = bool.Parse(value);
             }
         }
 
-        private String IniReadValue(String Section, String Key)
+        private string IniReadValue(string Section, string Key)
         {
             var stringBuilder = new StringBuilder(255);
             GetPrivateProfileString(Section, Key, "", stringBuilder, 255, this.m_path);

@@ -54,12 +54,12 @@ namespace FeatureFinder.Algorithms
 
                     //Some features are barely saturated. We want to go to the raw data for those. (We miss these if we don't!)
                     var isAboveIntensityThreshold = msfeature.IntensityUnSummed > 25000;     //note that Unsummed MS is considered saturated at 50000;
- 
+
                     List<XYPair> imsScanProfile;
                     if (containsSaturatedFeatures && isAboveIntensityThreshold)
                     {
                         imsScanProfile = lcimsmsFeature.GetIMSScanProfileFromMSFeatures();
-                        
+
                     }
                     else
                     {
@@ -69,7 +69,7 @@ namespace FeatureFinder.Algorithms
                     }
 
                     var maxIntensityFromProfile = imsScanProfile.Select(p => p.YValue).Max();
-                    
+
                     //normalize and scale the intensity values based on the max intensity of the ims profile from MSFeature data
                     //this is needed so that intensities from both IMSScanProfile extraction algorithms are comparable
                     foreach (var xyPair in imsScanProfile)
@@ -92,7 +92,7 @@ namespace FeatureFinder.Algorithms
                                                                            averageTOFLength,
                                                                            framePressure);
                     newLCIMSMSFeatureList.AddRange(lcimsmsFeaturesWithDriftTimes);
-                    
+
                     featuresProcessed++;
 
                     if (DateTime.UtcNow.Subtract(lastProgressUpdate).TotalSeconds >= 30)

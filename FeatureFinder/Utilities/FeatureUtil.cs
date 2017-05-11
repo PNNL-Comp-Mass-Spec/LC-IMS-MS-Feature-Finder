@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FeatureFinder.Data;
 using FeatureFinder.Control;
 using System.IO;
@@ -17,7 +16,7 @@ namespace FeatureFinder.Utilities
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
             var outputDirectory = "";
 
-            if (!Settings.OutputDirectory.Equals(String.Empty))
+            if (!Settings.OutputDirectory.Equals(string.Empty))
             {
                 outputDirectory = Settings.OutputDirectory + "\\";
             }

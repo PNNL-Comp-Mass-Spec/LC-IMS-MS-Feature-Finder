@@ -75,7 +75,7 @@ namespace FeatureFinder.Control
         #endregion
 
         #region Private Methods
-        private void CreateLCScanToFrameTypeMapping(String baseFileName)
+        private void CreateLCScanToFrameTypeMapping(string inputFolderPath, string baseFileName)
         {
             StreamReader scansFileReader = null;
 
@@ -141,7 +141,7 @@ namespace FeatureFinder.Control
         /// </summary>
         /// <exception cref="ApplicationException">Thrown when isos file does not contain column headers</exception>
         /// <returns>The column map as a Dictionary object</returns>
-        private Dictionary<String, int> CreateColumnMapping()
+        private Dictionary<string, int> CreateColumnMapping()
         {
             var columnMap = new Dictionary<string, int>();
 
@@ -291,7 +291,7 @@ namespace FeatureFinder.Control
 
                     if (ColumnMap.ContainsKey("MSFeature.ScanIMS")) msFeature.ScanIMS = Int32.Parse(columns[ColumnMap["MSFeature.ScanIMS"]], System.Globalization.NumberStyles.Any);
                     if (ColumnMap.ContainsKey("MSFeature.Charge")) msFeature.Charge = (byte)Int16.Parse(columns[ColumnMap["MSFeature.Charge"]], System.Globalization.NumberStyles.Any);
-                    if (ColumnMap.ContainsKey("MSFeature.Abundance")) msFeature.Abundance =(int)float.Parse(columns[ColumnMap["MSFeature.Abundance"]], System.Globalization.NumberStyles.Any);
+                    if (ColumnMap.ContainsKey("MSFeature.Abundance")) msFeature.Abundance = (int)float.Parse(columns[ColumnMap["MSFeature.Abundance"]], System.Globalization.NumberStyles.Any);
                     if (ColumnMap.ContainsKey("MSFeature.IntensityUnSummed")) msFeature.IntensityUnSummed = (int)float.Parse(columns[ColumnMap["MSFeature.IntensityUnSummed"]], System.Globalization.NumberStyles.Any);
                     if (ColumnMap.ContainsKey("MSFeature.Mz")) msFeature.Mz = double.Parse(columns[ColumnMap["MSFeature.Mz"]], System.Globalization.NumberStyles.Any);
                     if (ColumnMap.ContainsKey("MSFeature.Fit")) msFeature.Fit = float.Parse(columns[ColumnMap["MSFeature.Fit"]], System.Globalization.NumberStyles.Any);
@@ -352,7 +352,7 @@ namespace FeatureFinder.Control
             var deconToolsFilterTableIsBeingUsed = (Settings.FilterUsingHardCodedFilters && Settings.DeconToolsFilterList != null && Settings.DeconToolsFilterList.Count > 0);
             if (deconToolsFilterTableIsBeingUsed)
             {
-                if (!DeconToolsFilterUtil.IsValidMSFeature(msFeature,Settings.DeconToolsFilterList))
+                if (!DeconToolsFilterUtil.IsValidMSFeature(msFeature, Settings.DeconToolsFilterList))
                 {
                     return false;
                 }
