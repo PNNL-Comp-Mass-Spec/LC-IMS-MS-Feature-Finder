@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using FeatureFinder.Utilities;
@@ -12,13 +13,18 @@ namespace Test
     public class DeconToolsFilterLoaderTests
     {
         [Test]
-        public void test1()
+        [TestCase("DeconToolsIsosFilters_IMS4_2011-04-28.txt")]
+        public void test1(string settingsFileName)
         {
-            string testFilterFile1 = @"\\protoapps\UserData\Slysz\DeconTools_TestFiles\LCMSFeatureFinder\DeconToolsFilterFiles\testFilterFile1.txt";
-            DeconToolsFilterLoader loader = new DeconToolsFilterLoader(testFilterFile1);
+            var methodName = MethodBase.GetCurrentMethod().Name;
+
+            var deconToolsParamFile = Test.GetTestFile(methodName, settingsFileName);
+
+            Console.WriteLine("Reading " + deconToolsParamFile.FullName);
+            var loader = new DeconToolsFilterLoader(deconToolsParamFile.FullName);
             loader.DisplayFilters();
 
-            DeconToolsFilter testFilter1 = loader.DeconToolsFilterList[6];
+            var testFilter1 = loader.DeconToolsFilterList[6];
             Assert.AreEqual(2, testFilter1.ChargeMinimum);
             Assert.AreEqual(2147483647, testFilter1.ChargeMaximum);
             Assert.AreEqual(500, testFilter1.AbundanceMinimum);

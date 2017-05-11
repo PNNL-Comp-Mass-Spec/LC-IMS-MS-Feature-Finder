@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 using FeatureFinder.Control;
 
@@ -11,37 +10,59 @@ namespace Test
     public class IniReaderTests
     {
         [Test]
-        public void deconToolsFiltersAreBeingReadIn_test1()
+        [TestCase("FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16.ini")]
+        public void deconToolsFiltersAreBeingReadIn_test1(string settingsFileName)
         {
-            string testfile = @"\\protoapps\UserData\Slysz\DeconTools_TestFiles\LCMSFeatureFinder\DeconToolsFilterFiles\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_12MaxLCGap_NoDaCorr_NoConfDtn_2011-03-21.ini";
+            var methodName = MethodBase.GetCurrentMethod().Name;
 
-            IniReader iniReader = new IniReader(testfile);
+            var iniFile = Test.GetTestFile(methodName, settingsFileName);
+
+            if (!iniFile.Exists)
+                Assert.Ignore("Skipping test " + methodName + " since file not found: " + iniFile.FullName);
+
+            Console.WriteLine("Reading settings in " + iniFile.FullName);
+            var iniReader = new IniReader(iniFile.FullName);
             iniReader.CreateSettings();
 
             Assert.AreEqual(12, Settings.DeconToolsFilterList.Count);
-            
 
         }
 
         [Test]
-        public void deconToolsfiltersAreBeingAppliedTest()
+        [TestCase("FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16.ini")]
+        [Category("Long_Running")]
+        public void deconToolsfiltersAreBeingAppliedTest(string settingsFileName)
         {
-            string testfile = @"\\protoapps\UserData\Slysz\DeconTools_TestFiles\LCMSFeatureFinder\DeconToolsFilterFiles\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_12MaxLCGap_NoDaCorr_NoConfDtn_2011-03-21.ini";
+            var methodName = MethodBase.GetCurrentMethod().Name;
 
-            IniReader iniReader = new IniReader(testfile);
+            // FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16.ini references
+            // Sarc_MS2_90_6Apr11_Cheetah_11-02-19_inverse_isos.csv and DeconToolsIsosFilters_IMS4_2011-04-28.txt in folder
+            // \\proto-2\UnitTest_Files\DeconTools_TestFiles\LCMSFeatureFinder
+
+            var iniFile = Test.GetTestFile(methodName, settingsFileName);
+
+            if (!iniFile.Exists)
+                Assert.Ignore("Skipping test " + methodName + " since file not found: " + iniFile.FullName);
+
+            Console.WriteLine("Reading settings in " + iniFile.FullName);
+            var iniReader = new IniReader(iniFile.FullName);
             iniReader.CreateSettings();
 
-            IsosReader isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
+            if (string.IsNullOrWhiteSpace(Settings.InputDirectory) && iniFile.Directory != null)
+                Settings.InputDirectory = iniFile.Directory.FullName;
 
-            LCIMSMSFeatureFinderController controller = new LCIMSMSFeatureFinderController(isosReader);
+            var isosFilePath = Path.Combine(Settings.InputDirectory, Settings.InputFileName);
+
+            var isosFile = new FileInfo(isosFilePath);
+            if (!isosFile.Exists)
+                Assert.Ignore("Skipping test " + methodName + " since file not found: " + isosFile.FullName);
+
+            var isosReader = new IsosReader(isosFilePath, Settings.OutputDirectory);
+
+            var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
-    
-
 
         }
-
-
-
 
     }
 }
