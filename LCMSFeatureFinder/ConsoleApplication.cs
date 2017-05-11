@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using System.IO;
-using System.Text.RegularExpressions;
 using FeatureFinder.Control;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
@@ -174,7 +173,14 @@ namespace LCMSFeatureFinder
             return System.IO.Path.GetFileName(assemblyPath);
         }
 
+        private static FileInfo GetSourceFile(string inputDirectory, string inputFileName)
+        {
+            if (string.IsNullOrEmpty(inputDirectory))
+            {
+                return new FileInfo(inputFileName);
             }
+
+            return new FileInfo(Path.Combine(inputDirectory, inputFileName));
 
         }
 
@@ -202,7 +208,7 @@ namespace LCMSFeatureFinder
         /// Checks to see what type of data is being processed.
         /// </summary>
         /// <returns>LC_DATA if LC Data is being processed, IMS_DATA if IMS Data is being processed, -1 if error</returns>
-        private static int PeekAtIsosFile()
+        private static int PeekAtIsosFile(string isosFilePath)
         {
             var isosFileReader = new StreamReader(isosFilePath);
 
@@ -231,7 +237,7 @@ namespace LCMSFeatureFinder
         /// <returns>Processed file location</returns>
         private static string ProcessFileLocation(string fileLocation)
         {
-            // Replace all slashes to backslashes since we are working with a Windows directory 
+            // Replace all slashes to backslashes since we are working with a Windows directory
             fileLocation = fileLocation.Replace("/", "\\");
 
             // If the string does not contain ":\" or "\\", move on.
