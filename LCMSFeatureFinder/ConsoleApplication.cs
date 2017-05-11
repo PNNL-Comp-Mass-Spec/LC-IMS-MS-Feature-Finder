@@ -19,27 +19,29 @@ namespace LCMSFeatureFinder
         private const int LC_DATA = 0;
         private const int IMS_DATA = 1;
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            if (args.Length < 1)
+            try
             {
-                PrintUsage();
-                return;
-            }
+                if (args.Length < 1)
+                {
+                    PrintUsage();
+                    return -1;
+                }
 
-            if (args[0].ToUpper().Equals("/X"))
-            {
-                Settings.PrintExampleSettings();
-                return;
-            }
+                if (args[0].ToUpper().Equals("/X"))
+                {
+                    Settings.PrintExampleSettings();
+                    return 0;
+                }
 
-            IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
-            SetConsoleMode(handle, ENABLE_EXTENDED_FLAGS);
+                var handle = Process.GetCurrentProcess().MainWindowHandle;
+                SetConsoleMode(handle, ENABLE_EXTENDED_FLAGS);
 
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            string assemblyVersion = assembly.GetName().Version.ToString();
+                var assembly = Assembly.GetExecutingAssembly();
+                var assemblyVersion = assembly.GetName().Version.ToString();
 
-            String iniFile = ProcessFileLocation(args[0]);
+                var iniFilePath = ProcessFileLocation(args[0]);
 
                 var iniFile = new FileInfo(iniFilePath);
                 if (!iniFile.Exists)
@@ -48,39 +50,33 @@ namespace LCMSFeatureFinder
                     return -2;
                 }
 
-            Logger.Log("LCMSFeatureFinder Version " + assemblyVersion);
-            Logger.Log("Loading settings from INI file: " + iniFile);
-            Logger.Log("Data Filters - ");
-            Logger.Log(" Minimum LC scan = " + Settings.ScanLCMin);
-            Logger.Log(" Maximum LC scan = " + Settings.ScanLCMax);
-            Logger.Log(" Minimum IMS scan = " + Settings.ScanIMSMin);
-            Logger.Log(" Maximum IMS scan = " + Settings.ScanIMSMax);
-            if (Settings.FilterUsingHardCodedFilters)
-            {
-                Logger.Log(" Filtering using charge/abundance/fitScore/i_score table from file:" + Settings.DeconToolsFilterFileName);
-                
-            }
-            else
-            {
-                Logger.Log(" Maximum fit = " + Settings.FitMax);
-                Logger.Log(" Maximum i_score = " + Settings.InterferenceScoreMax);
-                Logger.Log(" Minimum intensity = " + Settings.IntensityMin);
-            }
-            if (Settings.FilterFlaggedData)
-            {
-                Logger.Log(" Filtering out flagged data");
-            }
-            Logger.Log(" Mono mass start = " + Settings.MassMonoisotopicStart);
-            Logger.Log(" Mono mass end = " + Settings.MassMonoisotopicEnd);
                 var iniReader = new IniReader(iniFile.FullName);
                 iniReader.CreateSettings();
 
+                Logger.Log("LCMSFeatureFinder Version " + assemblyVersion);
+                Logger.Log("Loading settings from INI file: " + iniFile.FullName);
+                Logger.Log("Data Filters - ");
+                Logger.Log(" Minimum LC scan = " + Settings.ScanLCMin);
+                Logger.Log(" Maximum LC scan = " + Settings.ScanLCMax);
+                Logger.Log(" Minimum IMS scan = " + Settings.ScanIMSMin);
+                Logger.Log(" Maximum IMS scan = " + Settings.ScanIMSMax);
+                if (Settings.FilterUsingHardCodedFilters)
+                {
+                    Logger.Log(" Filtering using charge/abundance/fitScore/i_score table from file: " + Settings.DeconToolsFilterFileName);
+                }
+                else
+                {
+                    Logger.Log(" Maximum fit = " + Settings.FitMax);
+                    Logger.Log(" Maximum i_score = " + Settings.InterferenceScoreMax);
+                    Logger.Log(" Minimum intensity = " + Settings.IntensityMin);
+                }
+                if (Settings.FilterFlaggedData)
+                {
+                    Logger.Log(" Filtering out flagged data");
+                }
+                Logger.Log(" Mono mass start = " + Settings.MassMonoisotopicStart);
+                Logger.Log(" Mono mass end = " + Settings.MassMonoisotopicEnd);
 
-            if (dataType < 0)
-            {
-                Logger.Log("Unknown type of Isos file. Exiting.");
-                return;
-            }
                 var isosFile = GetSourceFile(Settings.InputDirectory, Settings.InputFileName);
 
                 if (!isosFile.Exists)
@@ -99,7 +95,7 @@ namespace LCMSFeatureFinder
 
                 var uimfFile = GetSourceFile(Settings.InputDirectory, FileUtil.GetUimfFileForIsosFile(Settings.InputFileName));
 
-                if (!uimfFile.Exists && dataType != LC_DATA)
+                if (Settings.UseConformationDetection && !uimfFile.Exists && dataType != LC_DATA)
                 {
                     Logger.Log("Error: UIMF file not found at " + uimfFile.FullName);
                     return -7;
@@ -107,55 +103,73 @@ namespace LCMSFeatureFinder
 
                 var isosReader = new IsosReader(isosFile.FullName, Settings.OutputDirectory);
 
+                if (dataType == LC_DATA || Settings.IgnoreIMSDriftTime)
+                {
+                    Logger.Log("Total number of MS Features in _isos.csv file = " + isosReader.NumOfUnfilteredMSFeatures);
+                    Logger.Log("Total number of MS Features we'll consider = " + isosReader.MSFeatureList.Count);
 
-            if (dataType == LC_DATA || Settings.IgnoreIMSDriftTime)
-            {
-                Logger.Log("Total number of MS Features in _isos.csv file = " + isosReader.NumOfUnfilteredMSFeatures);
-                Logger.Log("Total number of MS Features we'll consider = " + isosReader.MSFeatureList.Count);
-                Logger.Log("Processing LC-MS Data...");
-                Logger.Log("Currently not implemented. Exiting...");
-                //RunLCMSFeatureFinder(isosReader);
-            }
-            else if (dataType == IMS_DATA)
-            {
+                    Logger.Log("LC data processing is not currently implemented. Exiting...");
+                    //RunLCMSFeatureFinder(isosReader);
+
+                    Logger.Log("Aborted!");
+                    return -5;
+
+                }
+
+                if (dataType != IMS_DATA)
+                {
+                    Logger.Log("Unsupported data type. Exiting...");
+                    Logger.Log("Aborted!");
+                    return -6;
+                }
+
                 Logger.Log("Processing LC-IMS-MS Data...");
 
-                //DataReader uimfReader = null;
+                var success = RunLCIMSMSFeatureFinder(isosReader);
 
-                /*
-                    if (settings.UseConformationDetection)
-                    {
-                        uimfReader = new UIMFLibrary.DataReader();
-                        if (!uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
-                        {
-                            throw new FileNotFoundException("Could not find file '" + Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf") + "'.");
-                        }
-                        Logger.Log("UIMF file has been opened.");
-                    }
-                    */ 
+                if (success)
+                {
+                    Logger.Log("Finished!");
+                    return 0;
+                }
 
-                //RunLCIMSMSFeatureFinder(isosReader, uimfReader);
-                RunLCIMSMSFeatureFinder(isosReader);
+                Logger.Log("Processing error; check the log messages");
+
+                return -10;
             }
-            Logger.Log("Finished!");
-            Logger.CloseLog();
+            catch (Exception ex)
+            {
+                Logger.Log("Exception while processing: " + ex.Message);
+                System.Threading.Thread.Sleep(2000);
+                return -11;
+            }
+            finally
+            {
+                Logger.CloseLog();
+            }
+        }
+
+            }
+
         }
 
         /// <summary>
         /// Runs the necessary steps for LC-IMS-MS Feature Finding.
         /// </summary>
         /// <param name="isosReader">The IsosReader object</param>
-        private static void RunLCIMSMSFeatureFinder(IsosReader isosReader)
+        private static bool RunLCIMSMSFeatureFinder(IsosReader isosReader)
         {
             try
             {
-                LCIMSMSFeatureFinderController controller = new LCIMSMSFeatureFinderController(isosReader);
+                var controller = new LCIMSMSFeatureFinderController(isosReader);
                 controller.Execute();
+                return true;
             }
             catch (Exception e)
             {
                 Logger.Log(e.Message);
                 Logger.Log(e.StackTrace);
+                return false;
             }
         }
 
