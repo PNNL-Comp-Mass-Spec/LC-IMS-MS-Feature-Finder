@@ -1,26 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FeatureFinder.Data
 {
+    [Obsolete("This class is unused")]
     public class LCMSFeature
     {
-        private int m_charge;
         private int m_scanLCMinimum;
         private int m_scanLCMaximum;
 
         private double m_massMinimum;
         private double m_massMaximum;
 
-        private List<MSFeature> m_msFeatureList;
+        // This list is unused
+        // private List<MSFeature> m_msFeatureList;
 
-        public LCMSFeature()
-        {
-            m_msFeatureList = new List<MSFeature>();
-        }
+        // Constructor
+        //public LCMSFeature()
+        //{
+        //    m_msFeatureList = new List<MSFeature>();
+        //}
 
         public void Reset()
         {
-            m_charge = 0;
             m_scanLCMinimum = int.MaxValue;
             m_scanLCMaximum = int.MinValue;
             m_massMinimum = int.MaxValue;
@@ -49,7 +51,7 @@ namespace FeatureFinder.Data
 
         public void AddMSFeature(MSFeature msFeature)
         {
-            m_msFeatureList.Add(msFeature);
+            // m_msFeatureList.Add(msFeature);
             Recalculate(msFeature);
         }
     }
