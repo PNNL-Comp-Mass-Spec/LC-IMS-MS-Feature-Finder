@@ -134,5 +134,24 @@ namespace FeatureFinder.Control
             Console.WriteLine("FilterIsosToSinglePoint=True");
         }
 
+        public static void PrintExampleDeconToolsFilterFile()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Data in this file must be tab-delimited");
+            Console.WriteLine();
+            Console.WriteLine("chargeMin	chargeMax	abundanceMin	abundanceMax	iscoreCutoff	fitScoreCutoff");
+            Console.WriteLine("1	1	500	1000	0	0.3");
+            Console.WriteLine("1	1	1000	2000	0	0.3");
+            Console.WriteLine("1	1	2000	8000	0	0.2");
+            Console.WriteLine("1	1	8000	20000	0	0.15");
+            Console.WriteLine("1	1	20000	300000	0.4	0.1");
+            Console.WriteLine("1	1	300000	2147483647	0.4	0.35");
+            Console.WriteLine("2	1000	500	1000	0	0.3");
+            Console.WriteLine("2	1000	1000	2000	0.4	0.3");
+            Console.WriteLine("2	1000	2000	8000	0.4	0.2");
+            Console.WriteLine("2	1000	8000	20000	0.4	0.15");
+            Console.WriteLine("2	1000	20000	300000	0.4	0.1");
+            Console.WriteLine("2	1000	300000	2147483647	0.4	0.35");
+        }
     }
 }

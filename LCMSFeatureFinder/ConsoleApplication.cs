@@ -48,6 +48,12 @@ namespace LCMSFeatureFinder
                     return 0;
                 }
 
+                if (args[0].ToUpper().Equals("/Y"))
+                {
+                    Settings.PrintExampleDeconToolsFilterFile();
+                    return 0;
+                }
+
                 var handle = Process.GetCurrentProcess().MainWindowHandle;
                 SetConsoleMode(handle, ENABLE_EXTENDED_FLAGS);
 
@@ -273,7 +279,8 @@ namespace LCMSFeatureFinder
             Console.WriteLine("The settings file defines the input file path and the output directory.");
             Console.WriteLine("It also defines a series of settings used to aid the Feature Finder.");
             Console.WriteLine();
-            Console.WriteLine("To see an example settings file, use LCMSFeatureFinder.exe /X");
+            Console.WriteLine("To see an example settings file, use " + exeName + " /X");
+            Console.WriteLine("To see an example file for parameter DeconToolsFilterFileName, use " + exeName + " /Y");
             Console.WriteLine();
             Console.WriteLine("Program written by Kevin Crowell for the Department of Energy (PNNL, Richland, WA) in 2010");
             Console.WriteLine("Version: " + GetAppVersion());
