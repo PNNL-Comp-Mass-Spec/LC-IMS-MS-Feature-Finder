@@ -10,9 +10,9 @@ namespace FeatureFinder.Algorithms
     {
         public static IEnumerable<LCIMSMSFeature> ClusterByMassAndScanLC(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
         {
-            List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
+            var lcimsmsFeatureList = new List<LCIMSMSFeature>();
             
-            float massToleranceBase = Settings.MassMonoisotopicConstraint;
+            var massToleranceBase = Settings.MassMonoisotopicConstraint;
 
             var sortByMassQuery = from imsmsFeature in imsmsFeatureEnumerable
                                   orderby imsmsFeature.CalculateAverageMonoisotopicMass()
@@ -21,13 +21,13 @@ namespace FeatureFinder.Algorithms
             LCIMSMSFeature lcimsmsFeature = null;
             double massReference = -99;
 
-            foreach (IMSMSFeature imsmsFeature in sortByMassQuery)
+            foreach (var imsmsFeature in sortByMassQuery)
             {
-                double mass = imsmsFeature.CalculateAverageMonoisotopicMass();
+                var mass = imsmsFeature.CalculateAverageMonoisotopicMass();
 
-                double massTolerance = massToleranceBase * massReference / 1000000;
-                double massToleranceHigh = massReference + massTolerance;
-                double massToleranceLow = massReference - massTolerance;
+                var massTolerance = massToleranceBase * massReference / 1000000;
+                var massToleranceHigh = massReference + massTolerance;
+                var massToleranceLow = massReference - massTolerance;
 
                 if (mass >= massToleranceLow && mass <= massToleranceHigh)
                 {
@@ -52,20 +52,20 @@ namespace FeatureFinder.Algorithms
 
         private static IEnumerable<LCIMSMSFeature> SplitByScanLCGap(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
         {
-            List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
+            var lcimsmsFeatureList = new List<LCIMSMSFeature>();
 
             int gapSizeMax = Settings.LCGapSizeMax;
 
-            foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+            foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
             {
                 var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
                                         orderby imsmsFeature.ScanLC
                                         select imsmsFeature;
 
                 LCIMSMSFeature newLCIMSMSFeature = null;
-                int scanLCReference = -99;
+                var scanLCReference = -99;
 
-                foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
+                foreach (var imsmsFeature in sortByScanLCQuery)
                 {
                     if (imsmsFeature.ScanLC - scanLCReference - 1 <= gapSizeMax)
                     {

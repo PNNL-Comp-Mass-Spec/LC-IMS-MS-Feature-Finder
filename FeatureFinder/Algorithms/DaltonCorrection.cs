@@ -11,21 +11,21 @@ namespace FeatureFinder.Algorithms
     {
         public static IEnumerable<LCIMSMSFeature> CorrectLCIMSMSFeatures(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
         {
-            int daCorrectionMax = Settings.IMSDaCorrectionMax;
-            float massToleranceBase = Settings.MassMonoisotopicConstraint;
-            int totalFound = 0;
+            var daCorrectionMax = Settings.IMSDaCorrectionMax;
+            var massToleranceBase = Settings.MassMonoisotopicConstraint;
+            var totalFound = 0;
 
-            foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+            foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
             {
                 if (lcimsmsFeature.IMSMSFeatureList.Count == 0)
                 {
                     continue;
                 }
 
-                double averageMass = lcimsmsFeature.CalculateAverageMonoisotopicMass();
-                double massTolerance = massToleranceBase * averageMass / 1000000.0;
+                var averageMass = lcimsmsFeature.CalculateAverageMonoisotopicMass();
+                var massTolerance = massToleranceBase * averageMass / 1000000.0;
 
-                double errorFlagPercentage = lcimsmsFeature.GetFlaggedPercentage();
+                var errorFlagPercentage = lcimsmsFeature.GetFlaggedPercentage();
 
                 var searchForDaErrorQuery = from otherLCIMSMSFeature in lcimsmsFeatureEnumerable
                                             where 
@@ -35,7 +35,7 @@ namespace FeatureFinder.Algorithms
                                             orderby Math.Abs(errorFlagPercentage - otherLCIMSMSFeature.GetFlaggedPercentage()) descending
                                             select otherLCIMSMSFeature;
 
-                foreach (LCIMSMSFeature lcimsmsFeatureToCheck in searchForDaErrorQuery.AsParallel().Where(lcimsmsFeatureToCheck => Math.Abs(errorFlagPercentage - lcimsmsFeatureToCheck.GetFlaggedPercentage()) > 0.3))
+                foreach (var lcimsmsFeatureToCheck in searchForDaErrorQuery.AsParallel().Where(lcimsmsFeatureToCheck => Math.Abs(errorFlagPercentage - lcimsmsFeatureToCheck.GetFlaggedPercentage()) > 0.3))
                 {
                     //bool featuresFitTogether = FeatureUtil.DoLCIMSMSFeaturesFitTogether(lcimsmsFeature, lcimsmsFeatureToCheck);
 

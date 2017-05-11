@@ -23,14 +23,14 @@ namespace FeatureFinder.Data
                 throw new InvalidOperationException("The xValues and yValues Lists must be the same size to create a Peak");
             }
 
-            List<XYPair> xyPairList = new List<XYPair>();
+            var xyPairList = new List<XYPair>();
 
-            for (int i = 0; i < xValues.Count; i++)
+            for (var i = 0; i < xValues.Count; i++)
             {
-                double xValue = xValues[i];
-                double yValue = yValues[i];
+                var xValue = xValues[i];
+                var yValue = yValues[i];
 
-                XYPair xyPair = new XYPair(xValue, yValue);
+                var xyPair = new XYPair(xValue, yValue);
                 xyPairList.Add(xyPair);
             }
 
@@ -42,7 +42,7 @@ namespace FeatureFinder.Data
             xValues = new List<double>();
             yValues = new List<double>();
 
-            foreach (XYPair xyPair in this.XYPairList)
+            foreach (var xyPair in this.XYPairList)
             {
                 xValues.Add(xyPair.XValue);
                 yValues.Add(xyPair.YValue);
@@ -94,7 +94,7 @@ namespace FeatureFinder.Data
                                select xyPair;
 
             
-            foreach (XYPair xyPair in sortByXValue)
+            foreach (var xyPair in sortByXValue)
             {
                 Console.WriteLine("[" + xyPair.XValue + ", " + xyPair.YValue + "]\t");
             }
@@ -105,7 +105,7 @@ namespace FeatureFinder.Data
             double totalY = 0;
             double totalXTimesY = 0;
 
-            foreach (XYPair xyPair in this.XYPairList)
+            foreach (var xyPair in this.XYPairList)
             {
                 totalY += xyPair.YValue;
                 totalXTimesY += (xyPair.XValue * xyPair.YValue);
@@ -121,11 +121,11 @@ namespace FeatureFinder.Data
                 return double.NaN;
             }
 
-            int indexOfMaxIntensity = 0;
+            var indexOfMaxIntensity = 0;
             double maxIntensity = 0;
-            for (int i = 0; i < XYPairList.Count; i++)
+            for (var i = 0; i < XYPairList.Count; i++)
             {
-                XYPair xyPair = XYPairList[i];
+                var xyPair = XYPairList[i];
                 if (xyPair.YValue > maxIntensity)
                 {
                     indexOfMaxIntensity = i;
@@ -133,14 +133,14 @@ namespace FeatureFinder.Data
                 }
             }
 
-            double x1 = XYPairList[indexOfMaxIntensity - 1].XValue;
-            double x2 = XYPairList[indexOfMaxIntensity].XValue;
-            double x3 = XYPairList[indexOfMaxIntensity + 1].XValue;
-            double y1 = XYPairList[indexOfMaxIntensity - 1].YValue;
-            double y2 = XYPairList[indexOfMaxIntensity].YValue;
-            double y3 = XYPairList[indexOfMaxIntensity + 1].YValue;
+            var x1 = XYPairList[indexOfMaxIntensity - 1].XValue;
+            var x2 = XYPairList[indexOfMaxIntensity].XValue;
+            var x3 = XYPairList[indexOfMaxIntensity + 1].XValue;
+            var y1 = XYPairList[indexOfMaxIntensity - 1].YValue;
+            var y2 = XYPairList[indexOfMaxIntensity].YValue;
+            var y3 = XYPairList[indexOfMaxIntensity + 1].YValue;
 
-            double quadratic = (y2 - y1) * (x3 - x2) - (y3 - y2) * (x2 - x1);
+            var quadratic = (y2 - y1) * (x3 - x2) - (y3 - y2) * (x2 - x1);
 
             // no good.  Just return the known peak
             if (Math.Abs(quadratic - 0) < double.Epsilon)

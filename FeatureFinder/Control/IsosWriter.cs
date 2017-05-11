@@ -15,7 +15,7 @@ namespace FeatureFinder.Control
 
         public IsosWriter(List<MSFeature> msFeatureList, Dictionary<String, int> columnMap)
         {
-            String baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
+            var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
             m_isosFileReader = new StreamReader(Settings.OutputDirectory + baseFileName + "_Filtered_isos.csv");
             m_isosFileWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Filtered_New_isos.csv");
             m_columnMap = columnMap;
@@ -29,19 +29,19 @@ namespace FeatureFinder.Control
 
         private void WriteIsosFile()
         {
-            String line = "";
-            int offset = 0;
-            int index = 0;
-            int previousFeatureId = int.MaxValue;
+            var line = "";
+            var offset = 0;
+            var index = 0;
+            var previousFeatureId = int.MaxValue;
 
             m_msFeatureList.Sort(MSFeature.IDComparison);
 
             m_isosFileWriter.WriteLine(m_isosFileReader.ReadLine());
 
             // Read the rest of the Stream, 1 line at a time, and save the write the appropriate data into the new Isos file
-            for (int i = 0; (line = m_isosFileReader.ReadLine()) != null && i + offset < m_msFeatureList.Count; i++)
+            for (var i = 0; (line = m_isosFileReader.ReadLine()) != null && i + offset < m_msFeatureList.Count; i++)
             {
-                MSFeature msFeature = m_msFeatureList[i + offset];
+                var msFeature = m_msFeatureList[i + offset];
                 while (msFeature.Id == previousFeatureId && i + offset < m_msFeatureList.Count - 1)
                 {
                     offset++;
@@ -52,15 +52,15 @@ namespace FeatureFinder.Control
                 {
                     msFeature.FilteredIndex = index;
                     index++;
-                    String[] columns = line.Split(',', '\t', '\n');
+                    var columns = line.Split(',', '\t', '\n');
 
                     if (m_columnMap.ContainsKey("MSFeature.Mz")) columns[m_columnMap["MSFeature.Mz"]] = msFeature.Mz.ToString();
                     if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) columns[m_columnMap["MSFeature.MassMonoisotopic"]] = msFeature.MassMonoisotopic.ToString();
                     if (m_columnMap.ContainsKey("MSFeature.MassMostAbundant")) columns[m_columnMap["MSFeature.MassMostAbundant"]] = msFeature.MassMostAbundantIsotope.ToString();
                  
-                    string newLine = "";
+                    var newLine = "";
 
-                    foreach (String column in columns)
+                    foreach (var column in columns)
                     {
                         newLine = newLine + column + ",";
                     }

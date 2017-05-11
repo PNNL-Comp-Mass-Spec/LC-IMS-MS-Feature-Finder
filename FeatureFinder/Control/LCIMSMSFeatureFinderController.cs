@@ -31,9 +31,9 @@ namespace FeatureFinder.Control
                 Logger.Log("Total number of MS Features we'll consider = " + m_isosReader.MSFeatureList.Count);
                 Logger.Log("Creating IMS-MS Features...");
 
-                List<MSFeature> filteredMSFeatureList = m_isosReader.MSFeatureList;
+                var filteredMSFeatureList = m_isosReader.MSFeatureList;
 
-                ConcurrentBag<IMSMSFeature> imsmsfeatureBag = new ConcurrentBag<IMSMSFeature>();
+                var imsmsfeatureBag = new ConcurrentBag<IMSMSFeature>();
 
                 if (Settings.UseCharge)
                 {
@@ -43,9 +43,9 @@ namespace FeatureFinder.Control
 
                     Parallel.ForEach(groupByScanLCAndChargeQuery, msFeatureGroup =>
                     {
-                        IEnumerable<IMSMSFeature> imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+                        var imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
 
-                        foreach (IMSMSFeature imsmsFeature in imsmsFeatureList)
+                        foreach (var imsmsFeature in imsmsFeatureList)
                         {
                             imsmsfeatureBag.Add(imsmsFeature);
                         }
@@ -59,9 +59,9 @@ namespace FeatureFinder.Control
 
                     Parallel.ForEach(groupByScanLCQuery, msFeatureGroup =>
                     {
-                        IEnumerable<IMSMSFeature> imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+                        var imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
 
-                        foreach (IMSMSFeature imsmsFeature in imsmsFeatureList)
+                        foreach (var imsmsFeature in imsmsFeatureList)
                         {
                             imsmsfeatureBag.Add(imsmsFeature);
                         }
@@ -77,7 +77,7 @@ namespace FeatureFinder.Control
                 //Logger.Log("Total Number of Filtered IMS-MS Features = " + imsmsFeatureEnumerable.Count());
                 Logger.Log("Creating LC-IMS-MS Features...");
 
-                ConcurrentBag<LCIMSMSFeature> lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
+                var lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
 
                 if (Settings.UseCharge)
                 {
@@ -87,9 +87,9 @@ namespace FeatureFinder.Control
 
                     Parallel.ForEach(groupByChargeQuery, imsmsFeatureGroup =>
                     {
-                        IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsFeatureGroup);
+                        var lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsFeatureGroup);
 
-                        foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
+                        foreach (var lcimsmsFeature in lcimsmsFeatureList)
                         {
                             lcimsmsFeatureBag.Add(lcimsmsFeature);
                         }
@@ -97,9 +97,9 @@ namespace FeatureFinder.Control
                 }
                 else
                 {
-                    IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsfeatureBag);
+                    var lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsfeatureBag);
 
-                    foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
+                    foreach (var lcimsmsFeature in lcimsmsFeatureList)
                     {
                         lcimsmsFeatureBag.Add(lcimsmsFeature);
                     }
@@ -113,8 +113,8 @@ namespace FeatureFinder.Control
                 {
                     Logger.Log("Executing Dalton Correction Algorithm on LC-IMS-MS Features...");
 
-                    ConcurrentBag<LCIMSMSFeature> daCorrectedLCIMSMSFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
-                    ConcurrentBag<IEnumerable<LCIMSMSFeature>> lcimsmsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
+                    var daCorrectedLCIMSMSFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
+                    var lcimsmsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
 
                     if (Settings.UseCharge)
                     {
@@ -126,7 +126,7 @@ namespace FeatureFinder.Control
                         {
                             IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureGroup);
 
-                            foreach (IEnumerable<LCIMSMSFeature> lcimsmsFeatureList in returnList)
+                            foreach (var lcimsmsFeatureList in returnList)
                             {
                                 lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
                             }
@@ -136,7 +136,7 @@ namespace FeatureFinder.Control
                     {
                         IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureBag);
 
-                        foreach (IEnumerable<LCIMSMSFeature> lcimsmsFeatureList in returnList)
+                        foreach (var lcimsmsFeatureList in returnList)
                         {
                             lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
                         }
@@ -146,9 +146,9 @@ namespace FeatureFinder.Control
 
                     Parallel.ForEach(lcimsmsFeatureListBag, lcimsmsFeatureGroup =>
                     {
-                        IEnumerable<LCIMSMSFeature> lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
+                        var lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
 
-                        foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureList)
+                        foreach (var lcimsmsFeature in lcimsmsFeatureList)
                         {
                             daCorrectedLCIMSMSFeatureBag.Add(lcimsmsFeature);
                         }
@@ -189,24 +189,24 @@ namespace FeatureFinder.Control
 
                 Logger.Log("Creating filtered Isos file...");
 
-                List<MSFeature> msFeatureListOutput = new List<MSFeature>();
-                foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+                var msFeatureListOutput = new List<MSFeature>();
+                foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
                 {
                     if (Settings.FilterIsosToSinglePoint)
                     {
-                        MSFeature msFeatureRep = lcimsmsFeature.GetMSFeatureRep();
+                        var msFeatureRep = lcimsmsFeature.GetMSFeatureRep();
                         msFeatureListOutput.Add(msFeatureRep);
                     }
                     else
                     {
-                        foreach (IMSMSFeature imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
+                        foreach (var imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
                         {
                             msFeatureListOutput.AddRange(imsmsFeature.MSFeatureList);
                         }
                     }
                 }
 
-                IsosWriter isosWriter = new IsosWriter(msFeatureListOutput, m_isosReader.ColumnMap);
+                var isosWriter = new IsosWriter(msFeatureListOutput, m_isosReader.ColumnMap);
 
                 Logger.Log("Writing output files...");
                 FeatureUtil.WriteLCIMSMSFeatureToFile(lcimsmsFeatureEnumerable);

@@ -12,8 +12,8 @@ namespace FeatureFinder.Control
 {
     public class IsosReader
     {
-        private StreamReader m_isosFileReader;
-        private TextWriter m_isosFileWriter;
+        private readonly StreamReader m_isosFileReader;
+        private readonly TextWriter m_isosFileWriter;
 
         #region Constructors
         /// <summary>
@@ -89,12 +89,12 @@ namespace FeatureFinder.Control
                     return;
                 }
 
-                String[] columnTitles = firstLine.Split('\t', ',', '\n');
-                int frameNumColumn = -1;
-                int frameTypeColumn = -1;
+                var columnTitles = firstLine.Split(splitChars);
+                var frameNumColumn = -1;
+                var frameTypeColumn = -1;
 
                 // Find the Frame Type column
-                for (int i = 0; i < columnTitles.Length; i++)
+                for (var i = 0; i < columnTitles.Length; i++)
                 {
                     switch (columnTitles[i].Trim().ToLower())
                     {
@@ -119,8 +119,8 @@ namespace FeatureFinder.Control
                 {
                     String[] columns = line.Split(',', '\t', '\n');
 
-                    int frameNum = int.Parse(columns[frameNumColumn]);
-                    DataReader.FrameType frameType = (DataReader.FrameType)short.Parse(columns[frameTypeColumn]);
+                    var frameNum = int.Parse(columns[frameNumColumn]);
+                    var frameType = (DataReader.FrameType)short.Parse(columns[frameTypeColumn]);
 
                     if (!ScanLCToFrameTypeMap.Mapping.ContainsKey(frameNum))
                     {
@@ -143,19 +143,19 @@ namespace FeatureFinder.Control
         /// <returns>The column map as a Dictionary object</returns>
         private Dictionary<String, int> CreateColumnMapping()
         {
-            Dictionary<String, int> columnMap = new Dictionary<String, int>();
+            var columnMap = new Dictionary<string, int>();
 
-            String firstLine = m_isosFileReader.ReadLine();
+            var firstLine = m_isosFileReader.ReadLine();
 
             if (firstLine == null)
             {
                 return null;
             }
 
-            String[] columnTitles = firstLine.Split('\t', ',', '\n');
+            var columnTitles = firstLine.Split('\t', ',', '\n');
             m_isosFileWriter.WriteLine(firstLine);
 
-            for (int i = 0; i < columnTitles.Length; i++)
+            for (var i = 0; i < columnTitles.Length; i++)
             {
                 switch (columnTitles[i].Trim().ToLower())
                 {
@@ -246,24 +246,24 @@ namespace FeatureFinder.Control
         /// </summary>
         private List<MSFeature> SaveDataToMSFeatureList()
         {
-            List<MSFeature> msFeatureList = new List<MSFeature>();
-            String line;
+            var msFeatureList = new List<MSFeature>();
+            string line;
             NumOfUnfilteredMSFeatures = 0;
-            int msFeatureIndex = 0;
-            int currentFrame = 0;
+            var msFeatureIndex = 0;
+            var currentFrame = 0;
 
             // Read the rest of the Stream, 1 line at a time, and save the appropriate data into new Objects
-            for (int i = 0; (line = m_isosFileReader.ReadLine()) != null; i++)
+            for (var i = 0; (line = m_isosFileReader.ReadLine()) != null; i++)
             {
                 try
                 {
-                    String[] columns = line.Split(',', '\t', '\n');
+                    var columns = line.Split(',', '\t', '\n');
 
-                    MSFeature msFeature = new MSFeature {IndexInFile = i};
+                    var msFeature = new MSFeature { IndexInFile = i };
 
                     if (ColumnMap.ContainsKey("MSFeature.Frame"))
                     {
-                        int frame = Int32.Parse(columns[ColumnMap["MSFeature.Frame"]]);
+                        var frame = Int32.Parse(columns[ColumnMap["MSFeature.Frame"]]);
 
                         DataReader.FrameType frameType;
                         ScanLCToFrameTypeMap.Mapping.TryGetValue(frame, out frameType);
@@ -349,7 +349,7 @@ namespace FeatureFinder.Control
             }
 
 
-            bool deconToolsFilterTableIsBeingUsed = (Settings.FilterUsingHardCodedFilters &&  Settings.DeconToolsFilterList != null && Settings.DeconToolsFilterList.Count > 0);
+            var deconToolsFilterTableIsBeingUsed = (Settings.FilterUsingHardCodedFilters && Settings.DeconToolsFilterList != null && Settings.DeconToolsFilterList.Count > 0);
             if (deconToolsFilterTableIsBeingUsed)
             {
                 if (!DeconToolsFilterUtil.IsValidMSFeature(msFeature,Settings.DeconToolsFilterList))

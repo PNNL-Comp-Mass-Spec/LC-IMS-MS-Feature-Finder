@@ -13,24 +13,24 @@ namespace FeatureFinder.Control
 
         public DeconToolsFilterLoader(string filterTableTextFile)
         {
-            
+
             if (!File.Exists(filterTableTextFile))
             {
                 Logger.Log("File not found error. DeconTools filter settings could not be loaded.");
                 throw new FileNotFoundException("File not found error. DeconTools filter settings could not be loaded.");
             }
 
-            using (StreamReader sr = new StreamReader(filterTableTextFile))
+            using (var sr = new StreamReader(filterTableTextFile))
             {
                 sr.ReadLine();   //headerline
 
                 while (sr.Peek() != -1)
                 {
 
-                    string line = sr.ReadLine();
+                    var line = sr.ReadLine();
 
                     if (line == null) continue;
-                    string[] parsedLine = line.Split('\t');
+                    var parsedLine = line.Split('\t');
 
                     if (parsedLine.Length != 6)
                     {
@@ -38,20 +38,20 @@ namespace FeatureFinder.Control
                         throw new ArgumentException("Error loading DeconTools filter settings file.");
                     }
 
-                    int zMin = Convert.ToInt32(parsedLine[0]);
-                    int zMax = Convert.ToInt32(parsedLine[1]);
-                    int abundanceMin = Convert.ToInt32(parsedLine[2]);
-                    int abundanceMax = Convert.ToInt32(parsedLine[3]);
+                    var zMin = Convert.ToInt32(parsedLine[0]);
+                    var zMax = Convert.ToInt32(parsedLine[1]);
+                    var abundanceMin = Convert.ToInt32(parsedLine[2]);
+                    var abundanceMax = Convert.ToInt32(parsedLine[3]);
 
-                    double iscoreCutoff = Convert.ToDouble(parsedLine[4]);
-                    double fitScoreCutoff = Convert.ToDouble(parsedLine[5]);
+                    var iscoreCutoff = Convert.ToDouble(parsedLine[4]);
+                    var fitScoreCutoff = Convert.ToDouble(parsedLine[5]);
 
-                    DeconToolsFilter f = new DeconToolsFilter(zMin, zMax, abundanceMin, abundanceMax, fitScoreCutoff, iscoreCutoff);
+                    var f = new DeconToolsFilter(zMin, zMax, abundanceMin, abundanceMax, fitScoreCutoff, iscoreCutoff);
                     DeconToolsFilterList.Add(f);
                 }
             }
 
-   
+
 
         }
 

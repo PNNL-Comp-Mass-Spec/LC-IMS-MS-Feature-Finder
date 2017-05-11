@@ -45,14 +45,14 @@ namespace FeatureFinder.Data
 
         public Dictionary<double, double> GetIntensityValues()
         {
-            Dictionary<double, double> intensityDictionary = new Dictionary<double, double>();
+            var intensityDictionary = new Dictionary<double, double>();
 
-            foreach (MSFeature msFeature in MSFeatureList)
+            foreach (var msFeature in MSFeatureList)
             {
                 double driftTime = msFeature.DriftTime;
                 double intensity = msFeature.Abundance; // TODO: Use Original Intensity if available
 
-                double currentIntensity = 0.0;
+                var currentIntensity = 0.0;
                 if (intensityDictionary.TryGetValue(driftTime, out currentIntensity))
                 {
                     intensityDictionary[driftTime] += intensity;

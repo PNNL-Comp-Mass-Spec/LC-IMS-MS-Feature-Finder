@@ -12,9 +12,9 @@ namespace FeatureFinder.Control
 
         static PeakWriter()
         {
-            String baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
+            var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
 
-            StreamWriter streamWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Peaks.txt") {AutoFlush = true};
+            var streamWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Peaks.txt") {AutoFlush = true};
             m_textWriter = streamWriter;
         }
 
@@ -22,7 +22,7 @@ namespace FeatureFinder.Control
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            for(int i = 0; i < xValues.Count; i++)
+            for(var i = 0; i < xValues.Count; i++)
             {
                 stringBuilder.Append(xValues[i] + "\t" + yValues1[i] + "\t" + yValues2[i] + "\n");
             }

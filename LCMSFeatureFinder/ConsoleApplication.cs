@@ -138,16 +138,16 @@ namespace LCMSFeatureFinder
         /// <returns>LC_DATA if LC Data is being processed, IMS_DATA if IMS Data is being processed, -1 if error</returns>
         private static int PeekAtIsosFile()
         {
-            StreamReader isosFileReader = new StreamReader(Settings.InputDirectory + Settings.InputFileName);
+            var isosFileReader = new StreamReader(isosFilePath);
 
-            String firstLine = isosFileReader.ReadLine();
+            var firstLine = isosFileReader.ReadLine();
 
             if (firstLine == null)
             {
                 return -1;
             }
 
-            String[] columnTitles = firstLine.Split('\t', ',', '\n');
+            var columnTitles = firstLine.Split('\t', ',', '\n');
             if (columnTitles.Any(column => column.Equals("ims_scan_num")))
             {
                 isosFileReader.Close();

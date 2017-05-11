@@ -8,12 +8,12 @@ namespace FeatureFinder.Control
 {
     public class IniReader
     {
-        private String m_path;
+        private readonly string m_path;
 
         [DllImport("kernel32")]
-        private static extern int GetPrivateProfileString(String section, String key, String def, StringBuilder retVal, int size, String filePath);
+        private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
 
-        public IniReader(String path)
+        public IniReader(string path)
         {
             if (File.Exists(path))
             {
@@ -28,7 +28,7 @@ namespace FeatureFinder.Control
 
         public void CreateSettings()
         {
-            String value = "";
+            var value = "";
 
             /*
              * Files Settings
@@ -36,7 +36,7 @@ namespace FeatureFinder.Control
             value = IniReadValue("Files", "InputFileName");
             if (!value.Equals(String.Empty))
             {
-                string directoryName = Path.GetDirectoryName(value);
+                var directoryName = Path.GetDirectoryName(value);
                 if (directoryName != null && !directoryName.Equals(string.Empty))
                 {
                     Settings.InputDirectory = Path.GetDirectoryName(value) + "\\";
@@ -59,7 +59,7 @@ namespace FeatureFinder.Control
             if (!value.Equals(String.Empty))
             {
                 Settings.DeconToolsFilterFileName = value;
-                DeconToolsFilterLoader loader = new DeconToolsFilterLoader(value);
+                var loader = new DeconToolsFilterLoader(value);
                 Settings.DeconToolsFilterList = loader.DeconToolsFilterList;
             }
             else
@@ -246,7 +246,7 @@ namespace FeatureFinder.Control
 
         private String IniReadValue(String Section, String Key)
         {
-            StringBuilder stringBuilder = new StringBuilder(255);
+            var stringBuilder = new StringBuilder(255);
             GetPrivateProfileString(Section, Key, "", stringBuilder, 255, this.m_path);
             return stringBuilder.ToString();
         }

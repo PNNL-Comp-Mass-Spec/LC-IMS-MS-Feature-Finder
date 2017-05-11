@@ -12,21 +12,21 @@ namespace FeatureFinder.Utilities
         // TODO: Sometimes, a normalized value of 1 is never seen. This happens when the # of points is an even number.
         public static List<XYPair> CreateTheoreticalGaussianPeak(double centerOfPeak, double peakFWHM, int numOfPoints)
         {
-            double sigma = peakFWHM / 2.35482;
-            double sixSigma = 3 * peakFWHM;
-            double pointSize = sixSigma / (double)(numOfPoints - 1);
+            var sigma = peakFWHM / 2.35482;
+            var sixSigma = 3 * peakFWHM;
+            var pointSize = sixSigma / (double)(numOfPoints - 1);
 
-            int startPoint = 0 - (int)Math.Floor(((numOfPoints - 1) / 2.0));
-            int stopPoint = 0 + (int)Math.Ceiling(((numOfPoints - 1) / 2.0));
+            var startPoint = 0 - (int)Math.Floor(((numOfPoints - 1) / 2.0));
+            var stopPoint = 0 + (int)Math.Ceiling(((numOfPoints - 1) / 2.0));
 
-            List<XYPair> xyPairList = new List<XYPair>();
+            var xyPairList = new List<XYPair>();
 
-            for (int i = startPoint; i <= stopPoint; i++)
+            for (var i = startPoint; i <= stopPoint; i++)
             {
-                double xValue = centerOfPeak + (pointSize * i);
-                double yValue = (1 / sigma) * ONE_OVER_SQRT_OF_2_PI * Math.Exp(-1 * (Math.Pow(xValue - centerOfPeak, 2)) / (2 * Math.Pow(sigma, 2)));
+                var xValue = centerOfPeak + (pointSize * i);
+                var yValue = (1 / sigma) * ONE_OVER_SQRT_OF_2_PI * Math.Exp(-1 * (Math.Pow(xValue - centerOfPeak, 2)) / (2 * Math.Pow(sigma, 2)));
 
-                XYPair xyPair = new XYPair(xValue, yValue);
+                var xyPair = new XYPair(xValue, yValue);
                 xyPairList.Add(xyPair);
             }
 
@@ -35,48 +35,48 @@ namespace FeatureFinder.Utilities
 
         public static double CalculatePeakFit(Peak observedPeak, Peak theoreticalPeak, double minYValueFactor)
         {
-            List<double> xValues = new List<double>();
-            List<double> yValues1 = new List<double>();
-            List<double> yValues2 = new List<double>();
+            var xValues = new List<double>();
+            var yValues1 = new List<double>();
+            var yValues2 = new List<double>();
 
             double minimumXValue = 0;
             double maximumXValue = 0;
             observedPeak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
 
-            IInterpolation observedInterpolation = PeakUtil.GetLinearInterpolationMethod(observedPeak);
-            IInterpolation theoreticalInterpolation = PeakUtil.GetLinearInterpolationMethod(theoreticalPeak);
+            var observedInterpolation = PeakUtil.GetLinearInterpolationMethod(observedPeak);
+            var theoreticalInterpolation = PeakUtil.GetLinearInterpolationMethod(theoreticalPeak);
 
-            double maxObservedPeakValue = observedInterpolation.Interpolate(observedPeak.GetQuadraticFit());
-            double maxTheoreticalPeakValue = theoreticalInterpolation.Interpolate(theoreticalPeak.GetQuadraticFit());
+            var maxObservedPeakValue = observedInterpolation.Interpolate(observedPeak.GetQuadraticFit());
+            var maxTheoreticalPeakValue = theoreticalInterpolation.Interpolate(theoreticalPeak.GetQuadraticFit());
 
-            double totalWidth = maximumXValue - minimumXValue;
-            double pointWidth = totalWidth / 1000.0;
+            var totalWidth = maximumXValue - minimumXValue;
+            var pointWidth = totalWidth / 1000.0;
 
-            double minValueToTest = maxObservedPeakValue * minYValueFactor;
-            int numPointsTested = 0;
+            var minValueToTest = maxObservedPeakValue * minYValueFactor;
+            var numPointsTested = 0;
 
-            double sumOfSquaredResiduals = 0.0;
+            var sumOfSquaredResiduals = 0.0;
 
             for (double i = 0; i < totalWidth; i += pointWidth)
             {
-                double observedPeakValue = observedInterpolation.Interpolate(minimumXValue + i);
+                var observedPeakValue = observedInterpolation.Interpolate(minimumXValue + i);
 
                 if (observedPeakValue < minValueToTest) continue;
-                double normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
-                double normalizedTheoreticalPeakValue = theoreticalInterpolation.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
+                var normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
+                var normalizedTheoreticalPeakValue = theoreticalInterpolation.Interpolate(minimumXValue + i) / maxTheoreticalPeakValue;
 
                 xValues.Add(minimumXValue + i);
                 yValues1.Add(normalizedObservedPeakValue);
                 yValues2.Add(normalizedTheoreticalPeakValue);
 
-                double residualDifference = normalizedObservedPeakValue - normalizedTheoreticalPeakValue;
+                var residualDifference = normalizedObservedPeakValue - normalizedTheoreticalPeakValue;
 
                 //sumOfSquaredResiduals += Math.Pow(residualDifference, 2);
                 sumOfSquaredResiduals += Math.Abs(residualDifference);
                 numPointsTested++;
             }
 
-            double fitScore = 1 - (sumOfSquaredResiduals / (double)numPointsTested);
+            var fitScore = 1 - (sumOfSquaredResiduals / (double)numPointsTested);
             //Console.WriteLine(fitScore);
 
             //PeakWriter.Write(xValues, yValues1, yValues2);
@@ -92,12 +92,12 @@ namespace FeatureFinder.Utilities
                 observedPeak = TransformPeakToNewWidth(observedPeak, modelPeak.Count);
             }
 
-            double maxObservedPeakValue = double.MinValue;
-            double maxModelPeakValue = double.MinValue;
-            double sumOfObservedPeakValues = 0.0;
+            var maxObservedPeakValue = double.MinValue;
+            var maxModelPeakValue = double.MinValue;
+            var sumOfObservedPeakValues = 0.0;
 
             // First find the max values for normalization purposes. Also find the sum of the Y values for the Fit Peak.
-            for (int i = 0; i < modelPeak.Count; i++)
+            for (var i = 0; i < modelPeak.Count; i++)
             {
                 if (observedPeak[i] > maxObservedPeakValue) maxObservedPeakValue = observedPeak[i];
                 if (modelPeak[i] > maxModelPeakValue) maxModelPeakValue = modelPeak[i];
@@ -105,26 +105,26 @@ namespace FeatureFinder.Utilities
                 sumOfObservedPeakValues += observedPeak[i];
             }
 
-            double minValueToTest = maxObservedPeakValue * minYValueFactor;
+            var minValueToTest = maxObservedPeakValue * minYValueFactor;
 
-            double sumOfSquaredResiduals = 0.0;
+            var sumOfSquaredResiduals = 0.0;
 
-            for (int i = 0; i < observedPeak.Count; i++)
+            for (var i = 0; i < observedPeak.Count; i++)
             {
-                double observedPeakValue = observedPeak[i];
+                var observedPeakValue = observedPeak[i];
 
                 if (observedPeakValue >= minValueToTest)
                 {
-                    double normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
-                    double normalizedModelPeakValue = modelPeak[i] / maxModelPeakValue;
+                    var normalizedObservedPeakValue = observedPeakValue / maxObservedPeakValue;
+                    var normalizedModelPeakValue = modelPeak[i] / maxModelPeakValue;
 
-                    double residualDifference = normalizedObservedPeakValue - normalizedModelPeakValue;
+                    var residualDifference = normalizedObservedPeakValue - normalizedModelPeakValue;
 
                     sumOfSquaredResiduals += Math.Pow(residualDifference, 2);
                 }
             }
 
-            double fitScore = 1 - (sumOfSquaredResiduals / observedPeak.Count);
+            var fitScore = 1 - (sumOfSquaredResiduals / observedPeak.Count);
 
             return fitScore;
         }
@@ -136,7 +136,7 @@ namespace FeatureFinder.Utilities
                 return peak;
             }
 
-            List<double> newPeak = new List<double>();
+            var newPeak = new List<double>();
 
             // TODO: Create the new peak
 
@@ -213,17 +213,17 @@ namespace FeatureFinder.Utilities
         // TODO: Verify this actually works --- Da's code, slightly modified by me
         public static Peak KDESmooth(Peak peak, double bandwidth)
         {
-            List<double> xValueList = new List<double>();
-            List<double> yValueList = new List<double>();
+            var xValueList = new List<double>();
+            var yValueList = new List<double>();
 
             peak.GetXAndYValuesAsLists(out xValueList, out yValueList);
 
-            int numPoints = xValueList.Count;
-            int numBins = numPoints;
+            var numPoints = xValueList.Count;
+            var numBins = numPoints;
 
-            List<double> newYValueList = new List<double>();
+            var newYValueList = new List<double>();
 
-            foreach (double point in xValueList)
+            foreach (var point in xValueList)
             {
                 double sumWInv = 0;
                 double sumXoW = 0;
@@ -231,11 +231,11 @@ namespace FeatureFinder.Utilities
                 double sumYoW = 0;
                 double sumXYoW = 0;
 
-                for (int j = 0; j < numPoints; j++)
+                for (var j = 0; j < numPoints; j++)
                 {
-                    double x = xValueList[j];
-                    double y = yValueList[j];
-                    double standardized = Math.Abs(x - point) / bandwidth;
+                    var x = xValueList[j];
+                    var y = yValueList[j];
+                    var standardized = Math.Abs(x - point) / bandwidth;
                     double w = 0;
                     if (standardized < 6)
                     {
@@ -248,12 +248,12 @@ namespace FeatureFinder.Utilities
                     sumXYoW += x * y * w;
                 }
 
-                double intercept = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumX2oW * sumYoW - sumXoW * sumXYoW);
-                double slope = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumWInv * sumXYoW - sumXoW * sumYoW);
+                var intercept = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumX2oW * sumYoW - sumXoW * sumXYoW);
+                var slope = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumWInv * sumXYoW - sumXoW * sumYoW);
                 newYValueList.Add(intercept + slope * point);
             }
 
-            Peak newPeak = new Peak(xValueList, newYValueList);
+            var newPeak = new Peak(xValueList, newYValueList);
 
             return newPeak;
         }
@@ -261,11 +261,11 @@ namespace FeatureFinder.Utilities
         // TODO: Verify this actually works --- Da's code, slightly modified by me
         public static List<double> KDESmooth(List<double> yValueList, double bandwidth)
         {
-            int numPoints = yValueList.Count;
+            var numPoints = yValueList.Count;
 
-            List<double> newYValueList = new List<double>();
+            var newYValueList = new List<double>();
 
-            for (int i = 0; i < numPoints; i++)
+            for (var i = 0; i < numPoints; i++)
             {
                 double sumWInv = 0;
                 double sumXoW = 0;
@@ -273,11 +273,11 @@ namespace FeatureFinder.Utilities
                 double sumYoW = 0;
                 double sumXYoW = 0;
 
-                for (int j = 0; j < numPoints; j++)
+                for (var j = 0; j < numPoints; j++)
                 {
                     double x = j;
-                    double y = yValueList[j];
-                    double standardized = Math.Abs(x - i) / bandwidth;
+                    var y = yValueList[j];
+                    var standardized = Math.Abs(x - i) / bandwidth;
                     double w = 0;
                     if (standardized < 6)
                     {
@@ -290,8 +290,8 @@ namespace FeatureFinder.Utilities
                     sumXYoW += x * y * w;
                 }
 
-                double intercept = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumX2oW * sumYoW - sumXoW * sumXYoW);
-                double slope = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumWInv * sumXYoW - sumXoW * sumYoW);
+                var intercept = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumX2oW * sumYoW - sumXoW * sumXYoW);
+                var slope = 1 / (sumWInv * sumX2oW - sumXoW * sumXoW) * (sumWInv * sumXYoW - sumXoW * sumYoW);
                 newYValueList.Add(intercept + slope * i);
             }
 
@@ -300,8 +300,8 @@ namespace FeatureFinder.Utilities
 
         public static IInterpolation GetLinearInterpolationMethod(Peak peak)
         {
-            List<double> xValues = new List<double>();
-            List<double> yValues = new List<double>();
+            var xValues = new List<double>();
+            var yValues = new List<double>();
 
             peak.GetXAndYValuesAsLists(out xValues, out yValues);
 
@@ -313,11 +313,11 @@ namespace FeatureFinder.Utilities
         private static int FindPositionOfMaximum(List<double> peak, out double maximum)
         {
             maximum = double.MinValue;
-            int position = 0;
+            var position = 0;
 
-            for (int i = 0; i < peak.Count; i++)
+            for (var i = 0; i < peak.Count; i++)
             {
-                double point = peak[i];
+                var point = peak[i];
 
                 if (point <= maximum) continue;
                 maximum = point;

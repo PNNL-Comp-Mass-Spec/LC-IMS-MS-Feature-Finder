@@ -10,24 +10,24 @@ namespace FeatureFinder.Algorithms
     {
         public static IEnumerable<IMSMSFeature> ClusterByMass(IEnumerable<MSFeature> msFeatureEnumerable)
         {
-            List<IMSMSFeature> imsmsFeatureList = new List<IMSMSFeature>();
+            var imsmsFeatureList = new List<IMSMSFeature>();
             
-            float massToleranceBase = Settings.MassMonoisotopicConstraint;
+            var massToleranceBase = Settings.MassMonoisotopicConstraint;
 
             var sortByMassQuery = from msFeature in msFeatureEnumerable
                                   orderby msFeature.MassMonoisotopic
                                   select msFeature;
 
             IMSMSFeature imsmsFeature = null;
-            double massReference = double.MinValue;
+            var massReference = double.MinValue;
 
-            foreach (MSFeature msFeature in sortByMassQuery)
+            foreach (var msFeature in sortByMassQuery)
             {
-                double mass = msFeature.MassMonoisotopic;
+                var mass = msFeature.MassMonoisotopic;
 
-                double massTolerance = massToleranceBase * massReference / 1000000;
-                double massToleranceHigh = massReference + massTolerance;
-                double massToleranceLow = massReference - massTolerance;
+                var massTolerance = massToleranceBase * massReference / 1000000;
+                var massToleranceHigh = massReference + massTolerance;
+                var massToleranceLow = massReference - massTolerance;
 
                 if (mass >= massToleranceLow && mass <= massToleranceHigh)
                 {
@@ -48,12 +48,12 @@ namespace FeatureFinder.Algorithms
 
         public static IEnumerable<IMSMSFeature> SplitByIMSScan(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable, int maxGap)
         {
-            List<IMSMSFeature> newIMSMSFeatureList = new List<IMSMSFeature>();
-            foreach (IMSMSFeature imsmsFeature in imsmsFeatureEnumerable)
+            var newIMSMSFeatureList = new List<IMSMSFeature>();
+            foreach (var imsmsFeature in imsmsFeatureEnumerable)
             {
                 IEnumerable<MSFeature> msFeatureList = imsmsFeature.MSFeatureList.OrderBy(x => x.ScanIMS);
                 IMSMSFeature newIMSMSFeature = null;
-                int scanIMSReference = -99999;
+                var scanIMSReference = -99999;
 
                 foreach (var msFeature in msFeatureList)
                 {
