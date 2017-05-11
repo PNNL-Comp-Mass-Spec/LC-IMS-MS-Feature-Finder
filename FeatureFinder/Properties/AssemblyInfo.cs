@@ -29,4 +29,4 @@ using System.Runtime.InteropServices;
 //      SVN Revision
 //      Build Number
 //
-[assembly: AssemblyVersion("2.1.*")]
+[assembly: AssemblyVersion("2.2.*")]
