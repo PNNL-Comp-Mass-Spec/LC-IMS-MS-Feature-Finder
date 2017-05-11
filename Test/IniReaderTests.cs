@@ -31,7 +31,7 @@ namespace Test
             IniReader iniReader = new IniReader(testfile);
             iniReader.CreateSettings();
 
-            IsosReader isosReader = new IsosReader();
+            IsosReader isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             LCIMSMSFeatureFinderController controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();

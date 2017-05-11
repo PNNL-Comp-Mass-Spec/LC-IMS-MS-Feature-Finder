@@ -30,7 +30,7 @@ namespace FeatureFinder.FunctionalTests
             var iniReader = new IniReader(testfile);
             iniReader.CreateSettings();
 
-            var isosReader = new IsosReader();
+            var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
@@ -47,7 +47,7 @@ namespace FeatureFinder.FunctionalTests
         [Test]
         public void traditionalMSFeatureDataProcessingTest1()
         {
-            
+
             string sourceIsosFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_mass860_noRepair_isos.csv";
 
@@ -62,7 +62,7 @@ namespace FeatureFinder.FunctionalTests
             var iniReader = new IniReader(testfile);
             iniReader.CreateSettings();
 
-            var isosReader = new IsosReader();
+            var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
@@ -95,12 +95,12 @@ namespace FeatureFinder.FunctionalTests
             var iniReader = new IniReader(testfile);
             iniReader.CreateSettings();
 
-            var isosReader = new IsosReader();
+            var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
 
-            
+
 
             Assert.AreEqual(1, controller.LCimsmsFeatures.Count());
 
@@ -134,7 +134,7 @@ namespace FeatureFinder.FunctionalTests
             var iniReader = new IniReader(testfile);
             iniReader.CreateSettings();
 
-            var isosReader = new IsosReader();
+            var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
@@ -191,7 +191,7 @@ namespace FeatureFinder.FunctionalTests
         //    var iniReader = new IniReader(testfile);
         //    iniReader.CreateSettings();
 
-        //    var isosReader = new IsosReader();
+        //    var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
         //    var controller = new LCIMSMSFeatureFinderController(isosReader);
         //    controller.Execute();
@@ -233,7 +233,7 @@ namespace FeatureFinder.FunctionalTests
         //    var iniReader = new IniReader(testfile);
         //    iniReader.CreateSettings();
 
-        //    var isosReader = new IsosReader();
+        //    var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
         //    var controller = new LCIMSMSFeatureFinderController(isosReader);
         //    controller.Execute();

@@ -77,8 +77,9 @@ namespace LCMSFeatureFinder
                 return;
             }
 
-            IsosReader isosReader = new IsosReader();
-            
+
+                var isosReader = new IsosReader(isosFile.FullName, Settings.OutputDirectory);
+
 
             if (dataType == LC_DATA || Settings.IgnoreIMSDriftTime)
             {

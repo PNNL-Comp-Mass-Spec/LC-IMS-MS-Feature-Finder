@@ -17,15 +17,23 @@ namespace FeatureFinder.Control
 
         #region Constructors
         /// <summary>
-        /// Constructor for passing in a String containing the location of the ISOS csv file
+        /// Constructor for passing in a string containing the location of the ISOS csv file
         /// </summary>
-        public IsosReader()
+        public IsosReader(string isosFilePath, string outputFolderPath)
         {
-            String baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
+            if (string.IsNullOrWhiteSpace(isosFilePath))
+                throw new ArgumentException("Isos file path must be defined", nameof(isosFilePath));
 
-            m_isosFileReader = new StreamReader(Settings.InputDirectory + Settings.InputFileName);
-            m_isosFileWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_Filtered_isos.csv");
-            CreateLCScanToFrameTypeMapping(baseFileName);
+            var isosFile = new FileInfo(isosFilePath);
+
+            var baseFileName = Regex.Split(Path.GetFileName(isosFilePath), "_isos")[0];
+
+            m_isosFileReader = new StreamReader(new FileStream(isosFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+            m_isosFileWriter = new StreamWriter(Path.Combine(outputFolderPath, baseFileName + "_Filtered_isos.csv"));
+
+            // Load the _scans.csv file (if it exists)
+            CreateLCScanToFrameTypeMapping(isosFile.DirectoryName, baseFileName);
+
             ColumnMap = CreateColumnMapping();
             MSFeatureList = SaveDataToMSFeatureList();
 
