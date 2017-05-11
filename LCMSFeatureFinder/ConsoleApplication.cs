@@ -41,8 +41,12 @@ namespace LCMSFeatureFinder
 
             String iniFile = ProcessFileLocation(args[0]);
 
-            IniReader iniReader = new IniReader(iniFile);
-            iniReader.CreateSettings();
+                var iniFile = new FileInfo(iniFilePath);
+                if (!iniFile.Exists)
+                {
+                    Logger.Log("Error: Ini file not found at " + iniFilePath);
+                    return -2;
+                }
 
             Logger.Log("LCMSFeatureFinder Version " + assemblyVersion);
             Logger.Log("Loading settings from INI file: " + iniFile);
@@ -68,15 +72,38 @@ namespace LCMSFeatureFinder
             }
             Logger.Log(" Mono mass start = " + Settings.MassMonoisotopicStart);
             Logger.Log(" Mono mass end = " + Settings.MassMonoisotopicEnd);
+                var iniReader = new IniReader(iniFile.FullName);
+                iniReader.CreateSettings();
 
-            int dataType = PeekAtIsosFile();
 
             if (dataType < 0)
             {
                 Logger.Log("Unknown type of Isos file. Exiting.");
                 return;
             }
+                var isosFile = GetSourceFile(Settings.InputDirectory, Settings.InputFileName);
 
+                if (!isosFile.Exists)
+                {
+                    Logger.Log("Error: Isos file not found at " + isosFile.FullName);
+                    return -3;
+                }
+
+                var dataType = PeekAtIsosFile(isosFile.FullName);
+
+                if (dataType < 0)
+                {
+                    Logger.Log("Unknown type of Isos file. Exiting.");
+                    return -4;
+                }
+
+                var uimfFile = GetSourceFile(Settings.InputDirectory, FileUtil.GetUimfFileForIsosFile(Settings.InputFileName));
+
+                if (!uimfFile.Exists && dataType != LC_DATA)
+                {
+                    Logger.Log("Error: UIMF file not found at " + uimfFile.FullName);
+                    return -7;
+                }
 
                 var isosReader = new IsosReader(isosFile.FullName, Settings.OutputDirectory);
 

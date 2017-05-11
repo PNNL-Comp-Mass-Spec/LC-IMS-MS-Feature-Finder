@@ -77,12 +77,15 @@ namespace FeatureFinder.Control
         #region Private Methods
         private void CreateLCScanToFrameTypeMapping(string inputFolderPath, string baseFileName)
         {
-            StreamReader scansFileReader = null;
 
-            try
+            var scansFilePath = Path.Combine(inputFolderPath, baseFileName + "_scans.csv");
+
+            if (!File.Exists(scansFilePath))
             {
-                scansFileReader = new StreamReader(Settings.OutputDirectory + baseFileName + "_scans.csv");
-                String firstLine = scansFileReader.ReadLine();
+                // Scans file not found; this is OK
+                return;
+            }
+
 
                 if (firstLine == null)
                 {
@@ -127,12 +130,9 @@ namespace FeatureFinder.Control
                         ScanLCToFrameTypeMap.Mapping.Add(frameNum, frameType);
                     }
                 }
+
             }
-            catch (FileNotFoundException)
-            {
-                // If the Scans file is not found, return an empty dictionary
-                return;
-            }
+
         }
 
         /// <summary>
