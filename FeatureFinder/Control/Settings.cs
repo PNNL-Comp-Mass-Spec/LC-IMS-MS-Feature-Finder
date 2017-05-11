@@ -6,7 +6,13 @@ namespace FeatureFinder.Control
 {
     public static class Settings
     {
-        public enum FrameType { NoFilter = -1, Prescan = 0, MS, MSMS }
+        public enum FrameType
+        {
+            NoFilter = -1,
+            Prescan = 0,
+            MS,
+            MSMS
+        }
 
         public static string InputDirectory { get; set; }
         public static string InputFileName { get; set; }
@@ -81,11 +87,17 @@ namespace FeatureFinder.Control
 
         public static void PrintExampleSettings()
         {
-            Console.WriteLine("");
+            Console.WriteLine();
             Console.WriteLine("[Files]");
             Console.WriteLine("InputFileName=InputFile_isos.csv");
             Console.WriteLine("OutputDirectory=C:\\");
+            Console.WriteLine("; The following defines a file with custom IScore and IsotopicFit score cutoffs for various combos of charge and abundance");
+            Console.WriteLine("DeconToolsFilterFileName=");
+
             Console.WriteLine("[DataFilters]");
+            Console.WriteLine("; If UseHardCodedFilters is True, IsotopicFit and IScore filters in the file");
+            Console.WriteLine("; specified by DeconToolsFilterFileName will override MaxIsotopicFit and MaxIScore");
+            Console.WriteLine("; based on charge and intensity of the given data point");
             Console.WriteLine("MaxIsotopicFit=0.15");
             Console.WriteLine("MaxIScore=0.3");
             Console.WriteLine("MinimumIntensity=0");
@@ -98,24 +110,29 @@ namespace FeatureFinder.Control
             Console.WriteLine("MonoMassStart=0");
             Console.WriteLine("MonoMassEnd=15000");
             Console.WriteLine("FrameType=-1");
+
             Console.WriteLine("[UMCCreationOptions]");
             Console.WriteLine("IgnoreIMSDriftTime=False");
             Console.WriteLine("MonoMassConstraint=12");
             Console.WriteLine("MonoMassConstraintIsPPM=True");
-            Console.WriteLine("UsegenericNET=True");
+            Console.WriteLine("UseGenericNET=True");
             Console.WriteLine("UseCharge=True");
             Console.WriteLine("MinFeatureLengthPoints=3");
             Console.WriteLine("LCGapMaxSize=4");
             Console.WriteLine("IMSMaxDaCorrection=1");
             Console.WriteLine("UMCFitScoreMinimum=0.9");
+
             Console.WriteLine("[UMCSplittingOptions]");
             Console.WriteLine("Split=True");
             Console.WriteLine("MinimumDifferenceInMedianPpmMassToSplit=4");
+
             Console.WriteLine("[DriftProfileOptions]");
             Console.WriteLine("UseConformationDetection=True");
             Console.WriteLine("SmoothingStDev=1.5");
+
             Console.WriteLine("[PostCreationFilteringOptions]");
             Console.WriteLine("FilterIsosToSinglePoint=True");
         }
+
     }
 }
