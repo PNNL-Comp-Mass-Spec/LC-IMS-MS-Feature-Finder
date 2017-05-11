@@ -20,14 +20,11 @@ namespace FeatureFinder.Control
 
         public static void Write(List<double> xValues, List<double> yValues1, List<double> yValues2)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-
             for(var i = 0; i < xValues.Count; i++)
             {
-                stringBuilder.Append(xValues[i] + "\t" + yValues1[i] + "\t" + yValues2[i] + "\n");
+                m_textWriter.WriteLine(xValues[i] + "\t" + yValues1[i] + "\t" + yValues2[i]);
             }
 
-            m_textWriter.WriteLine(stringBuilder.ToString());
         }
 
         public static void CloseWriter()

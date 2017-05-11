@@ -243,37 +243,23 @@ namespace FeatureFinder.FunctionalTests
 
         private void DisplayFeatureStats(LCIMSMSFeature testFeature1)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("OrigIndex= \t" + testFeature1.OriginalIndex);
-            sb.Append(Environment.NewLine);
+            Console.WriteLine("OrigIndex= \t" + testFeature1.OriginalIndex);
 
             int scanLCMinimum, scanLCMaximum, scanIMSMinimum, scanIMSMaximum;
             MSFeature msFeatureRep;
             testFeature1.GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
 
+            Console.WriteLine("FrameStart= \t" + scanLCMinimum);
+            Console.WriteLine("FrameStop= \t" + scanLCMaximum);
+            Console.WriteLine("IMSScan_Start= \t" + scanIMSMinimum);
+            Console.WriteLine("IMSScan_Stop= \t" + scanIMSMaximum);
+            Console.WriteLine("DriftTime= \t" + testFeature1.DriftTime);
+            Console.WriteLine("monoMass = \t" + testFeature1.CalculateAverageMonoisotopicMass().ToString("0.0####"));
+            Console.WriteLine("maxAbundance = \t" + testFeature1.AbundanceMaxRaw);
+            Console.WriteLine("summedAbundance = \t" + testFeature1.AbundanceSumRaw);
+            Console.WriteLine("totMemberCount = \t" + testFeature1.GetMemberCount());
+            Console.WriteLine("totSaturated = \t" + testFeature1.GetSaturatedMemberCount());
 
-            sb.Append("FrameStart= \t" + scanLCMinimum);
-            sb.Append(Environment.NewLine);
-            sb.Append("FrameStop= \t" + scanLCMaximum);
-            sb.Append(Environment.NewLine);
-            sb.Append("IMSScan_Start= \t" + scanIMSMinimum);
-            sb.Append(Environment.NewLine);
-            sb.Append("IMSScan_Stop= \t" + scanIMSMaximum);
-            sb.Append(Environment.NewLine);
-            sb.Append("DriftTime= \t" + testFeature1.DriftTime);
-            sb.Append(Environment.NewLine);
-            sb.Append("monoMass = \t" + testFeature1.CalculateAverageMonoisotopicMass().ToString("0.0000"));
-            sb.Append(Environment.NewLine);
-            sb.Append("maxAbundance = \t" + testFeature1.AbundanceMaxRaw);
-            sb.Append(Environment.NewLine);
-            sb.Append("summedAbundance = \t" + testFeature1.AbundanceSumRaw);
-            sb.Append(Environment.NewLine);
-            sb.Append("totMemberCount = \t" + testFeature1.GetMemberCount());
-            sb.Append(Environment.NewLine);
-            sb.Append("totSaturated = \t" + testFeature1.GetSaturatedMemberCount());
-            sb.Append(Environment.NewLine);
-
-            Console.WriteLine(sb.ToString());
         }
     }
 }

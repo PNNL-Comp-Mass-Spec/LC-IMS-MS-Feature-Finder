@@ -22,74 +22,45 @@ namespace FeatureFinder.Utilities
                 outputDirectory = Settings.OutputDirectory + "\\";
             }
 
-            TextWriter featureWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatures.txt");
-            TextWriter mapWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatureToPeakMap.txt");
-
-            StringBuilder labelStringBuilder = new StringBuilder();
-            labelStringBuilder.Append("Feature_Index" + "\t");
-            labelStringBuilder.Append("Original_Index" + "\t");
-            labelStringBuilder.Append("Monoisotopic_Mass" + "\t");
-            labelStringBuilder.Append("Average_Mono_Mass" + "\t");
-            labelStringBuilder.Append("UMC_MW_Min" + "\t");
-            labelStringBuilder.Append("UMC_MW_Max" + "\t");
-            labelStringBuilder.Append("Scan_Start" + "\t");
-            labelStringBuilder.Append("Scan_End" + "\t");
-            labelStringBuilder.Append("Scan" + "\t");
-            labelStringBuilder.Append("IMS_Scan" + "\t");
-            labelStringBuilder.Append("IMS_Scan_Start" + "\t");
-            labelStringBuilder.Append("IMS_Scan_End" + "\t");
-            labelStringBuilder.Append("Avg_Interference_Score" + "\t");
-            labelStringBuilder.Append("Decon2ls_Fit_Score" + "\t");
-            labelStringBuilder.Append("UMC_Member_Count" + "\t");
-            labelStringBuilder.Append("Saturated_Member_Count" + "\t");
-            labelStringBuilder.Append("Max_Abundance" + "\t");
-            labelStringBuilder.Append("Abundance" + "\t");
-            labelStringBuilder.Append("Class_Rep_MZ" + "\t");
-            labelStringBuilder.Append("Class_Rep_Charge" + "\t");
-            labelStringBuilder.Append("Charge_Max" + "\t");
-            labelStringBuilder.Append("Drift_Time" + "\t");
-            labelStringBuilder.Append("Conformation_Fit_Score" + "\t");
-            labelStringBuilder.Append("LC_Fit_Score" + "\t");
-            labelStringBuilder.Append("Average_Isotopic_Fit" + "\t");
-            labelStringBuilder.Append("Members_Percentage" + "\t");
-            labelStringBuilder.Append("Combined_Score");
-
-            featureWriter.WriteLine(labelStringBuilder.ToString());
-
-            mapWriter.WriteLine("Feature_Index\tPeak_Index\tFiltered_Peak_Index");
-
-            int index = 0;
-
-            foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+            using (var featureWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatures.txt"))
+            using (var mapWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatureToPeakMap.txt"))
             {
-                MSFeature msFeatureRep = null;
 
-                int maxAbundance = int.MinValue;
-                int msFeatureCount = 0;
-                int saturatedMSFeatureCount = 0;
-                int repMinIMSScan = 0;
-                int repMaxIMSScan = 0;
-                long totalAbundance = 0;
-                double minMass = double.MaxValue;
-                double maxMass = double.MinValue;
-                double totalMass = 0;
-                double totalFit = 0;
-                double totalInterferenceScore = 0;
-                double totalAbundanceTimesDriftTime = 0;
+                var headerCols = new List<string>
+            {
+                "Feature_Index",
+                "Original_Index",
+                "Monoisotopic_Mass",
+                "Average_Mono_Mass",
+                "UMC_MW_Min",
+                "UMC_MW_Max",
+                "Scan_Start",
+                "Scan_End",
+                "Scan",
+                "IMS_Scan",
+                "IMS_Scan_Start",
+                "IMS_Scan_End",
+                "Avg_Interference_Score",
+                "Decon2ls_Fit_Score",
+                "UMC_Member_Count",
+                "Saturated_Member_Count",
+                "Max_Abundance",
+                "Abundance",
+                "Class_Rep_MZ",
+                "Class_Rep_Charge",
+                "Charge_Max",
+                "Drift_Time",
+                "Conformation_Fit_Score",
+                "LC_Fit_Score",
+                "Average_Isotopic_Fit",
+                "Members_Percentage",
+                "Combined_Score"
+            };
 
-                var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
-                                        orderby imsmsFeature.ScanLC ascending
-                                        select imsmsFeature;
+                featureWriter.WriteLine(string.Join("\t", headerCols));
 
-                int scanLCStart = sortByScanLCQuery.First().ScanLC;
-                int scanLCEnd = sortByScanLCQuery.Last().ScanLC;
+                mapWriter.WriteLine("Feature_Index\tPeak_Index\tFiltered_Peak_Index");
 
-                foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
-                {
-                    int minIMSScan = int.MaxValue;
-                    int maxIMSScan = int.MinValue;
-
-                    bool isFeatureRep = false;
 
                     foreach (MSFeature msFeature in imsmsFeature.MSFeatureList)
                     {
@@ -186,12 +157,12 @@ namespace FeatureFinder.Utilities
                 stringBuilder.Append(combinedScore.ToString("0.00000")); // Combined
 
                 featureWriter.WriteLine(stringBuilder.ToString());
+                    featureWriter.WriteLine(string.Join("\t", outLine));
+
 
                 index++;
             }
 
-            featureWriter.Close();
-            mapWriter.Close();
         }
 
         public static IEnumerable<IMSMSFeature> FilterByMemberCount(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)

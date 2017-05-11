@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace FeatureFinder.Control
@@ -67,24 +66,20 @@ namespace FeatureFinder.Control
 
         public void DisplayFilters()
         {
-            StringBuilder sb = new StringBuilder();
             foreach (var filter in DeconToolsFilterList)
             {
-                sb.Append(filter.ChargeMinimum);
-                sb.Append("\t");
-                sb.Append(filter.ChargeMaximum);
-                sb.Append("\t");
-                sb.Append(filter.AbundanceMinimum);
-                sb.Append("\t");
-                sb.Append(filter.AbundanceMaximum);
-                sb.Append("\t");
-                sb.Append(filter.FitScoreMaximum);
-                sb.Append("\t");
-                sb.Append(filter.InterferenceScoreMaximum);
-                sb.Append(Environment.NewLine);
+                var filterValues = new List<string>
+                {
+                    filter.ChargeMinimum.ToString(),
+                    filter.ChargeMaximum.ToString(),
+                    filter.AbundanceMinimum.ToString(),
+                    filter.AbundanceMaximum.ToString(),
+                    filter.FitScoreMaximum.ToString("0.000"),
+                    filter.InterferenceScoreMaximum.ToString("0.000")
+                };
+                Console.WriteLine(string.Join("\t", filterValues));
             }
 
-            Console.WriteLine(sb.ToString());
         }
 
 
