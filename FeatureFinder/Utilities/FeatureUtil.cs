@@ -61,106 +61,164 @@ namespace FeatureFinder.Utilities
 
                 mapWriter.WriteLine("Feature_Index\tPeak_Index\tFiltered_Peak_Index");
 
+                var index = 0;
 
-                    foreach (MSFeature msFeature in imsmsFeature.MSFeatureList)
+                foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
+                {
+                    MSFeature msFeatureRep = null;
+
+                    var maxAbundance = int.MinValue;
+                    var msFeatureCount = 0;
+                    var saturatedMSFeatureCount = 0;
+                    var repMinIMSScan = 0;
+                    var repMaxIMSScan = 0;
+                    long totalAbundance = 0;
+                    var minMass = double.MaxValue;
+                    var maxMass = double.MinValue;
+                    double totalMass = 0;
+                    double totalFit = 0;
+                    double totalInterferenceScore = 0;
+                    double totalAbundanceTimesDriftTime = 0;
+
+                    var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
+                                            orderby imsmsFeature.ScanLC ascending
+                                            select imsmsFeature;
+
+                    var scanLCStart = sortByScanLCQuery.First().ScanLC;
+                    var scanLCEnd = sortByScanLCQuery.Last().ScanLC;
+
+                    foreach (var imsmsFeature in sortByScanLCQuery)
                     {
-                        String filteredFeatureId = msFeature.FilteredIndex >= 0 ? msFeature.FilteredIndex.ToString() : "";
-                        mapWriter.WriteLine(index + "\t" + msFeature.IndexInFile + "\t" + filteredFeatureId);
+                        var minIMSScan = int.MaxValue;
+                        var maxIMSScan = int.MinValue;
 
-                        if (msFeature.Abundance > maxAbundance)
+                        var isFeatureRep = false;
+
+                        foreach (var msFeature in imsmsFeature.MSFeatureList)
                         {
-                            msFeatureRep = msFeature;
-                            maxAbundance = msFeature.Abundance;
-                            isFeatureRep = true;
+                            var filteredFeatureId = msFeature.FilteredIndex >= 0 ? msFeature.FilteredIndex.ToString() : "";
+                            mapWriter.WriteLine(index + "\t" + msFeature.IndexInFile + filteredFeatureId);
+
+                            if (msFeature.Abundance > maxAbundance)
+                            {
+                                msFeatureRep = msFeature;
+                                maxAbundance = msFeature.Abundance;
+                                isFeatureRep = true;
+                            }
+
+                            if (msFeature.MassMonoisotopic < minMass) minMass = msFeature.MassMonoisotopic;
+                            if (msFeature.MassMonoisotopic > maxMass) maxMass = msFeature.MassMonoisotopic;
+
+                            if (msFeature.ScanIMS < minIMSScan) minIMSScan = msFeature.ScanIMS;
+                            if (msFeature.ScanIMS > maxIMSScan) maxIMSScan = msFeature.ScanIMS;
+
+                            if (msFeature.IsSaturated) saturatedMSFeatureCount++;
+
+                            totalAbundance += msFeature.Abundance;
+                            totalAbundanceTimesDriftTime += (double)msFeature.Abundance * msFeature.DriftTime;
+                            totalMass += msFeature.MassMonoisotopic;
+                            totalFit += msFeature.Fit;
+                            totalInterferenceScore += msFeature.InterferenceScore;
+                            msFeatureCount++;
                         }
 
-                        if (msFeature.MassMonoisotopic < minMass) minMass = msFeature.MassMonoisotopic;
-                        if (msFeature.MassMonoisotopic > maxMass) maxMass = msFeature.MassMonoisotopic;
-
-                        if (msFeature.ScanIMS < minIMSScan) minIMSScan = msFeature.ScanIMS;
-                        if (msFeature.ScanIMS > maxIMSScan) maxIMSScan = msFeature.ScanIMS;
-
-                        if (msFeature.IsSaturated) saturatedMSFeatureCount++;
-
-                        totalAbundance += msFeature.Abundance;
-                        totalAbundanceTimesDriftTime += ((double)msFeature.Abundance * msFeature.DriftTime);
-                        totalMass += msFeature.MassMonoisotopic;
-                        totalFit += msFeature.Fit;
-                        totalInterferenceScore += msFeature.InterferenceScore;
-                        msFeatureCount++;
+                        if (isFeatureRep)
+                        {
+                            repMinIMSScan = minIMSScan;
+                            repMaxIMSScan = maxIMSScan;
+                        }
                     }
 
-                    if (isFeatureRep)
+                    var averageMass = totalMass / msFeatureCount;
+                    var averageFit = 1.0 - ((totalFit / msFeatureCount) / Settings.FitMax);
+                    var averageInterferenceScore = (totalInterferenceScore / msFeatureCount);
+                    var averageDecon2lsFit = (totalFit / msFeatureCount);
+
+                    if (float.IsInfinity(lcimsmsFeature.IMSScore) || float.IsNaN(lcimsmsFeature.IMSScore)) lcimsmsFeature.IMSScore = 0;
+                    if (float.IsInfinity(lcimsmsFeature.LCScore) || float.IsNaN(lcimsmsFeature.LCScore)) lcimsmsFeature.IMSScore = 0;
+
+                    var memberPercentage = msFeatureCount / (double)lcimsmsFeature.MaxMemberCount;
+                    if (double.IsInfinity(memberPercentage) || double.IsNaN(memberPercentage)) memberPercentage = 0.0;
+
+                    var combinedScore = (lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0;
+                    if (double.IsInfinity(combinedScore) || double.IsNaN(combinedScore)) combinedScore = 0.0;
+
+                    var driftTimeWeightedAverage = totalAbundanceTimesDriftTime / totalAbundance;
+
+                    var outLine = new List<string>
+                {
+                    index.ToString(),
+                    lcimsmsFeature.OriginalIndex.ToString(),
+                    averageMass.ToString("0.0####"),
+                    averageMass.ToString("0.0####"),
+                    minMass.ToString("0.0####"),
+                    maxMass.ToString("0.0####"),
+                    ScanLCMap.Mapping[scanLCStart].ToString(),
+                    ScanLCMap.Mapping[scanLCEnd].ToString()
+                };
+
+                    if (msFeatureRep != null)
                     {
-                        repMinIMSScan = minIMSScan;
-                        repMaxIMSScan = maxIMSScan;
+                        outLine.Add(ScanLCMap.Mapping[msFeatureRep.ScanLC].ToString());
+                        outLine.Add(msFeatureRep.ScanIMS.ToString());
                     }
-                }
+                    else
+                    {
+                        outLine.Add("");
+                        outLine.Add("");
+                    }
 
-                double averageMass = totalMass / msFeatureCount;
-                double averageFit = 1.0 - ((totalFit / msFeatureCount) / Settings.FitMax);
-                double averageInterferenceScore = (totalInterferenceScore / msFeatureCount);
-                double averageDecon2lsFit = (totalFit / msFeatureCount);
+                    outLine.Add(repMinIMSScan.ToString());
+                    outLine.Add(repMaxIMSScan.ToString());
+                    outLine.Add(PRISM.StringUtilities.ValueToString(averageInterferenceScore, 5));
+                    outLine.Add(PRISM.StringUtilities.ValueToString(averageDecon2lsFit, 5));
+                    outLine.Add(msFeatureCount.ToString());
+                    outLine.Add(saturatedMSFeatureCount.ToString());
+                    outLine.Add(maxAbundance.ToString());
 
-                if (float.IsInfinity(lcimsmsFeature.IMSScore) || float.IsNaN(lcimsmsFeature.IMSScore)) lcimsmsFeature.IMSScore = 0;
-                if (float.IsInfinity(lcimsmsFeature.LCScore) || float.IsNaN(lcimsmsFeature.LCScore)) lcimsmsFeature.IMSScore = 0;
 
-                double memberPercentage = (double)msFeatureCount / (double)lcimsmsFeature.MaxMemberCount;
-                if (double.IsInfinity(memberPercentage) || double.IsNaN(memberPercentage)) memberPercentage = 0.0;
+                    if (Settings.UseConformationDetection)
+                    {
+                        outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.AbundanceSumRaw, 5));
+                    }
+                    else
+                    {
+                        outLine.Add(totalAbundance.ToString());
+                    }
 
-                double combinedScore = (lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0;
-                if (double.IsInfinity(combinedScore) || double.IsNaN(combinedScore)) combinedScore = 0.0;
+                    if (msFeatureRep != null)
+                    {
+                        outLine.Add(msFeatureRep.Mz.ToString("0.0####"));
+                    }
+                    else
+                    {
+                        outLine.Add("");
+                    }
 
-                double driftTimeWeightedAverage = totalAbundanceTimesDriftTime / (double)totalAbundance;
+                    outLine.Add(lcimsmsFeature.Charge.ToString());      // ClassRepCharge
+                    outLine.Add(lcimsmsFeature.Charge.ToString());      // ChargeMax
 
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.Append(index + "\t");
-                stringBuilder.Append(lcimsmsFeature.OriginalIndex + "\t");
-                stringBuilder.Append(averageMass.ToString("0.00000") + "\t");
-                stringBuilder.Append(averageMass.ToString("0.00000") + "\t");
-                stringBuilder.Append(minMass.ToString("0.00000") + "\t");
-                stringBuilder.Append(maxMass.ToString("0.00000") + "\t");
-                stringBuilder.Append(ScanLCMap.Mapping[scanLCStart] + "\t");
-                stringBuilder.Append(ScanLCMap.Mapping[scanLCEnd] + "\t");
-                stringBuilder.Append(ScanLCMap.Mapping[msFeatureRep.ScanLC] + "\t");
-                stringBuilder.Append(msFeatureRep.ScanIMS + "\t");
-                stringBuilder.Append(repMinIMSScan + "\t");
-                stringBuilder.Append(repMaxIMSScan + "\t");
-                stringBuilder.Append(averageInterferenceScore.ToString("0.00000") + "\t");
-                stringBuilder.Append(averageDecon2lsFit.ToString("0.00000") + "\t");
-                stringBuilder.Append(msFeatureCount + "\t");
-                stringBuilder.Append(saturatedMSFeatureCount + "\t");
-                stringBuilder.Append(maxAbundance + "\t");
-                if (Settings.UseConformationDetection)
-                {
-                    stringBuilder.Append(lcimsmsFeature.AbundanceSumRaw + "\t");
-                }
-                else
-                {
-                    stringBuilder.Append(totalAbundance + "\t");
-                }
-                stringBuilder.Append(msFeatureRep.Mz + "\t");
-                stringBuilder.Append(lcimsmsFeature.Charge + "\t");
-                stringBuilder.Append(lcimsmsFeature.Charge + "\t");
-                if (Settings.UseConformationDetection)
-                {
-                    stringBuilder.Append(lcimsmsFeature.DriftTime.ToString("0.00000") + "\t");
-                }
-                else
-                {
-                    stringBuilder.Append(driftTimeWeightedAverage.ToString("0.00000") + "\t");
-                }
-                stringBuilder.Append(lcimsmsFeature.IMSScore.ToString("0.00000") + "\t");
-                stringBuilder.Append(lcimsmsFeature.LCScore.ToString("0.00000") + "\t");
-                stringBuilder.Append(averageFit.ToString("0.00000") + "\t");
-                stringBuilder.Append(memberPercentage.ToString("0.00000") + "\t"); // Mem Percent
-                stringBuilder.Append(combinedScore.ToString("0.00000")); // Combined
+                    if (Settings.UseConformationDetection)
+                    {
+                        outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.DriftTime, 5));
+                    }
+                    else
+                    {
+                        outLine.Add(PRISM.StringUtilities.ValueToString(driftTimeWeightedAverage, 5));
+                    }
 
-                featureWriter.WriteLine(stringBuilder.ToString());
+
+                    outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.IMSScore, 5));   // Conformation_Fit_Score
+                    outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.LCScore, 5));    // LC_Fit_Score
+                    outLine.Add(PRISM.StringUtilities.ValueToString(averageFit, 5));                // Average_Isotopic_Fit
+                    outLine.Add(PRISM.StringUtilities.ValueToString(memberPercentage, 5));          // Members_Percentage
+                    outLine.Add(PRISM.StringUtilities.ValueToString(combinedScore, 5));             // Combined_Score
+
                     featureWriter.WriteLine(string.Join("\t", outLine));
 
+                    index++;
+                }
 
-                index++;
             }
 
         }
