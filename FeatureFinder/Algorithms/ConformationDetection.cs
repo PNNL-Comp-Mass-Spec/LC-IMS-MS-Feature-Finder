@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FeatureFinder.Control;
 using FeatureFinder.Data;
@@ -19,8 +20,15 @@ namespace FeatureFinder.Algorithms
         public static IEnumerable<LCIMSMSFeature> DetectConformationsUsingRawData(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
         {
             var newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
+            var uimfFile = new FileInfo(Path.Combine(Settings.InputDirectory, FileUtil.GetUimfFileForIsosFile(Settings.InputFileName)));
 
-            using (var uimfReader = new DataReader(Settings.InputDirectory + FileUtil.GetUimfFileForIsosFile(Settings.InputFileName)))
+            if (!uimfFile.Exists)
+            {
+                Logger.Log("Uimf file not found at " + uimfFile.FullName + "; skipping conformer detection");
+                return newLCIMSMSFeatureList;
+            }
+
+            using (var uimfReader = new DataReader(uimfFile.FullName))
             {
                 Logger.Log("UIMF file has been opened.");
 
@@ -418,7 +426,7 @@ namespace FeatureFinder.Algorithms
 
         public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
         {
-            var expectedFilename = Settings.InputDirectory + FileUtil.GetUimfFileForIsosFile(Settings.InputFileName);
+            var expectedFilename = Path.Combine(Settings.InputDirectory, FileUtil.GetUimfFileForIsosFile(Settings.InputFileName));
 
             var uimfReader = new DataReader(expectedFilename);
 
