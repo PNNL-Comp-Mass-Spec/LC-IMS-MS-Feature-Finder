@@ -86,8 +86,16 @@ namespace FeatureFinder.Control
                 return;
             }
 
+            var splitChars = new[] { '\t', ',' };
 
-                if (firstLine == null)
+            using (var scansFileReader = new StreamReader(new FileStream(scansFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+            {
+                if (scansFileReader.EndOfStream)
+                    return;
+
+                var firstLine = scansFileReader.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(firstLine))
                 {
                     return;
                 }
@@ -117,10 +125,13 @@ namespace FeatureFinder.Control
                 }
 
                 // Add each Frame Number and its corresponding Frame Type to the Map
-                String line = "";
-                for (int i = 0; (line = scansFileReader.ReadLine()) != null; i++)
+                while (!scansFileReader.EndOfStream)
                 {
-                    String[] columns = line.Split(',', '\t', '\n');
+                    var line = scansFileReader.ReadLine();
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
+                    var columns = line.Split(splitChars);
 
                     var frameNum = int.Parse(columns[frameNumColumn]);
                     var frameType = (DataReader.FrameType)short.Parse(columns[frameTypeColumn]);
