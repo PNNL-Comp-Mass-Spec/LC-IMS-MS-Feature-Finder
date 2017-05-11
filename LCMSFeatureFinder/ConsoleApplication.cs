@@ -6,11 +6,25 @@ using System.Text.RegularExpressions;
 using FeatureFinder.Control;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using FeatureFinder.Utilities;
 
 namespace LCMSFeatureFinder
 {
+    /// <summary>
+    /// This program finds LC-IMS-MS features using deisotoped features from DeconTools.
+    /// Required files are a DeconTools _isos.csv file plus the corresponding .UIMF file if UseConformationDetection is True
+    /// </summary>
+    /// <remarks>
+    /// Written by Kevin Crowell for the Department of Energy (PNNL, Richland, WA)
+    /// Program started in October, 2010
+    ///
+    /// E-mail: matthew.monroe@pnnl.gov or proteomics@pnnl.gov
+    /// Website: http://omics.pnl.gov/ or http://panomics.pnnl.gov/
+    /// </remarks>
     class ConsoleApplication
     {
+        private const string PROGRAM_DATE = "May 10, 2017";
+
         [DllImport("kernel32.dll")]
         public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
@@ -149,6 +163,17 @@ namespace LCMSFeatureFinder
             }
         }
 
+        private static string GetAppVersion()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version + " (" + PROGRAM_DATE + ")";
+        }
+
+        private static string GetExeName()
+        {
+            var assemblyPath = Assembly.GetEntryAssembly().Location;
+            return System.IO.Path.GetFileName(assemblyPath);
+        }
+
             }
 
         }
@@ -231,11 +256,27 @@ namespace LCMSFeatureFinder
         /// </summary>
         private static void PrintUsage()
         {
+            var exeName = GetExeName();
+
             Console.WriteLine("");
-            Console.WriteLine("Syntax: LCMSFeatureFinder.exe SettingsFile.ini\n");
+            Console.WriteLine("This program finds LC-IMS-MS features using deisotoped features from DeconTools.");
+            Console.WriteLine("Required files are a DeconTools _isos.csv file plus the corresponding .UIMF file if UseConformationDetection is True");
+            Console.WriteLine("");
+            Console.WriteLine("Syntax: " + exeName + " SettingsFile.ini");
+            Console.WriteLine();
             Console.WriteLine("The settings file defines the input file path and the output directory.");
-            Console.WriteLine("It also defines a series of settings used to aid the Feature Finder.\n");
+            Console.WriteLine("It also defines a series of settings used to aid the Feature Finder.");
+            Console.WriteLine();
             Console.WriteLine("To see an example settings file, use LCMSFeatureFinder.exe /X");
+            Console.WriteLine();
+            Console.WriteLine("Program written by Kevin Crowell for the Department of Energy (PNNL, Richland, WA) in 2010");
+            Console.WriteLine("Version: " + GetAppVersion());
+            Console.WriteLine();
+            Console.WriteLine("E-mail: matthew.monroe@pnnl.gov or proteomics@pnnl.gov");
+            Console.WriteLine("Website: http://omics.pnl.gov/ or http://panomics.pnnl.gov/");
+            Console.WriteLine();
+
+            System.Threading.Thread.Sleep(1500);
         }
     }
 }
