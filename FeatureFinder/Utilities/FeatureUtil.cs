@@ -26,35 +26,35 @@ namespace FeatureFinder.Utilities
             {
 
                 var headerCols = new List<string>
-            {
-                "Feature_Index",
-                "Original_Index",
-                "Monoisotopic_Mass",
-                "Average_Mono_Mass",
-                "UMC_MW_Min",
-                "UMC_MW_Max",
-                "Scan_Start",
-                "Scan_End",
-                "Scan",
-                "IMS_Scan",
-                "IMS_Scan_Start",
-                "IMS_Scan_End",
-                "Avg_Interference_Score",
-                "Decon2ls_Fit_Score",
-                "UMC_Member_Count",
-                "Saturated_Member_Count",
-                "Max_Abundance",
-                "Abundance",
-                "Class_Rep_MZ",
-                "Class_Rep_Charge",
-                "Charge_Max",
-                "Drift_Time",
-                "Conformation_Fit_Score",
-                "LC_Fit_Score",
-                "Average_Isotopic_Fit",
-                "Members_Percentage",
-                "Combined_Score"
-            };
+                {
+                    "Feature_Index",
+                    "Original_Index",
+                    "Monoisotopic_Mass",
+                    "Average_Mono_Mass",
+                    "UMC_MW_Min",
+                    "UMC_MW_Max",
+                    "Scan_Start",
+                    "Scan_End",
+                    "Scan",
+                    "IMS_Scan",
+                    "IMS_Scan_Start",
+                    "IMS_Scan_End",
+                    "Avg_Interference_Score",
+                    "Decon2ls_Fit_Score",
+                    "UMC_Member_Count",
+                    "Saturated_Member_Count",
+                    "Max_Abundance",
+                    "Abundance",
+                    "Class_Rep_MZ",
+                    "Class_Rep_Charge",
+                    "Charge_Max",
+                    "Drift_Time",
+                    "Conformation_Fit_Score",
+                    "LC_Fit_Score",
+                    "Average_Isotopic_Fit",
+                    "Members_Percentage",
+                    "Combined_Score"
+                };
 
                 featureWriter.WriteLine(string.Join("\t", headerCols));
 
@@ -96,7 +96,7 @@ namespace FeatureFinder.Utilities
                         foreach (var msFeature in imsmsFeature.MSFeatureList)
                         {
                             var filteredFeatureId = msFeature.FilteredIndex >= 0 ? msFeature.FilteredIndex.ToString() : "";
-                            mapWriter.WriteLine(index + "\t" + msFeature.IndexInFile + filteredFeatureId);
+                            mapWriter.WriteLine(index + "\t" + msFeature.IndexInFile + "\t" + filteredFeatureId);
 
                             if (msFeature.Abundance > maxAbundance)
                             {
