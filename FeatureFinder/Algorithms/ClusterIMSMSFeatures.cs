@@ -6,83 +6,83 @@ using FeatureFinder.Control;
 
 namespace FeatureFinder.Algorithms
 {
-	public static class ClusterIMSMSFeatures
-	{
-		public static IEnumerable<LCIMSMSFeature> ClusterByMassAndScanLC(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
-		{
-			List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
-			
-			float massToleranceBase = Settings.MassMonoisotopicConstraint;
+    public static class ClusterIMSMSFeatures
+    {
+        public static IEnumerable<LCIMSMSFeature> ClusterByMassAndScanLC(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
+        {
+            List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
+            
+            float massToleranceBase = Settings.MassMonoisotopicConstraint;
 
-			var sortByMassQuery = from imsmsFeature in imsmsFeatureEnumerable
-								  orderby imsmsFeature.CalculateAverageMonoisotopicMass()
-								  select imsmsFeature;
+            var sortByMassQuery = from imsmsFeature in imsmsFeatureEnumerable
+                                  orderby imsmsFeature.CalculateAverageMonoisotopicMass()
+                                  select imsmsFeature;
 
-			LCIMSMSFeature lcimsmsFeature = null;
-			double massReference = -99;
+            LCIMSMSFeature lcimsmsFeature = null;
+            double massReference = -99;
 
-			foreach (IMSMSFeature imsmsFeature in sortByMassQuery)
-			{
-				double mass = imsmsFeature.CalculateAverageMonoisotopicMass();
+            foreach (IMSMSFeature imsmsFeature in sortByMassQuery)
+            {
+                double mass = imsmsFeature.CalculateAverageMonoisotopicMass();
 
-				double massTolerance = massToleranceBase * massReference / 1000000;
-				double massToleranceHigh = massReference + massTolerance;
-				double massToleranceLow = massReference - massTolerance;
+                double massTolerance = massToleranceBase * massReference / 1000000;
+                double massToleranceHigh = massReference + massTolerance;
+                double massToleranceLow = massReference - massTolerance;
 
-				if (mass >= massToleranceLow && mass <= massToleranceHigh)
-				{
-					lcimsmsFeature.AddIMSMSFeature(imsmsFeature);
-				}
-				else
-				{
-					lcimsmsFeature = new LCIMSMSFeature(imsmsFeature.Charge);
-					lcimsmsFeature.AddIMSMSFeature(imsmsFeature);
-					lcimsmsFeatureList.Add(lcimsmsFeature);
-				}
+                if (mass >= massToleranceLow && mass <= massToleranceHigh)
+                {
+                    lcimsmsFeature.AddIMSMSFeature(imsmsFeature);
+                }
+                else
+                {
+                    lcimsmsFeature = new LCIMSMSFeature(imsmsFeature.Charge);
+                    lcimsmsFeature.AddIMSMSFeature(imsmsFeature);
+                    lcimsmsFeatureList.Add(lcimsmsFeature);
+                }
 
-				massReference = mass;
-			}
+                massReference = mass;
+            }
 
-			return lcimsmsFeatureList;
+            return lcimsmsFeatureList;
 
-			//IEnumerable<LCIMSMSFeature> splitLCIMSMSFeatureEnumerable = SplitByScanLCGap(lcimsmsFeatureList);
+            //IEnumerable<LCIMSMSFeature> splitLCIMSMSFeatureEnumerable = SplitByScanLCGap(lcimsmsFeatureList);
 
-			//return splitLCIMSMSFeatureEnumerable;
-		}
+            //return splitLCIMSMSFeatureEnumerable;
+        }
 
-		private static IEnumerable<LCIMSMSFeature> SplitByScanLCGap(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
-		{
-			List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
+        private static IEnumerable<LCIMSMSFeature> SplitByScanLCGap(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        {
+            List<LCIMSMSFeature> lcimsmsFeatureList = new List<LCIMSMSFeature>();
 
-			int gapSizeMax = Settings.LCGapSizeMax;
+            int gapSizeMax = Settings.LCGapSizeMax;
 
-			foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
-			{
-				var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
-										orderby imsmsFeature.ScanLC
-										select imsmsFeature;
+            foreach (LCIMSMSFeature lcimsmsFeature in lcimsmsFeatureEnumerable)
+            {
+                var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
+                                        orderby imsmsFeature.ScanLC
+                                        select imsmsFeature;
 
-				LCIMSMSFeature newLCIMSMSFeature = null;
-				int scanLCReference = -99;
+                LCIMSMSFeature newLCIMSMSFeature = null;
+                int scanLCReference = -99;
 
-				foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
-				{
-					if (imsmsFeature.ScanLC - scanLCReference - 1 <= gapSizeMax)
-					{
-						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
-					}
-					else
-					{
-						newLCIMSMSFeature = new LCIMSMSFeature(imsmsFeature.Charge);
-						newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
-						lcimsmsFeatureList.Add(newLCIMSMSFeature);
-					}
+                foreach (IMSMSFeature imsmsFeature in sortByScanLCQuery)
+                {
+                    if (imsmsFeature.ScanLC - scanLCReference - 1 <= gapSizeMax)
+                    {
+                        newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
+                    }
+                    else
+                    {
+                        newLCIMSMSFeature = new LCIMSMSFeature(imsmsFeature.Charge);
+                        newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
+                        lcimsmsFeatureList.Add(newLCIMSMSFeature);
+                    }
 
-					scanLCReference = imsmsFeature.ScanLC;
-				}
-			}
+                    scanLCReference = imsmsFeature.ScanLC;
+                }
+            }
 
-			return lcimsmsFeatureList;
-		}
-	}
+            return lcimsmsFeatureList;
+        }
+    }
 }

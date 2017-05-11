@@ -26,7 +26,7 @@ namespace Test
             Assert.AreEqual(0.3, testFilter1.FitScoreMaximum);
             Assert.AreEqual(0, testFilter1.InterferenceScoreMaximum);
 
-            //2	2147483647	500	1000	0.3	0
+            //2 2147483647  500 1000    0.3 0
 
         }
 

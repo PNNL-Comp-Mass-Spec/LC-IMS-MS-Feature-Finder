@@ -10,17 +10,17 @@ using FeatureFinder.Data.Maps;
 
 namespace Test
 {
-	public class Test
-	{
-		[Test]
-		public void PrintExampleSettings()
-		{
-			Settings.PrintExampleSettings();
-		}
+    public class Test
+    {
+        [Test]
+        public void PrintExampleSettings()
+        {
+            Settings.PrintExampleSettings();
+        }
 
-		[Test]
-		public void RunFeatureFinder()
-		{
-		}
-	}
+        [Test]
+        public void RunFeatureFinder()
+        {
+        }
+    }
 }

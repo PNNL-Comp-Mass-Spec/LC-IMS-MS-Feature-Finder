@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 //
 //      Major Version
 //      Minor Version 
-//		SVN Revision
+//      SVN Revision
 //      Build Number
 //
 [assembly: AssemblyVersion("2.1.*")]
