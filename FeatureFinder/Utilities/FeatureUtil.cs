@@ -16,7 +16,7 @@ namespace FeatureFinder.Utilities
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
             var outputDirectory = "";
 
-            if (!Settings.OutputDirectory.Equals(string.Empty))
+            if (!string.IsNullOrWhiteSpace(Settings.OutputDirectory) && !Settings.OutputDirectory.EndsWith("\\"))
             {
                 outputDirectory = Settings.OutputDirectory + "\\";
             }

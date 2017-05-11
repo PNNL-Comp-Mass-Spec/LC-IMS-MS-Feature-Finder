@@ -12,7 +12,7 @@ namespace FeatureFinder.Control
         {
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
 
-            var streamWriter = new StreamWriter(Settings.OutputDirectory + baseFileName + "_FeatureFinder_Log.txt") {AutoFlush = true};
+            var streamWriter = new StreamWriter(Path.Combine(Settings.OutputDirectory, baseFileName + "_FeatureFinder_Log.txt")) {AutoFlush = true};
             m_textWriter = streamWriter;
         }
 

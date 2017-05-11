@@ -28,8 +28,26 @@ namespace FeatureFinder.Control
 
             var baseFileName = Regex.Split(Path.GetFileName(isosFilePath), "_isos")[0];
 
+            DirectoryInfo outputFolder;
+            if (string.IsNullOrWhiteSpace(outputFolderPath) || outputFolderPath == ".")
+            {
+                outputFolder = isosFile.Directory;
+            }
+            else
+            {
+                outputFolder = new DirectoryInfo(outputFolderPath);
+            }
+
+            if (!outputFolder.Exists)
+            {
+                if (outputFolder.Parent != null && outputFolder.Parent.Exists)
+                    outputFolder.Create();
+                else
+                    throw new ArgumentException("Output folder not found: " + outputFolderPath, nameof(outputFolderPath));
+            }
+
             m_isosFileReader = new StreamReader(new FileStream(isosFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-            m_isosFileWriter = new StreamWriter(Path.Combine(outputFolderPath, baseFileName + "_Filtered_isos.csv"));
+            m_isosFileWriter = new StreamWriter(Path.Combine(outputFolder.FullName, baseFileName + "_Filtered_isos.csv"));
 
             // Load the _scans.csv file (if it exists)
             CreateLCScanToFrameTypeMapping(isosFile.DirectoryName, baseFileName);
