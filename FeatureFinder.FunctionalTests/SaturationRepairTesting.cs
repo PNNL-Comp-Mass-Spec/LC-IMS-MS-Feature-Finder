@@ -14,17 +14,18 @@ namespace FeatureFinder.FunctionalTests
         // see Redmine issue: http://redmine.pnl.gov/issues/947
 
         [Test]
+        [Ignore("Missing_File")]
         public void saturatedMSFeatureDataProcessingTest1()
         {
-            string sourceIsosFile =
+            var sourceIsosFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_mass860_repaired_isos.csv";
 
-            string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
+            var copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            string testfile =
+            var testfile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
             var iniReader = new IniReader(testfile);
@@ -45,18 +46,19 @@ namespace FeatureFinder.FunctionalTests
         }
 
         [Test]
+        [Ignore("Missing_File")]
         public void traditionalMSFeatureDataProcessingTest1()
         {
 
-            string sourceIsosFile =
+            var sourceIsosFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_mass860_noRepair_isos.csv";
 
-            string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
+            var copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            string testfile =
+            var testfile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
             var iniReader = new IniReader(testfile);
@@ -78,18 +80,19 @@ namespace FeatureFinder.FunctionalTests
 
 
         [Test]
+        [Ignore("Missing_File")]
         public void nonSaturatedMSFeatureProcessingTest1()
         {
 
-            string sourceIsosFile =
+            var sourceIsosFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_mass1064_repaired_isos.csv";
 
-            string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
+            var copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            string testfile =
+            var testfile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
             var iniReader = new IniReader(testfile);
@@ -118,17 +121,18 @@ namespace FeatureFinder.FunctionalTests
         }
 
         [Test]
+        [Ignore("Missing_File")]
         public void nonSaturatedLowIntensityProcessingTest1()
         {
-            string sourceIsosFile =
+            var sourceIsosFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_lowIntensityCase860_repaired_isos.csv";
 
-            string copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
+            var copiedIsosFileName = @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\Sarc_P09_B06_0786_20Jul11_Cheetah_11-05-31_isos.csv";
 
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            string testfile =
+            var testfile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
             var iniReader = new IniReader(testfile);

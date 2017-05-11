@@ -11,33 +11,35 @@ namespace Test
     public class LCIMSMSFeatureFinderControllerTests
     {
         [Test]
+        [Ignore("Missing_File")]
         public void standardFile_no_conformationDetection_test1()
         {
 
-            string testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_NoConfDtn_2011-03-21.ini";
+            var testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_NoConfDtn_2011-03-21.ini";
 
-            IniReader iniReader = new IniReader(testfile);
+            var iniReader = new IniReader(testfile);
             iniReader.CreateSettings();
 
-            IsosReader isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
+            var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
-            LCIMSMSFeatureFinderController controller = new LCIMSMSFeatureFinderController(isosReader);
+            var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
 
         }
 
         [Test]
+        [Ignore("Missing_File")]
         public void standardFile_conformationDetection_test1()
         {
 
-            string testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-03-21.ini";
+            var testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-03-21.ini";
 
-            IniReader iniReader = new IniReader(testfile);
+            var iniReader = new IniReader(testfile);
             iniReader.CreateSettings();
 
-            IsosReader isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
+            var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
-            LCIMSMSFeatureFinderController controller = new LCIMSMSFeatureFinderController(isosReader);
+            var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
 
         }
