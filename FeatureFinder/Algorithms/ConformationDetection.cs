@@ -20,7 +20,7 @@ namespace FeatureFinder.Algorithms
         {
             var newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
 
-            using (var uimfReader = new DataReader(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+            using (var uimfReader = new DataReader(Settings.InputDirectory + FileUtil.GetUimfFileForIsosFile(Settings.InputFileName)))
             {
                 Logger.Log("UIMF file has been opened.");
 
@@ -418,8 +418,7 @@ namespace FeatureFinder.Algorithms
 
         public static void TestDriftTimeTheory(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
         {
-            var expectedFilename = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
-
+            var expectedFilename = Settings.InputDirectory + FileUtil.GetUimfFileForIsosFile(Settings.InputFileName);
 
             var uimfReader = new DataReader(expectedFilename);
 

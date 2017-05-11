@@ -40,14 +40,14 @@ namespace FeatureFinder.Control
             // Calculate the drift time for each MS Feature. We are choosing to not use the Decon2ls output.
             //DataReader uimfReader = new UIMFLibrary.DataReader();
 
-            //string uimfRawdataFile = Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf");
+            // string uimfRawdataFile = Path.Combine(isosFile.DirectoryName, FileUtil.GetUimfFileForIsosFile(isosFile.Name));
             //if (!File.Exists(uimfRawdataFile))
             //{
             //    Logger.Log("File not found error. Could not find the file: " + uimfRawdataFile);
             //    throw new FileNotFoundException("File not found error. Could not find the file: " + uimfRawdataFile);
             //}
 
-            //if (uimfReader.OpenUIMF(Settings.InputDirectory + Settings.InputFileName.Replace("_isos.csv", ".uimf")))
+            //if (uimfReader.OpenUIMF(Path.Combine(isosFile.DirectoryName, FileUtil.GetUimfFileForIsosFile(isosFile.Name))))
             //{
             //    FixDriftTimeValues(uimfReader);
             //}
