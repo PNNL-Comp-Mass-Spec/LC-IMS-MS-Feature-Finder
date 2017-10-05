@@ -151,7 +151,19 @@ namespace FeatureFinder.Data
             scanLCMaximum = sortByScanLCQuery.Last().ScanLC;
         }
 
-        public void GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out int scanLCMinimum, out int scanLCMaximum, out int scanIMSMinimum, out int scanIMSMaximum, out MSFeature msFeatureRep)
+        public void GetMinAndMaxScanIMS(
+            out int scanIMSMinimum,
+            out int scanIMSMaximum)
+        {
+            GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out _, out _, out scanIMSMinimum, out scanIMSMaximum, out _);
+        }
+
+        public void GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(
+            out int scanLCMinimum,
+            out int scanLCMaximum,
+            out int scanIMSMinimum,
+            out int scanIMSMaximum,
+            out MSFeature msFeatureRep)
         {
             var msFeatureList = new List<MSFeature>();
 
@@ -231,13 +243,7 @@ namespace FeatureFinder.Data
 
         public List<XYPair>  GetIMSScanProfileFromMSFeatures()
         {
-            var scanLCMinimum = 0;
-            var scanLCMaximum = 0;
-            var scanIMSMinimum = 0;
-            var scanIMSMaximum = 0;
-
-            MSFeature msFeatureRep = null;
-            GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
+            GetMinAndMaxScanIMS(out var scanIMSMinimum, out var scanIMSMaximum);
 
             var xyPairs = new List<XYPair>();
 
