@@ -143,9 +143,9 @@ namespace FeatureFinder.Data
                 msFeatureList.AddRange(imsmsFeature.MSFeatureList);
             }
 
-            var sortByScanLCQuery = from msFeature in msFeatureList
+            var sortByScanLCQuery = (from msFeature in msFeatureList
                                     orderby msFeature.ScanLC
-                                    select msFeature;
+                                    select msFeature).ToList();
 
             scanLCMinimum = sortByScanLCQuery.First().ScanLC;
             scanLCMaximum = sortByScanLCQuery.Last().ScanLC;
@@ -172,16 +172,16 @@ namespace FeatureFinder.Data
                 msFeatureList.AddRange(imsmsFeature.MSFeatureList);
             }
 
-            var sortByScanLCQuery = from msFeature in msFeatureList
-                                    orderby msFeature.ScanLC ascending
-                                    select msFeature;
+            var sortByScanLCQuery = (from msFeature in msFeatureList
+                                    orderby msFeature.ScanLC
+                                    select msFeature).ToList();
 
             scanLCMinimum = sortByScanLCQuery.First().ScanLC;
             scanLCMaximum = sortByScanLCQuery.Last().ScanLC;
 
-            var sortByScanIMSQuery = from msFeature in msFeatureList
-                                     orderby msFeature.ScanIMS ascending
-                                     select msFeature;
+            var sortByScanIMSQuery = (from msFeature in msFeatureList
+                                     orderby msFeature.ScanIMS
+                                     select msFeature).ToList();
 
             scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
             scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
@@ -202,16 +202,16 @@ namespace FeatureFinder.Data
                 msFeatureList.AddRange(imsmsFeature.MSFeatureList);
             }
 
-            var sortByScanLCQuery = from msFeature in msFeatureList
-                                    orderby msFeature.ScanLC ascending
-                                    select msFeature;
+            var sortByScanLCQuery = (from msFeature in msFeatureList
+                                    orderby msFeature.ScanLC
+                                    select msFeature).ToList();
 
             scanLCMinimum = sortByScanLCQuery.First().ScanLC;
             scanLCMaximum = sortByScanLCQuery.Last().ScanLC;
 
-            var sortByScanIMSQuery = from msFeature in msFeatureList
-                                     orderby msFeature.DriftTime ascending
-                                     select msFeature;
+            var sortByScanIMSQuery = (from msFeature in msFeatureList
+                                     orderby msFeature.DriftTime
+                                     select msFeature).ToList();
 
             driftTimeMinimum = sortByScanIMSQuery.First().DriftTime;
             driftTimeMaximum = sortByScanIMSQuery.Last().DriftTime;
@@ -340,8 +340,10 @@ namespace FeatureFinder.Data
                                      group msFeature by new { msFeature.ScanLC } into newGroup
                                      select newGroup;
 
-            foreach (IEnumerable<MSFeature> msFeatureGroup in groupByScanLCQuery)
+            foreach (IEnumerable<MSFeature> item in groupByScanLCQuery)
             {
+                var msFeatureGroup = item.ToList();
+
                 Console.Write("LC Scan = " + msFeatureGroup.First().ScanLC + ": ");
 
                 var orderByDriftTimeQuery = from msFeature in msFeatureGroup

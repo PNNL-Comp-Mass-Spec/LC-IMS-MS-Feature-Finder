@@ -252,11 +252,12 @@ namespace FeatureFinder.Algorithms
                 // Create new IMS-MS Features by grabbing MS Features in each LC Scan that are in the defined window of the detected drift time
                 foreach (var imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
                 {
-                    var msFeatureEnumerable = imsmsFeature.FindMSFeaturesInScanIMSRange(minimumXValue, maximumXValue);
+                    var msFeatures = imsmsFeature.FindMSFeaturesInScanIMSRange(minimumXValue, maximumXValue).ToList();
 
-                    if (msFeatureEnumerable.Count() <= 0) continue;
+                    if (!msFeatures.Any()) continue;
+
                     var newIMSMSFeature = new IMSMSFeature(imsmsFeature.ScanLC, imsmsFeature.Charge);
-                    newIMSMSFeature.AddMSFeatureList(msFeatureEnumerable);
+                    newIMSMSFeature.AddMSFeatureList(msFeatures);
                     newLCIMSMSFeature.AddIMSMSFeature(newIMSMSFeature);
                 }
 
@@ -366,9 +367,9 @@ namespace FeatureFinder.Algorithms
 
         public static void PadXYPairsWithZeros(ref List<XYPair> driftProfileXYPairList, int numZeros)
         {
-            var sortByXValue = from xyPair in driftProfileXYPairList
-                               orderby xyPair.XValue ascending
-                               select xyPair;
+            var sortByXValue = (from xyPair in driftProfileXYPairList
+                               orderby xyPair.XValue
+                               select xyPair).ToList();
 
             var minXValue = sortByXValue.First().XValue;
             var maxXValue = sortByXValue.Last().XValue;

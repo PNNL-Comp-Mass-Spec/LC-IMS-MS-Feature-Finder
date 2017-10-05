@@ -79,9 +79,9 @@ namespace FeatureFinder.Utilities
                     double totalInterferenceScore = 0;
                     double totalAbundanceTimesDriftTime = 0;
 
-                    var sortByScanLCQuery = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
-                                            orderby imsmsFeature.ScanLC ascending
-                                            select imsmsFeature;
+                    var sortByScanLCQuery = (from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
+                                             orderby imsmsFeature.ScanLC
+                                             select imsmsFeature).ToList();
 
                     var scanLCStart = sortByScanLCQuery.First().ScanLC;
                     var scanLCEnd = sortByScanLCQuery.Last().ScanLC;

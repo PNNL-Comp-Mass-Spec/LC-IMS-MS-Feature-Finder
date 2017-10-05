@@ -51,10 +51,10 @@ namespace FeatureFinder.Data
 
         public void GetMinAndMaxXValues(out double xValueMinimum, out double xValueMaximum)
         {
-            var sortByXValue = from xyPair in XYPairList
+            var sortByXValue = (from xyPair in XYPairList
                                where xyPair.YValue > 0
-                               orderby xyPair.XValue ascending
-                               select xyPair;
+                               orderby xyPair.XValue
+                               select xyPair).ToList();
 
             xValueMinimum = sortByXValue.First().XValue;
             xValueMaximum = sortByXValue.Last().XValue;

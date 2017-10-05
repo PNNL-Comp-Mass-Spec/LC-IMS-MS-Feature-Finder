@@ -68,9 +68,9 @@ namespace FeatureFinder.Data
 
         public void GetMinAndMaxDriftTimes(out double driftTimeMinimum, out double driftTimeMaximum)
         {
-            var sortByDriftTimeQuery = from msFeature in MSFeatureList
+            var sortByDriftTimeQuery = (from msFeature in MSFeatureList
                                        orderby msFeature.DriftTime
-                                       select msFeature;
+                                       select msFeature).ToList();
 
             driftTimeMinimum = sortByDriftTimeQuery.First().DriftTime;
             driftTimeMaximum = sortByDriftTimeQuery.Last().DriftTime;
@@ -78,9 +78,9 @@ namespace FeatureFinder.Data
 
         public void GetMinAndMaxIMSScan(out double scanIMSMinimum, out double scanIMSMaximum)
         {
-            var sortByScanIMSQuery = from msFeature in MSFeatureList
+            var sortByScanIMSQuery = (from msFeature in MSFeatureList
                                      orderby msFeature.ScanIMS
-                                     select msFeature;
+                                     select msFeature).ToList();
 
             scanIMSMinimum = sortByScanIMSQuery.First().ScanIMS;
             scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
