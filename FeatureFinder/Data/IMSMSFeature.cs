@@ -27,7 +27,7 @@ namespace FeatureFinder.Data
             MSFeatureList.AddRange(msFeatureEnumerable);
         }
 
-    
+
         public double CalculateAverageMonoisotopicMass()
         {
             return MSFeatureList.Average(msFeature => msFeature.MassMonoisotopic);
@@ -52,8 +52,7 @@ namespace FeatureFinder.Data
                 double driftTime = msFeature.DriftTime;
                 double intensity = msFeature.Abundance; // TODO: Use Original Intensity if available
 
-                var currentIntensity = 0.0;
-                if (intensityDictionary.TryGetValue(driftTime, out currentIntensity))
+                if (intensityDictionary.TryGetValue(driftTime, out _))
                 {
                     intensityDictionary[driftTime] += intensity;
                 }

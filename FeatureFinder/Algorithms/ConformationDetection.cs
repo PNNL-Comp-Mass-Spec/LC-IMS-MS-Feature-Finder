@@ -145,9 +145,7 @@ namespace FeatureFinder.Algorithms
             var previousIntensity = double.MinValue;
             var movingUp = true;
 
-            var minScanLC = 0;
-            var maxScanLC = 0;
-            lcimsmsFeature.GetMinAndMaxScanLC(out minScanLC, out maxScanLC);
+            // lcimsmsFeature.GetMinAndMaxScanLC(out var minScanLC, out var maxScanLC);
 
             var minimumIntensityToConsider = smoothedDriftProfilePeak.GetMaximumYValue() * 0.05;
 
