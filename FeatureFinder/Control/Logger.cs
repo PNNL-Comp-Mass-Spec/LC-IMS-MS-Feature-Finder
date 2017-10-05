@@ -19,7 +19,7 @@ namespace FeatureFinder.Control
         public static void Log(string textToLog)
         {
             var currentTime = DateTime.Now;
-            var logText = string.Format("{0:MM/dd/yyyy HH:mm:ss}", currentTime) + "\t" + textToLog;
+            var logText = string.Format("{0:yyyy-MM-dd HH:mm:ss}", currentTime) + "\t" + textToLog;
             m_textWriter.WriteLine(logText);
             Console.WriteLine(logText);
         }
