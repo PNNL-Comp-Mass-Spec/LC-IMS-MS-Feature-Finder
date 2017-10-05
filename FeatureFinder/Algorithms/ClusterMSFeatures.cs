@@ -10,7 +10,7 @@ namespace FeatureFinder.Algorithms
         public static IEnumerable<IMSMSFeature> ClusterByMass(IEnumerable<MSFeature> msFeatureEnumerable)
         {
             var imsmsFeatureList = new List<IMSMSFeature>();
-            
+
             var massToleranceBase = Settings.MassMonoisotopicConstraint;
 
             var sortByMassQuery = from msFeature in msFeatureEnumerable
@@ -28,7 +28,7 @@ namespace FeatureFinder.Algorithms
                 var massToleranceHigh = massReference + massTolerance;
                 var massToleranceLow = massReference - massTolerance;
 
-                if (mass >= massToleranceLow && mass <= massToleranceHigh)
+                if (mass >= massToleranceLow && mass <= massToleranceHigh && imsmsFeature != null)
                 {
                     imsmsFeature.AddMSFeature(msFeature);
                 }
@@ -64,7 +64,7 @@ namespace FeatureFinder.Algorithms
                     }
                     else
                     {
-                        newIMSMSFeature.AddMSFeature(msFeature);
+                        newIMSMSFeature?.AddMSFeature(msFeature);
                     }
 
                     scanIMSReference = msFeature.ScanIMS;

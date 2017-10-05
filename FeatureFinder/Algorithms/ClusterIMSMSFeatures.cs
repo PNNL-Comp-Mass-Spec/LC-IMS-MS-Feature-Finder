@@ -11,7 +11,7 @@ namespace FeatureFinder.Algorithms
         public static IEnumerable<LCIMSMSFeature> ClusterByMassAndScanLC(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
         {
             var lcimsmsFeatureList = new List<LCIMSMSFeature>();
-            
+
             var massToleranceBase = Settings.MassMonoisotopicConstraint;
 
             var sortByMassQuery = from imsmsFeature in imsmsFeatureEnumerable
@@ -29,7 +29,7 @@ namespace FeatureFinder.Algorithms
                 var massToleranceHigh = massReference + massTolerance;
                 var massToleranceLow = massReference - massTolerance;
 
-                if (mass >= massToleranceLow && mass <= massToleranceHigh)
+                if (mass >= massToleranceLow && mass <= massToleranceHigh && lcimsmsFeature != null)
                 {
                     lcimsmsFeature.AddIMSMSFeature(imsmsFeature);
                 }
@@ -50,6 +50,7 @@ namespace FeatureFinder.Algorithms
             //return splitLCIMSMSFeatureEnumerable;
         }
 
+        [Obsolete("Unused")]
         private static IEnumerable<LCIMSMSFeature> SplitByScanLCGap(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
         {
             var lcimsmsFeatureList = new List<LCIMSMSFeature>();
@@ -67,7 +68,7 @@ namespace FeatureFinder.Algorithms
 
                 foreach (var imsmsFeature in sortByScanLCQuery)
                 {
-                    if (imsmsFeature.ScanLC - scanLCReference - 1 <= gapSizeMax)
+                    if (imsmsFeature.ScanLC - scanLCReference - 1 <= gapSizeMax && newLCIMSMSFeature != null)
                     {
                         newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
                     }
