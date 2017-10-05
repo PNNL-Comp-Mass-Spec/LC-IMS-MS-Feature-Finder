@@ -16,13 +16,16 @@ namespace FeatureFinder.Utilities
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
             var outputDirectory = "";
 
-            if (!string.IsNullOrWhiteSpace(Settings.OutputDirectory) && !Settings.OutputDirectory.EndsWith("\\"))
+            if (!string.IsNullOrWhiteSpace(Settings.OutputDirectory))
             {
-                outputDirectory = Settings.OutputDirectory + "\\";
+                outputDirectory = Settings.OutputDirectory;
             }
 
-            using (var featureWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatures.txt"))
-            using (var mapWriter = new StreamWriter(outputDirectory + baseFileName + "_LCMSFeatureToPeakMap.txt"))
+            var featuresFilePath = Path.Combine(outputDirectory, baseFileName + "_LCMSFeatures.txt");
+            var featureToPeakMapPath = Path.Combine(outputDirectory, baseFileName + "_LCMSFeatureToPeakMap.txt");
+
+            using (var featureWriter = new StreamWriter(featuresFilePath))
+            using (var mapWriter = new StreamWriter(featureToPeakMapPath))
             {
 
                 var headerCols = new List<string>
