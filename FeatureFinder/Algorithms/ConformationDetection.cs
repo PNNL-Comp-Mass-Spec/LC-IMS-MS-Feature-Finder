@@ -16,7 +16,7 @@ namespace FeatureFinder.Algorithms
         private const double DRIFT_TIME_SLICE_WIDTH = 0.1;
         private const double FRAME_PRESSURE_STANDARD = 4.0;
 
-        public static IEnumerable<LCIMSMSFeature> DetectConformationsUsingRawData(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static IEnumerable<LCIMSMSFeature> DetectConformationsUsingRawData(IReadOnlyList<LCIMSMSFeature> lcImsMSFeatures)
         {
             var newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
             var uimfFile = new FileInfo(Path.Combine(Settings.InputDirectory, FileUtil.GetUimfFileForIsosFile(Settings.InputFileName)));
@@ -34,11 +34,11 @@ namespace FeatureFinder.Algorithms
                 var globalParams = uimfReader.GetGlobalParams();
 
                 var binWidth = globalParams.BinWidth;
-                var featureCount = lcimsmsFeatureEnumerable.Count();
+                var featureCount = lcImsMSFeatures.Count;
                 var featuresProcessed = 0;
                 var lastProgressUpdate = DateTime.UtcNow;
 
-                foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
+                foreach (var lcimsmsFeature in lcImsMSFeatures)
                 {
                     var scanLC = ScanLCMap.Mapping[lcimsmsFeature.IMSMSFeatureList[0].ScanLC];
 
