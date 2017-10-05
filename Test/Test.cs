@@ -14,8 +14,8 @@ namespace Test
         {
             var testFolderPath = "";
             if (!File.Exists(fileToFind) &&
-                Directory.Exists(Test.UNIT_TEST_FOLDER))
-                testFolderPath = Test.UNIT_TEST_FOLDER;
+                Directory.Exists(UNIT_TEST_FOLDER))
+                testFolderPath = UNIT_TEST_FOLDER;
 
             var fileInfo = new FileInfo(Path.Combine(testFolderPath, fileToFind));
             if (fileInfo.Exists)
@@ -77,14 +77,23 @@ namespace Test
 
             var isosReader = new IsosReader(isosFile.FullName, Settings.OutputDirectory);
 
-            var controller = new LCIMSMSFeatureFinderController(isosReader);
-            controller.Execute();
-
             var featuresFilePath = Path.Combine(Settings.OutputDirectory, isosFile.Name.Replace("_isos.csv", "_LCMSFeatures.txt"));
             var filteredIsosFilePath = Path.Combine(Settings.OutputDirectory, isosFile.Name.Replace("_isos.csv", "_Filtered_isos.csv"));
 
             var featuresFile = new FileInfo(featuresFilePath);
             var filteredIsos = new FileInfo(filteredIsosFilePath);
+
+            if (!featuresFile.Exists)
+                featuresFile.Delete();
+
+            if (!filteredIsos.Exists)
+                filteredIsos.Delete();
+
+            var controller = new LCIMSMSFeatureFinderController(isosReader);
+            controller.Execute();
+
+            featuresFile.Refresh();
+            filteredIsos.Refresh();
 
             if (!featuresFile.Exists)
                 Assert.Fail("LCMSFeatures file not found at " + featuresFile.FullName);
