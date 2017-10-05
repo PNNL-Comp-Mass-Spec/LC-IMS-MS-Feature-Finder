@@ -3,8 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
+    <ProductVersion></ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2EF309B8-149C-4086-8AB1-BA5259550D83}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -69,11 +68,11 @@
       <Version>3.6.1</Version>
     </PackageReference>
     <PackageReference Include="PRISM-Library">
-      <Version>1.0.4</Version>
+      <Version>2.4.32</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.97" />
     <PackageReference Include="UIMFLibrary">
-      <Version>1.0.5</Version>
+      <Version>1.0.9</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
