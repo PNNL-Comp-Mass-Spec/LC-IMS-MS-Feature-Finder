@@ -56,20 +56,18 @@ namespace FeatureFinder.Control
                     index++;
                     var columns = line.Split(',', '\t', '\n');
 
-                    if (m_columnMap.ContainsKey("MSFeature.Mz")) columns[m_columnMap["MSFeature.Mz"]] = msFeature.Mz.ToString();
-                    if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic")) columns[m_columnMap["MSFeature.MassMonoisotopic"]] = msFeature.MassMonoisotopic.ToString();
-                    if (m_columnMap.ContainsKey("MSFeature.MassMostAbundant")) columns[m_columnMap["MSFeature.MassMostAbundant"]] = msFeature.MassMostAbundantIsotope.ToString();
+                    if (m_columnMap.ContainsKey("MSFeature.Mz"))
+                        columns[m_columnMap["MSFeature.Mz"]] = PRISM.StringUtilities.DblToString(msFeature.Mz, 5);
 
-                    var newLine = "";
+                    if (m_columnMap.ContainsKey("MSFeature.MassMonoisotopic"))
+                        columns[m_columnMap["MSFeature.MassMonoisotopic"]] = PRISM.StringUtilities.DblToString(msFeature.MassMonoisotopic, 5);
 
-                    foreach (var column in columns)
-                    {
-                        newLine = newLine + column + ",";
-                    }
+                    if (m_columnMap.ContainsKey("MSFeature.MassMostAbundant"))
+                        columns[m_columnMap["MSFeature.MassMostAbundant"]] = PRISM.StringUtilities.DblToString(msFeature.MassMostAbundantIsotope, 5);
 
-                    newLine = newLine.Remove(newLine.Length - 1);
+                    var outLine = string.Join(",", columns);
+                    m_isosFileWriter.WriteLine(outLine);
 
-                    m_isosFileWriter.WriteLine(newLine);
                     previousFeatureId = msFeature.Id;
                 }
                 else
