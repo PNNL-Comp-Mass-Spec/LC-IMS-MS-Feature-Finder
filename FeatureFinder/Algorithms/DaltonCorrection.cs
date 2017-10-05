@@ -28,8 +28,8 @@ namespace FeatureFinder.Algorithms
                 var errorFlagPercentage = lcimsmsFeature.GetFlaggedPercentage();
 
                 var searchForDaErrorQuery = from otherLCIMSMSFeature in lcimsmsFeatureEnumerable
-                                            where 
-                                                Math.Abs(averageMass - otherLCIMSMSFeature.CalculateAverageMonoisotopicMass()) >= (1 - massTolerance) 
+                                            where
+                                                Math.Abs(averageMass - otherLCIMSMSFeature.CalculateAverageMonoisotopicMass()) >= (1 - massTolerance)
                                                 && Math.Abs(averageMass - otherLCIMSMSFeature.CalculateAverageMonoisotopicMass()) <= (1 + massTolerance)
                                                 && otherLCIMSMSFeature.IMSMSFeatureList.Count > 0
                                             orderby Math.Abs(errorFlagPercentage - otherLCIMSMSFeature.GetFlaggedPercentage()) descending
@@ -49,7 +49,7 @@ namespace FeatureFinder.Algorithms
                     {
                         FeatureUtil.MergeLCIMSMSFeatures(lcimsmsFeature, lcimsmsFeatureToCheck);
                     }
-                            
+
                     totalFound++;
                     break;
                     //}

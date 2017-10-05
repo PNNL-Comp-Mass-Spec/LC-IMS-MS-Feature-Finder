@@ -78,12 +78,12 @@ namespace FeatureFinder.Control
         /// <summary>
         /// Returns the MSFeatureList contained in this class
         /// </summary>
-        public List<MSFeature> MSFeatureList { get; private set; }
+        public List<MSFeature> MSFeatureList { get; }
 
         /// <summary>
         /// Returns the Column Map contained in this class
         /// </summary>
-        public Dictionary<string, int> ColumnMap { get; private set; }
+        public Dictionary<string, int> ColumnMap { get; }
 
         /// <summary>
         /// Returns the number of unfiltered MSFeatures that were read from the isos file

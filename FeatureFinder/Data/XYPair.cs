@@ -7,8 +7,8 @@
 
         public XYPair(double xValue, double yValue)
         {
-            this.XValue = xValue;
-            this.YValue = yValue;
+            XValue = xValue;
+            YValue = yValue;
         }
 
 

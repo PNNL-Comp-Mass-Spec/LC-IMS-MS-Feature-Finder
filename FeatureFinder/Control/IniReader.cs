@@ -27,12 +27,10 @@ namespace FeatureFinder.Control
 
         public void CreateSettings()
         {
-            var value = "";
-
             /*
              * Files Settings
              */
-            value = IniReadValue("Files", "InputFileName");
+            var value = IniReadValue("Files", "InputFileName");
             if (!string.IsNullOrWhiteSpace(value))
             {
                 var directoryName = Path.GetDirectoryName(value);
@@ -246,7 +244,7 @@ namespace FeatureFinder.Control
         private string IniReadValue(string Section, string Key)
         {
             var stringBuilder = new StringBuilder(255);
-            GetPrivateProfileString(Section, Key, "", stringBuilder, 255, this.m_path);
+            GetPrivateProfileString(Section, Key, "", stringBuilder, 255, m_path);
             return stringBuilder.ToString();
         }
     }

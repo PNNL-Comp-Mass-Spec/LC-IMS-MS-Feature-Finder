@@ -176,7 +176,7 @@ namespace LCMSFeatureFinder
         private static string GetExeName()
         {
             var assemblyPath = Assembly.GetEntryAssembly().Location;
-            return System.IO.Path.GetFileName(assemblyPath);
+            return Path.GetFileName(assemblyPath);
         }
 
         private static FileInfo GetSourceFile(string inputDirectory, string inputFileName)

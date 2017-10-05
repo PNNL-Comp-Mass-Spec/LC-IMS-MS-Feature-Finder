@@ -12,7 +12,7 @@ namespace FeatureFinder.Data
 
         public int CompareTo(MSFeature otherMSFeature)
         {
-            return this.Id.CompareTo(otherMSFeature.Id);
+            return Id.CompareTo(otherMSFeature.Id);
         }
 
         public static Comparison<MSFeature> MassComparison = delegate(MSFeature msFeature1, MSFeature msFeature2)

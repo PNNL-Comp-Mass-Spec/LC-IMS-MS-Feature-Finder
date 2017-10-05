@@ -18,7 +18,7 @@ namespace FeatureFinder.Utilities
                                     msFeature.InterferenceScore <= filter.InterferenceScoreMaximum
                               select filter;
 
-            return searchQuery.Count() > 0;
+            return searchQuery.Any();
         }
     }
 }

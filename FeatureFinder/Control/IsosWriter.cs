@@ -31,7 +31,7 @@ namespace FeatureFinder.Control
 
         private void WriteIsosFile()
         {
-            var line = "";
+            string line;
             var offset = 0;
             var index = 0;
             var previousFeatureId = int.MaxValue;

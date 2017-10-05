@@ -10,7 +10,7 @@ namespace FeatureFinder.Control
 {
     public class LCIMSMSFeatureFinderController
     {
-        private IsosReader m_isosReader;
+        private readonly IsosReader m_isosReader;
 
         #region Constructors
         public LCIMSMSFeatureFinderController(IsosReader isosReader)
@@ -107,7 +107,7 @@ namespace FeatureFinder.Control
 
                 Logger.Log("Total Number of LC-IMS-MS Features = " + lcimsmsFeatureBag.Count);
 
-                IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable = null;
+                IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable;
 
                 if (Settings.IMSDaCorrectionMax > 0 && !Settings.FilterFlaggedData)
                 {
@@ -142,8 +142,6 @@ namespace FeatureFinder.Control
                         }
                     }
 
-                    lcimsmsFeatureBag = null;
-
                     Parallel.ForEach(lcimsmsFeatureListBag, lcimsmsFeatureGroup =>
                     {
                         var lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
@@ -155,7 +153,6 @@ namespace FeatureFinder.Control
                     });
 
                     lcimsmsFeatureEnumerable = daCorrectedLCIMSMSFeatureBag;
-                    daCorrectedLCIMSMSFeatureBag = null;
 
                     Logger.Log("Total Number of Dalton Corrected LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
                 }

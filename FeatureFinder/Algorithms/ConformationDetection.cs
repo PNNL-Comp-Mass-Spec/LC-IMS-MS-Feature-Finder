@@ -12,7 +12,6 @@ namespace FeatureFinder.Algorithms
 {
     public static class ConformationDetection
     {
-        private const double DRIFT_TIME_WINDOW_WIDTH = 0.6;
         private const double DRIFT_TIME_SLICE_WIDTH = 0.1;
         private const double FRAME_PRESSURE_STANDARD = 4.0;
 
@@ -211,7 +210,7 @@ namespace FeatureFinder.Algorithms
                 }
             }
 
-            var resolvingPower = GetResolvingPower(lcimsmsFeature.Charge);
+            // var resolvingPower = GetResolvingPower(lcimsmsFeature.Charge);
 
             var newLCIMSMSFeatureList = new List<LCIMSMSFeature>();
 
@@ -391,14 +390,13 @@ namespace FeatureFinder.Algorithms
             {
                 return 50;
             }
+
             if (chargeState == 2)
             {
                 return 60;
             }
-            else
-            {
-                return 70;
-            }
+
+            return 70;
         }
 
         public static double ConvertIMSScanToDriftTime(double imsScan, double averageTOFLength, double framePressure)

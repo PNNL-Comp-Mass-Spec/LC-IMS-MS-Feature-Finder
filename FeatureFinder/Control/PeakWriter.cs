@@ -6,28 +6,28 @@ namespace FeatureFinder.Control
 {
     public static class PeakWriter
     {
-        private static TextWriter m_textWriter;
+        private static readonly TextWriter m_writer;
 
         static PeakWriter()
         {
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
 
             var streamWriter = new StreamWriter(Path.Combine(Settings.OutputDirectory, baseFileName + "_Peaks.txt")) {AutoFlush = true};
-            m_textWriter = streamWriter;
+            m_writer = streamWriter;
         }
 
         public static void Write(List<double> xValues, List<double> yValues1, List<double> yValues2)
         {
             for(var i = 0; i < xValues.Count; i++)
             {
-                m_textWriter.WriteLine(xValues[i] + "\t" + yValues1[i] + "\t" + yValues2[i]);
+                m_writer.WriteLine(xValues[i] + "\t" + yValues1[i] + "\t" + yValues2[i]);
             }
 
         }
 
         public static void CloseWriter()
         {
-            m_textWriter.Close();
+            m_writer.Close();
         }
     }
 }

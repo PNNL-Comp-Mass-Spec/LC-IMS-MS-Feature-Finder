@@ -14,17 +14,17 @@ namespace FeatureFinder.Utilities
         {
             var sigma = peakFWHM / 2.35482;
             var sixSigma = 3 * peakFWHM;
-            var pointSize = sixSigma / (double)(numOfPoints - 1);
+            var pointSize = sixSigma / (numOfPoints - 1);
 
-            var startPoint = 0 - (int)Math.Floor(((numOfPoints - 1) / 2.0));
-            var stopPoint = 0 + (int)Math.Ceiling(((numOfPoints - 1) / 2.0));
+            var startPoint = 0 - (int)Math.Floor((numOfPoints - 1) / 2.0);
+            var stopPoint = 0 + (int)Math.Ceiling((numOfPoints - 1) / 2.0);
 
             var xyPairList = new List<XYPair>();
 
             for (var i = startPoint; i <= stopPoint; i++)
             {
-                var xValue = centerOfPeak + (pointSize * i);
-                var yValue = (1 / sigma) * ONE_OVER_SQRT_OF_2_PI * Math.Exp(-1 * (Math.Pow(xValue - centerOfPeak, 2)) / (2 * Math.Pow(sigma, 2)));
+                var xValue = centerOfPeak + pointSize * i;
+                var yValue = 1 / sigma * ONE_OVER_SQRT_OF_2_PI * Math.Exp(-1 * Math.Pow(xValue - centerOfPeak, 2) / (2 * Math.Pow(sigma, 2)));
 
                 var xyPair = new XYPair(xValue, yValue);
                 xyPairList.Add(xyPair);
@@ -41,8 +41,8 @@ namespace FeatureFinder.Utilities
 
             observedPeak.GetMinAndMaxXValues(out var minimumXValue, out var maximumXValue);
 
-            var observedInterpolation = PeakUtil.GetLinearInterpolationMethod(observedPeak);
-            var theoreticalInterpolation = PeakUtil.GetLinearInterpolationMethod(theoreticalPeak);
+            var observedInterpolation = GetLinearInterpolationMethod(observedPeak);
+            var theoreticalInterpolation = GetLinearInterpolationMethod(theoreticalPeak);
 
             var maxObservedPeakValue = observedInterpolation.Interpolate(observedPeak.GetQuadraticFit());
             var maxTheoreticalPeakValue = theoreticalInterpolation.Interpolate(theoreticalPeak.GetQuadraticFit());
@@ -74,7 +74,7 @@ namespace FeatureFinder.Utilities
                 numPointsTested++;
             }
 
-            var fitScore = 1 - (sumOfSquaredResiduals / (double)numPointsTested);
+            var fitScore = 1 - sumOfSquaredResiduals / numPointsTested;
             //Console.WriteLine(fitScore);
 
             //PeakWriter.Write(xValues, yValues1, yValues2);
@@ -122,7 +122,7 @@ namespace FeatureFinder.Utilities
                 }
             }
 
-            var fitScore = 1 - (sumOfSquaredResiduals / observedPeak.Count);
+            var fitScore = 1 - sumOfSquaredResiduals / observedPeak.Count;
 
             return fitScore;
         }
@@ -206,7 +206,7 @@ namespace FeatureFinder.Utilities
 
             return null;
         }
-        */ 
+        */
 
         // TODO: Verify this actually works --- Da's code, slightly modified by me
         public static Peak KDESmooth(Peak peak, double bandwidth)
@@ -237,7 +237,7 @@ namespace FeatureFinder.Utilities
                     double w = 0;
                     if (standardized < 6)
                     {
-                        w = (2 * Math.Sqrt(2 * Math.PI) * Math.Exp(-2 * standardized * standardized));
+                        w = 2 * Math.Sqrt(2 * Math.PI) * Math.Exp(-2 * standardized * standardized);
                         sumWInv += 1 / w;
                     }
                     sumXoW += x * w;
@@ -279,7 +279,7 @@ namespace FeatureFinder.Utilities
                     double w = 0;
                     if (standardized < 6)
                     {
-                        w = (2 * Math.Sqrt(2 * Math.PI) * Math.Exp(-2 * standardized * standardized));
+                        w = 2 * Math.Sqrt(2 * Math.PI) * Math.Exp(-2 * standardized * standardized);
                         sumWInv += 1 / w;
                     }
                     sumXoW += x * w;
@@ -308,7 +308,7 @@ namespace FeatureFinder.Utilities
             return interpolation;
         }
 
-        private static int FindPositionOfMaximum(List<double> peak, out double maximum)
+        private static int FindPositionOfMaximum(IReadOnlyList<double> peak, out double maximum)
         {
             maximum = double.MinValue;
             var position = 0;

@@ -11,8 +11,8 @@ namespace FeatureFinder.Data
 
         public Peak(IEnumerable<XYPair> xyPairList)
         {
-            this.XYPairList = new List<XYPair>();
-            this.XYPairList.AddRange(xyPairList);
+            XYPairList = new List<XYPair>();
+            XYPairList.AddRange(xyPairList);
         }
 
         public Peak(IList<double> xValues, IList<double> yValues)
@@ -34,7 +34,7 @@ namespace FeatureFinder.Data
                 xyPairList.Add(xyPair);
             }
 
-            this.XYPairList = xyPairList;
+            XYPairList = xyPairList;
         }
 
         public void GetXAndYValuesAsLists(out List<double> xValues, out List<double> yValues)
@@ -42,7 +42,7 @@ namespace FeatureFinder.Data
             xValues = new List<double>();
             yValues = new List<double>();
 
-            foreach (var xyPair in this.XYPairList)
+            foreach (var xyPair in XYPairList)
             {
                 xValues.Add(xyPair.XValue);
                 yValues.Add(xyPair.YValue);
@@ -90,10 +90,10 @@ namespace FeatureFinder.Data
         public void PrintPeakToConsole()
         {
             var sortByXValue = from xyPair in XYPairList
-                               orderby xyPair.XValue ascending
+                               orderby xyPair.XValue
                                select xyPair;
 
-            
+
             foreach (var xyPair in sortByXValue)
             {
                 Console.WriteLine("[" + xyPair.XValue + ", " + xyPair.YValue + "]\t");
@@ -105,7 +105,7 @@ namespace FeatureFinder.Data
             double totalY = 0;
             double totalXTimesY = 0;
 
-            foreach (var xyPair in this.XYPairList)
+            foreach (var xyPair in XYPairList)
             {
                 totalY += xyPair.YValue;
                 totalXTimesY += (xyPair.XValue * xyPair.YValue);
@@ -145,7 +145,7 @@ namespace FeatureFinder.Data
             // no good.  Just return the known peak
             if (Math.Abs(quadratic - 0) < double.Epsilon)
             {
-                return x2;  
+                return x2;
             }
 
             quadratic = ((x1 + x2) - ((y2 - y1) * (x3 - x2) * (x1 - x3)) / quadratic) / 2.0;

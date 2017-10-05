@@ -73,7 +73,7 @@ namespace FeatureFinder.Data
         }
 
         /// <summary>
-        /// Calculates the average monoisotopic mass for the LC-IMS-MSFeature. 
+        /// Calculates the average monoisotopic mass for the LC-IMS-MSFeature.
         /// </summary>
         /// <returns></returns>
         public double CalculateAverageMonoisotopicMass()
@@ -130,7 +130,7 @@ namespace FeatureFinder.Data
                 numTotal++;
             }
 
-            var percentage = (double)numFlagged / (double)numTotal;
+            var percentage = numFlagged / (double)numTotal;
             return percentage;
         }
 
@@ -193,7 +193,9 @@ namespace FeatureFinder.Data
             msFeatureRep = sortByAbundanceQuery.First();
         }
 
-        public void GetMinAndMaxScanLCAndDriftTimeAndMSFeatureRep(out int scanLCMinimum, out int scanLCMaximum, out double driftTimeMinimum, out double driftTimeMaximum, out MSFeature msFeatureRep)
+        public void GetMinAndMaxScanLCAndDriftTimeAndMSFeatureRep(
+            out int scanLCMinimum, out int scanLCMaximum,
+            out double driftTimeMinimum, out double driftTimeMaximum, out MSFeature msFeatureRep)
         {
             var msFeatureList = new List<MSFeature>();
 
@@ -303,18 +305,18 @@ namespace FeatureFinder.Data
 
                     //double midPointMZ = (maxMZ + minMZ) / 2;
                     //double wideToleranceInMZ = midPointMZ - minMZ;
-            
+
             var frameMinimum = ScanLCMap.Mapping[scanLCMinimum];
             var frameMaximum = ScanLCMap.Mapping[scanLCMaximum];
 
-           
+
             int[] scanValues = null;
             int[] intensityVals = null;
 
             var sigma = msFeatureRep.Fwhm / 2.35;
             var toleranceInMZ = 2 * sigma ;    //  this is a +/- value;  so    4* sigma = 95% of a normal distribution
 
-            //Before: a wide m/z was used when generating the drift time profile. 
+            //Before: a wide m/z was used when generating the drift time profile.
             //uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, wideToleranceInMZ, ref scanValues, ref intensityVals);
 
             //now:  a narrow m/z range is used when generating the drift time profile

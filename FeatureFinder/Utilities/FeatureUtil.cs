@@ -358,7 +358,7 @@ namespace FeatureFinder.Utilities
             var returnList = new List<List<LCIMSMSFeature>>();
 
             var sortByMassQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
-                                  orderby lcimsmsFeature.CalculateAverageMonoisotopicMass() ascending
+                                  orderby lcimsmsFeature.CalculateAverageMonoisotopicMass()
                                   select lcimsmsFeature;
 
             var lcimsmsFeatureList = new List<LCIMSMSFeature>();
@@ -423,7 +423,7 @@ namespace FeatureFinder.Utilities
         public static IEnumerable<LCIMSMSFeature> SortByMass(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
         {
             var sortByMassQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
-                                  orderby lcimsmsFeature.Charge ascending, lcimsmsFeature.CalculateAverageMonoisotopicMass() ascending
+                                  orderby lcimsmsFeature.Charge, lcimsmsFeature.CalculateAverageMonoisotopicMass()
                                   select lcimsmsFeature;
 
             return sortByMassQuery.AsEnumerable();
