@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using FeatureFinder.Control;
 using NUnit.Framework;
-using FeatureFinder.Control;
 
-namespace Test
+namespace FeatureFinder.FunctionalTests
 {
     [TestFixture]
     public class LCIMSMSFeatureFinderControllerTests
