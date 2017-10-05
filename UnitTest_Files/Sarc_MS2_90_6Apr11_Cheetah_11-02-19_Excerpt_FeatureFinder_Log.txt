@@ -1,0 +1,28 @@
+2017-10-05 16:54:53	LCMSFeatureFinder Version 2.2.6487.30443
+2017-10-05 16:54:53	Loading settings from INI file: \\proto-2\UnitTest_Files\DeconTools_TestFiles\LCMSFeatureFinder\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn.ini
+2017-10-05 16:54:53	Data Filters - 
+2017-10-05 16:54:53	 Minimum LC scan = 0
+2017-10-05 16:54:53	 Maximum LC scan = 2147483647
+2017-10-05 16:54:53	 Minimum IMS scan = 0
+2017-10-05 16:54:53	 Maximum IMS scan = 2147483647
+2017-10-05 16:54:53	 Filtering using charge/abundance/fitScore/i_score table from file: \\proto-2\UnitTest_Files\DeconTools_TestFiles\LCMSFeatureFinder\DeconToolsIsosFilters_IMS4_2011-04-28.txt
+2017-10-05 16:54:53	 Filtering out flagged data
+2017-10-05 16:54:53	 Mono mass start = 0
+2017-10-05 16:54:53	 Mono mass end = 15000
+2017-10-05 16:54:56	Processing LC-IMS-MS Data...
+2017-10-05 16:54:56	Total number of MS Features in _isos.csv file = 145777
+2017-10-05 16:54:56	Total number of MS Features we'll consider = 114574
+2017-10-05 16:54:56	Creating IMS-MS Features...
+2017-10-05 16:54:56	Total Number of Unfiltered IMS-MS Features = 14659
+2017-10-05 16:54:56	Creating LC-IMS-MS Features...
+2017-10-05 16:54:56	Total Number of LC-IMS-MS Features = 2670
+2017-10-05 16:54:56	Filtering LC-IMS-MS features based on Member Count...
+2017-10-05 16:54:56	Total Number of Filtered LC-IMS-MS Features = 1844
+2017-10-05 16:54:56	Splitting LC-IMS-MS Features by LC Scan...
+2017-10-05 16:54:56	New Total Number of Filtered LC-IMS-MS Features = 2425
+2017-10-05 16:54:56	Conformation Detection...
+2017-10-05 16:54:56	UIMF file has been opened.
+2017-10-05 16:55:05	New Total Number of LC-IMS-MS Features = 2046
+2017-10-05 16:55:05	Creating filtered Isos file...
+2017-10-05 16:55:06	Writing output files...
+2017-10-05 16:55:06	Finished!
