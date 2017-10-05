@@ -6,7 +6,6 @@ using FeatureFinder.Control;
 using FeatureFinder.Data;
 using FeatureFinder.Data.Maps;
 using FeatureFinder.Utilities;
-using MathNet.Numerics.Interpolation;
 using UIMFLibrary;
 
 namespace FeatureFinder.Algorithms
