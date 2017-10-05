@@ -22,7 +22,7 @@ namespace LCMSFeatureFinder
     /// </remarks>
     class ConsoleApplication
     {
-        private const string PROGRAM_DATE = "May 10, 2017";
+        private const string PROGRAM_DATE = "October 5, 2017";
 
         [DllImport("kernel32.dll")]
         public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
@@ -66,6 +66,7 @@ namespace LCMSFeatureFinder
                 if (!iniFile.Exists)
                 {
                     Logger.Log("Error: Ini file not found at " + iniFilePath);
+                    System.Threading.Thread.Sleep(1500);
                     return -2;
                 }
 
@@ -101,6 +102,7 @@ namespace LCMSFeatureFinder
                 if (!isosFile.Exists)
                 {
                     Logger.Log("Error: Isos file not found at " + isosFile.FullName);
+                    System.Threading.Thread.Sleep(1500);
                     return -3;
                 }
 
@@ -109,6 +111,7 @@ namespace LCMSFeatureFinder
                 if (dataType < 0)
                 {
                     Logger.Log("Unknown type of Isos file. Exiting.");
+                    System.Threading.Thread.Sleep(1500);
                     return -4;
                 }
 
@@ -117,6 +120,7 @@ namespace LCMSFeatureFinder
                 if (Settings.UseConformationDetection && !uimfFile.Exists && dataType != LC_DATA)
                 {
                     Logger.Log("Error: UIMF file not found at " + uimfFile.FullName);
+                    System.Threading.Thread.Sleep(1500);
                     return -7;
                 }
 
@@ -131,6 +135,7 @@ namespace LCMSFeatureFinder
                     //RunLCMSFeatureFinder(isosReader);
 
                     Logger.Log("Aborted!");
+                    System.Threading.Thread.Sleep(1500);
                     return -5;
 
                 }
@@ -139,6 +144,7 @@ namespace LCMSFeatureFinder
                 {
                     Logger.Log("Unsupported data type. Exiting...");
                     Logger.Log("Aborted!");
+                    System.Threading.Thread.Sleep(1500);
                     return -6;
                 }
 
@@ -149,17 +155,19 @@ namespace LCMSFeatureFinder
                 if (success)
                 {
                     Logger.Log("Finished!");
+                    System.Threading.Thread.Sleep(750);
                     return 0;
                 }
 
                 Logger.Log("Processing error; check the log messages");
+                System.Threading.Thread.Sleep(1500);
 
                 return -10;
             }
             catch (Exception ex)
             {
                 Logger.Log("Exception while processing: " + ex.Message);
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(1500);
                 return -11;
             }
             finally
