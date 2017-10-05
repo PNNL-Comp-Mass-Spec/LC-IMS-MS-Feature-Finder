@@ -126,13 +126,11 @@ namespace FeatureFinder.Algorithms
 
             var globalIMSScanMinimum = double.MaxValue;
             var globalIMSScanMaximum = double.MinValue;
-            double localIMSScanMinimum = 0;
-            double localIMSScanMaximum = 0;
 
             // Grab all of the intensity values for each IMS-MS Feature and find the global minimum and maximum Drift Times
             foreach (var imsmsFeature in sortByScanLCQuery)
             {
-                imsmsFeature.GetMinAndMaxIMSScan(out localIMSScanMinimum, out localIMSScanMaximum);
+                imsmsFeature.GetMinAndMaxIMSScan(out var localIMSScanMinimum, out var localIMSScanMaximum);
 
                 if (localIMSScanMinimum < globalIMSScanMinimum) globalIMSScanMinimum = localIMSScanMinimum;
                 if (localIMSScanMaximum > globalIMSScanMaximum) globalIMSScanMaximum = localIMSScanMaximum;
@@ -227,9 +225,7 @@ namespace FeatureFinder.Algorithms
                 //double theoreticalFWHM = driftTime / resolvingPower;
                 double theoreticalFWHM = 3;
 
-                double minimumXValue = 0;
-                double maximumXValue = 0;
-                peak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
+                peak.GetMinAndMaxXValues(out var minimumXValue, out var maximumXValue);
 
                 const int numPoints = 100;
 

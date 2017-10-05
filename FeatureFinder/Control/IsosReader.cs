@@ -294,8 +294,7 @@ namespace FeatureFinder.Control
                     {
                         var frame = Int32.Parse(columns[ColumnMap["MSFeature.Frame"]]);
 
-                        DataReader.FrameType frameType;
-                        ScanLCToFrameTypeMap.Mapping.TryGetValue(frame, out frameType);
+                        ScanLCToFrameTypeMap.Mapping.TryGetValue(frame, out var frameType);
 
                         // Ignore this MS Feature if it belongsm to a Frame Type that is not correct
                         if (Settings.FrameTypeFilter != DataReader.FrameType.Calibration && frameType != Settings.FrameTypeFilter)

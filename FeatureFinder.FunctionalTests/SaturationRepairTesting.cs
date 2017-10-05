@@ -247,10 +247,9 @@ namespace FeatureFinder.FunctionalTests
         private void DisplayFeatureStats(LCIMSMSFeature testFeature1)
         {
             Console.WriteLine("OrigIndex= \t" + testFeature1.OriginalIndex);
-
-            int scanLCMinimum, scanLCMaximum, scanIMSMinimum, scanIMSMaximum;
-            MSFeature msFeatureRep;
-            testFeature1.GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
+            testFeature1.GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(
+                out var scanLCMinimum, out var scanLCMaximum,
+                out var scanIMSMinimum, out var scanIMSMaximum, out _);
 
             Console.WriteLine("FrameStart= \t" + scanLCMinimum);
             Console.WriteLine("FrameStop= \t" + scanLCMaximum);

@@ -39,9 +39,7 @@ namespace FeatureFinder.Utilities
             var yValues1 = new List<double>();
             var yValues2 = new List<double>();
 
-            double minimumXValue = 0;
-            double maximumXValue = 0;
-            observedPeak.GetMinAndMaxXValues(out minimumXValue, out maximumXValue);
+            observedPeak.GetMinAndMaxXValues(out var minimumXValue, out var maximumXValue);
 
             var observedInterpolation = PeakUtil.GetLinearInterpolationMethod(observedPeak);
             var theoreticalInterpolation = PeakUtil.GetLinearInterpolationMethod(theoreticalPeak);
