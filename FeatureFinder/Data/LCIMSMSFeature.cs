@@ -276,14 +276,10 @@ namespace FeatureFinder.Data
 
         public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, DataReader.FrameType frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
         {
-            var scanLCMinimum = 0;
-            var scanLCMaximum = 0;
-            var scanIMSMinimum = 0;
-            var scanIMSMaximum = 0;
 
-            MSFeature msFeatureRep = null;
-
-            GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(out scanLCMinimum, out scanLCMaximum, out scanIMSMinimum, out scanIMSMaximum, out msFeatureRep);
+            GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(
+                out var scanLCMinimum, out var scanLCMaximum,
+                out var scanIMSMinimum, out var scanIMSMaximum, out var msFeatureRep);
 
             double currentFWHM = msFeatureRep.Fwhm;
             var currentMonoMZ = msFeatureRep.MassMonoisotopic/msFeatureRep.Charge + 1.0072649;
