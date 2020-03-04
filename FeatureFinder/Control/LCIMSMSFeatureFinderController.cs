@@ -153,42 +153,45 @@ namespace FeatureFinder.Control
                         }
                     });
 
-                    lcimsmsFeatureEnumerable = daCorrectedLCIMSMSFeatureBag;
+                    lcImsMsFeatures = daCorrectedLCIMSMSFeatureBag;
 
-                    Logger.Log("Total Number of Dalton Corrected LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+                    Logger.Log("Total Number of Dalton Corrected LC-IMS-MS Features = " + lcImsMsFeatures.Count());
                 }
                 else
                 {
-                    lcimsmsFeatureEnumerable = lcimsmsFeatureBag;
+                    lcImsMsFeatures = lcImsMsFeatureBag;
                 }
 
                 Logger.Log("Filtering LC-IMS-MS features based on Member Count...");
-                lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(lcimsmsFeatureEnumerable);
-                Logger.Log("Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+                var filteredLcImsMsFeatures = FeatureUtil.FilterByMemberCount(lcImsMsFeatures).ToList();
+                Logger.Log("Total Number of Filtered LC-IMS-MS Features = " + filteredLcImsMsFeatures.Count);
 
                 Logger.Log("Splitting LC-IMS-MS Features by LC Scan...");
-                lcimsmsFeatureEnumerable = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(lcimsmsFeatureEnumerable);
+                var splitLcImsMsFeatures = FeatureUtil.SplitLCIMSMSFeaturesByScanLC(filteredLcImsMsFeatures).ToList();
+
+                IEnumerable<LCIMSMSFeature> featuresAfterScanBasedOrConformationFiltering;
                 if (!Settings.UseConformationDetection)
                 {
-                    lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
+                    featuresAfterScanBasedOrConformationFiltering = FeatureUtil.FilterSingleLCScan(splitLcImsMsFeatures).ToList();
+                    Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + featuresAfterScanBasedOrConformationFiltering.Count());
                 }
-                Logger.Log("New Total Number of Filtered LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
-
-                if (Settings.UseConformationDetection)
+                else
                 {
+                    Logger.Log("Number of LC-IMS-MS Features before conformation detection = " + splitLcImsMsFeatures.Count);
+
                     Logger.Log("Conformation Detection...");
-                    lcimsmsFeatureEnumerable = ConformationDetection.DetectConformationsUsingRawData(lcimsmsFeatureEnumerable.ToList());
-                    //lcimsmsFeatureEnumerable = FeatureUtil.FilterSingleLCScan(lcimsmsFeatureEnumerable);
-                    lcimsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(lcimsmsFeatureEnumerable);
-                    Logger.Log("New Total Number of LC-IMS-MS Features = " + lcimsmsFeatureEnumerable.Count());
+                    var conformationFilteredFeatures = ConformationDetection.DetectConformationsUsingRawData(splitLcImsMsFeatures);
+                    //conformationFilteredFeatures = FeatureUtil.FilterSingleLCScan(conformationFilteredFeatures);
+                    featuresAfterScanBasedOrConformationFiltering = FeatureUtil.FilterByMemberCount(conformationFilteredFeatures).ToList();
+                    Logger.Log("New Total Number of LC-IMS-MS Features = " + featuresAfterScanBasedOrConformationFiltering.Count());
                 }
 
-                lcimsmsFeatureEnumerable = FeatureUtil.SortByMass(lcimsmsFeatureEnumerable);
+                var massSortedLcImsMsFeatures = FeatureUtil.SortByMass(featuresAfterScanBasedOrConformationFiltering).ToList();
 
                 Logger.Log("Creating filtered Isos file...");
 
                 var msFeatureListOutput = new List<MSFeature>();
-                foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
+                foreach (var lcimsmsFeature in massSortedLcImsMsFeatures)
                 {
                     if (Settings.FilterIsosToSinglePoint)
                     {
@@ -208,9 +211,9 @@ namespace FeatureFinder.Control
                 isosWriter.CreateFilteredIsosFile(msFeatureListOutput);
 
                 Logger.Log("Writing output files...");
-                FeatureUtil.WriteLCIMSMSFeatureToFile(lcimsmsFeatureEnumerable);
+                FeatureUtil.WriteLCIMSMSFeatureToFile(massSortedLcImsMsFeatures);
 
-                LCimsmsFeatures = lcimsmsFeatureEnumerable;
+                LcImsMsFeatures = massSortedLcImsMsFeatures;
             }
         }
 
