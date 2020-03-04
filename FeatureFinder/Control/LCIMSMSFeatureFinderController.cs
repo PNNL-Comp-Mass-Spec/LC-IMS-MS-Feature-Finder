@@ -204,7 +204,8 @@ namespace FeatureFinder.Control
                     }
                 }
 
-                var isosWriter = new IsosWriter(msFeatureListOutput, m_isosReader.ColumnMap);
+                var isosWriter = new IsosWriter(m_isosReader.ColumnMap);
+                isosWriter.CreateFilteredIsosFile(msFeatureListOutput);
 
                 Logger.Log("Writing output files...");
                 FeatureUtil.WriteLCIMSMSFeatureToFile(lcimsmsFeatureEnumerable);

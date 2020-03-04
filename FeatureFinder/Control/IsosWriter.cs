@@ -7,47 +7,50 @@ namespace FeatureFinder.Control
 {
     public class IsosWriter
     {
+        private readonly string mBaseFileName;
+
         private readonly StreamReader m_isosFileReader;
         private readonly TextWriter m_isosFileWriter;
         private readonly Dictionary<string, int> m_columnMap;
-        private readonly List<MSFeature> m_msFeatureList;
 
-        public IsosWriter(List<MSFeature> msFeatureList, Dictionary<string, int> columnMap)
+        public IsosWriter(Dictionary<string, int> columnMap)
         {
-            var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
-            m_isosFileReader = new StreamReader(Path.Combine(Settings.OutputDirectory, baseFileName + "_Filtered_isos.csv"));
-            m_isosFileWriter = new StreamWriter(Path.Combine(Settings.OutputDirectory, baseFileName + "_Filtered_New_isos.csv"));
+            mBaseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
+            m_isosFileReader = new StreamReader(Path.Combine(Settings.OutputDirectory, mBaseFileName + "_Filtered_isos.csv"));
+            m_isosFileWriter = new StreamWriter(Path.Combine(Settings.OutputDirectory, mBaseFileName + "_Filtered_New_isos.csv"));
             m_columnMap = columnMap;
-            m_msFeatureList = msFeatureList;
-
-            WriteIsosFile();
-
-            File.Delete(Path.Combine(Settings.OutputDirectory, baseFileName + "_Filtered_isos.csv"));
-
-            File.Move(
-                Path.Combine(Settings.OutputDirectory, baseFileName + "_Filtered_New_isos.csv"),
-                Path.Combine(Settings.OutputDirectory, baseFileName + "_Filtered_isos.csv"));
         }
 
-        private void WriteIsosFile()
+        public void CreateFilteredIsosFile(List<MSFeature> msFeatureList)
+        {
+            WriteIsosFile(msFeatureList);
+
+            File.Delete(Path.Combine(Settings.OutputDirectory, mBaseFileName + "_Filtered_isos.csv"));
+
+            File.Move(
+                Path.Combine(Settings.OutputDirectory, mBaseFileName + "_Filtered_New_isos.csv"),
+                Path.Combine(Settings.OutputDirectory, mBaseFileName + "_Filtered_isos.csv"));
+        }
+
+        private void WriteIsosFile(List<MSFeature> msFeatureList)
         {
             string line;
             var offset = 0;
             var index = 0;
             var previousFeatureId = int.MaxValue;
 
-            m_msFeatureList.Sort(MSFeature.IDComparison);
+            msFeatureList.Sort(MSFeature.IDComparison);
 
             m_isosFileWriter.WriteLine(m_isosFileReader.ReadLine());
 
             // Read the rest of the Stream, 1 line at a time, and save the write the appropriate data into the new Isos file
-            for (var i = 0; (line = m_isosFileReader.ReadLine()) != null && i + offset < m_msFeatureList.Count; i++)
+            for (var i = 0; (line = m_isosFileReader.ReadLine()) != null && i + offset < msFeatureList.Count; i++)
             {
-                var msFeature = m_msFeatureList[i + offset];
-                while (msFeature.Id == previousFeatureId && i + offset < m_msFeatureList.Count - 1)
+                var msFeature = msFeatureList[i + offset];
+                while (msFeature.Id == previousFeatureId && i + offset < msFeatureList.Count - 1)
                 {
                     offset++;
-                    msFeature = m_msFeatureList[i + offset];
+                    msFeature = msFeatureList[i + offset];
                 }
 
                 if (msFeature.Id == i)
