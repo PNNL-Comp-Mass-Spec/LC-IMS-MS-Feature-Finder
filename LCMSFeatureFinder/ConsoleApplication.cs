@@ -22,7 +22,7 @@ namespace LCMSFeatureFinder
     /// </remarks>
     class ConsoleApplication
     {
-        private const string PROGRAM_DATE = "October 5, 2017";
+        private const string PROGRAM_DATE = "March 3, 2020";
 
         [DllImport("kernel32.dll")]
         public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
@@ -86,8 +86,8 @@ namespace LCMSFeatureFinder
                 }
                 else
                 {
-                    Logger.Log(" Maximum fit = " + Settings.FitMax);
-                    Logger.Log(" Maximum i_score = " + Settings.InterferenceScoreMax);
+                    Logger.Log(" Maximum isotopic fit score = " + Settings.FitMax);
+                    Logger.Log(" Maximum i_score (interference score) = " + Settings.InterferenceScoreMax);
                     Logger.Log(" Minimum intensity = " + Settings.IntensityMin);
                 }
                 if (Settings.FilterFlaggedData)
@@ -183,7 +183,7 @@ namespace LCMSFeatureFinder
 
         private static string GetExeName()
         {
-            var assemblyPath = Assembly.GetEntryAssembly().Location;
+            var assemblyPath = Assembly.GetEntryAssembly()?.Location;
             return Path.GetFileName(assemblyPath);
         }
 
@@ -256,17 +256,17 @@ namespace LCMSFeatureFinder
             // If the string does not contain ":\" or "\\", move on.
             if (!fileLocation.Contains(":\\") && !fileLocation.StartsWith("\\\\"))
             {
-                // Append "." to the front of the string if in the form of "\blabla"
+                // Append "." to the front of the string if in the form of "\ServerName"
                 if (fileLocation.StartsWith("\\"))
                 {
                     return "." + fileLocation;
                 }
 
-                // Append ".\" to the front of the string if in the form of "blabla"
+                // Append ".\" to the front of the string if in the form of "PathName"
                 return ".\\" + fileLocation;
             }
 
-            // filename is in the form of "C:\blabla" or "\\blabla"
+            // file location should now be in the form of "C:\PathName" or "\\ServerName"
             return fileLocation;
         }
 
