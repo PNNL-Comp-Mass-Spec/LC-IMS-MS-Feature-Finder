@@ -167,7 +167,7 @@ namespace FeatureFinder.Control
                     var columns = line.Split(splitChars);
 
                     var frameNum = int.Parse(columns[frameNumColumn]);
-                    var frameType = (DataReader.FrameType)short.Parse(columns[frameTypeColumn]);
+                    var frameType = (UIMFData.FrameType)short.Parse(columns[frameTypeColumn]);
 
                     if (!ScanLCToFrameTypeMap.Mapping.ContainsKey(frameNum))
                     {
@@ -311,8 +311,8 @@ namespace FeatureFinder.Control
 
                         ScanLCToFrameTypeMap.Mapping.TryGetValue(frame, out var frameType);
 
-                        // Ignore this MS Feature if it belongsm to a Frame Type that is not correct
-                        if (Settings.FrameTypeFilter != DataReader.FrameType.Calibration && frameType != Settings.FrameTypeFilter)
+                        // Ignore this MS Feature if it belongs to a Frame Type that is not correct
+                        if (Settings.FrameTypeFilter != UIMFData.FrameType.Calibration && frameType != Settings.FrameTypeFilter)
                         {
                             continue;
                         }

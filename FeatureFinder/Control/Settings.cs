@@ -48,7 +48,7 @@ namespace FeatureFinder.Control
         public static bool FilterUsingHardCodedFilters { get; set; }
         public static bool FilterFlaggedData { get; set; }
 
-        public static DataReader.FrameType FrameTypeFilter { get; set; }
+        public static UIMFData.FrameType FrameTypeFilter { get; set; }
         public static List<DeconToolsFilter> DeconToolsFilterList { get; set; }
 
         static Settings()
@@ -80,7 +80,7 @@ namespace FeatureFinder.Control
             UseConformationDetection = true;
             IgnoreIMSDriftTime = false;
             FilterIsosToSinglePoint = true;
-            FrameTypeFilter = DataReader.FrameType.Calibration;
+            FrameTypeFilter = UIMFData.FrameType.Calibration;
             FilterUsingHardCodedFilters = false;
             FilterFlaggedData = false;
         }
