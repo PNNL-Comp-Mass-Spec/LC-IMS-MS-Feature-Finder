@@ -17,10 +17,22 @@ namespace FeatureFinder.Control
         public static string InputDirectory { get; set; }
         public static string InputFileName { get; set; }
         public static string OutputDirectory { get; set; }
+
+        /// <summary>
+        /// Tab-delimited text file with filter specs
+        /// Columns are: chargeMin	chargeMax	abundanceMin	abundanceMax	iscoreCutoff	fitScoreCutoff
+        /// </summary>
         public static string DeconToolsFilterFileName { get; set; }
 
+        /// <summary>
+        /// Minimum number of points that a feature must contain
+        /// </summary>
         public static short FeatureLengthMin { get; set; }
-        public static short MinimumDifferenceInMedianPpmMassToSplit { get; set; }
+
+        // Obsolete (not implemented)
+        // public static bool Split { get; set; }
+        // public static short MinimumDifferenceInMedianPpmMassToSplit { get; set; }
+
         public static short LCGapSizeMax { get; set; }
 
         public static int ScanIMSMin { get; set; }
@@ -32,20 +44,34 @@ namespace FeatureFinder.Control
         public static float FitMax { get; set; }
         public static float InterferenceScoreMax { get; set; }
         public static float IntensityMin { get; set; }
+
+        /// <summary>
+        /// Mass tolerance for grouping data into features, in ppm
+        /// </summary>
         public static float MassMonoisotopicConstraint { get; set; }
-        public static float UMCFitScoreMinimum { get; set; }
+
         public static float MassMonoisotopicStart { get; set; }
         public static float MassMonoisotopicEnd { get; set; }
         public static float SmoothingStDev { get; set; }
 
-        public static bool MassMonoisotopicConstraintIsPPM { get; set; }
-        public static bool UseGenericNET { get; set; }
         public static bool UseCharge { get; set; }
-        public static bool Split { get; set; }
         public static bool UseConformationDetection { get; set; }
         public static bool IgnoreIMSDriftTime { get; set; }
+
+        /// <summary>
+        /// When true, make a filtered isos.csv file with one point per LC-IMS-MS feature
+        /// </summary>
         public static bool FilterIsosToSinglePoint { get; set; }
+
+        /// <summary>
+        /// When true, load filters from the file defined by DeconToolsFilterFileName
+        /// </summary>
         public static bool FilterUsingHardCodedFilters { get; set; }
+
+        /// <summary>
+        /// When true, could theoretically skip data points with 1 in the "Flag" column of the _isos.csv file
+        /// However, this option is not implemented
+        /// </summary>
         public static bool FilterFlaggedData { get; set; }
 
         public static UIMFData.FrameType FrameTypeFilter { get; set; }
@@ -54,9 +80,9 @@ namespace FeatureFinder.Control
         static Settings()
         {
             // Default Settings
-            InputDirectory = "";
-            InputFileName = "";
-            OutputDirectory = "";
+            InputDirectory = string.Empty;
+            InputFileName = string.Empty;
+            OutputDirectory = string.Empty;
             FitMax = 0.15f;
             InterferenceScoreMax = 0.3f;
             IntensityMin = 500;
@@ -67,16 +93,15 @@ namespace FeatureFinder.Control
             MassMonoisotopicStart = 0;
             MassMonoisotopicEnd = 15000;
             MassMonoisotopicConstraint = 20f;
-            MassMonoisotopicConstraintIsPPM = true;
             FeatureLengthMin = 3;
-            UseGenericNET = true;
             UseCharge = false;
             LCGapSizeMax = 5;
-            MinimumDifferenceInMedianPpmMassToSplit = 4;
-            Split = true;
+
+            // Obsolete (not implemented)
+            // MinimumDifferenceInMedianPpmMassToSplit = 4;
+            // Split = true;
             IMSDaCorrectionMax = 0;
             SmoothingStDev = 2f;
-            UMCFitScoreMinimum = 0f;
             UseConformationDetection = true;
             IgnoreIMSDriftTime = false;
             FilterIsosToSinglePoint = true;
@@ -98,7 +123,10 @@ namespace FeatureFinder.Control
             Console.WriteLine("; If UseHardCodedFilters is True, IsotopicFit and IScore filters in the file");
             Console.WriteLine("; specified by DeconToolsFilterFileName will override MaxIsotopicFit and MaxIScore");
             Console.WriteLine("; based on charge and intensity of the given data point");
+            Console.WriteLine(";");
+            Console.WriteLine("; Maximum isotopic fit");
             Console.WriteLine("MaxIsotopicFit=0.15");
+            Console.WriteLine("; Maximum interference score");
             Console.WriteLine("MaxIScore=0.3");
             Console.WriteLine("MinimumIntensity=0");
             Console.WriteLine("UseHardCodedFilters=False");
@@ -113,18 +141,17 @@ namespace FeatureFinder.Control
 
             Console.WriteLine("[UMCCreationOptions]");
             Console.WriteLine("IgnoreIMSDriftTime=False");
-            Console.WriteLine("MonoMassConstraint=12");
-            Console.WriteLine("MonoMassConstraintIsPPM=True");
-            Console.WriteLine("UseGenericNET=True");
+            Console.WriteLine("; Monoisotopic mass tolerance for grouping data, in ppm");
+            Console.WriteLine("MonoMassConstraint=20");
             Console.WriteLine("UseCharge=True");
             Console.WriteLine("MinFeatureLengthPoints=3");
             Console.WriteLine("LCGapMaxSize=4");
             Console.WriteLine("IMSMaxDaCorrection=1");
-            Console.WriteLine("UMCFitScoreMinimum=0.9");
 
-            Console.WriteLine("[UMCSplittingOptions]");
-            Console.WriteLine("Split=True");
-            Console.WriteLine("MinimumDifferenceInMedianPpmMassToSplit=4");
+            // Obsolete (not implemented)
+            // Console.WriteLine("[UMCSplittingOptions]");
+            // Console.WriteLine("Split=True");
+            // Console.WriteLine("MinimumDifferenceInMedianPpmMassToSplit=4");
 
             Console.WriteLine("[DriftProfileOptions]");
             Console.WriteLine("UseConformationDetection=True");
