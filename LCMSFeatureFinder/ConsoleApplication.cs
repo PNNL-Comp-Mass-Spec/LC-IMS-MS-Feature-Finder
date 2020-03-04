@@ -3,8 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 using FeatureFinder.Control;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 using FeatureFinder.Utilities;
 
 namespace LCMSFeatureFinder
@@ -24,10 +22,11 @@ namespace LCMSFeatureFinder
     {
         private const string PROGRAM_DATE = "March 3, 2020";
 
-        [DllImport("kernel32.dll")]
-        public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
-
-        private const uint ENABLE_EXTENDED_FLAGS = 0x0080;
+        // Uncomment this to prevent selecting text at the console from pausing program execution
+        //
+        // [DllImport("kernel32.dll")]
+        // public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+        // private const uint ENABLE_EXTENDED_FLAGS = 0x0080;
 
         private const int LC_DATA = 0;
         private const int IMS_DATA = 1;
@@ -54,8 +53,10 @@ namespace LCMSFeatureFinder
                     return 0;
                 }
 
-                var handle = Process.GetCurrentProcess().MainWindowHandle;
-                SetConsoleMode(handle, ENABLE_EXTENDED_FLAGS);
+                // Uncomment this to prevent selecting text at the console from pausing program execution
+                //
+                // var handle = Process.GetCurrentProcess().MainWindowHandle;
+                // SetConsoleMode(handle, ENABLE_EXTENDED_FLAGS);
 
                 var assembly = Assembly.GetExecutingAssembly();
                 var assemblyVersion = assembly.GetName().Version.ToString();
