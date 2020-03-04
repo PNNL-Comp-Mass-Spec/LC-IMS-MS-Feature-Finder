@@ -208,16 +208,12 @@ namespace FeatureFinder.Utilities
         }
         */
 
-        // TODO: Verify this actually works --- Da's code, slightly modified by me
+        // TODO: Verify this actually works --- Da's code, slightly modified by Kevin Crowell
         public static Peak KDESmooth(Peak peak, double bandwidth)
         {
-            var xValueList = new List<double>();
-            var yValueList = new List<double>();
-
-            peak.GetXAndYValuesAsLists(out xValueList, out yValueList);
+            peak.GetXAndYValuesAsLists(out var xValueList, out var yValueList);
 
             var numPoints = xValueList.Count;
-            var numBins = numPoints;
 
             var newYValueList = new List<double>();
 
@@ -256,7 +252,7 @@ namespace FeatureFinder.Utilities
             return newPeak;
         }
 
-        // TODO: Verify this actually works --- Da's code, slightly modified by me
+        // TODO: Verify this actually works --- Da's code, slightly modified by Kevin Crowell
         public static List<double> KDESmooth(List<double> yValueList, double bandwidth)
         {
             var numPoints = yValueList.Count;
@@ -298,10 +294,7 @@ namespace FeatureFinder.Utilities
 
         public static IInterpolation GetLinearInterpolationMethod(Peak peak)
         {
-            var xValues = new List<double>();
-            var yValues = new List<double>();
-
-            peak.GetXAndYValuesAsLists(out xValues, out yValues);
+            peak.GetXAndYValuesAsLists(out var xValues, out var yValues);
 
             IInterpolation interpolation = LinearSpline.Interpolate(xValues, yValues);
 
