@@ -8,61 +8,85 @@ namespace FeatureFinder.Control
     {
         public List<DeconToolsFilter> DeconToolsFilterList = new List<DeconToolsFilter>();
 
-        #region Constructors
-
-        public DeconToolsFilterLoader(string filterTableTextFile)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="deconToolsFilterFilePath"></param>
+        public DeconToolsFilterLoader(string deconToolsFilterFilePath)
         {
 
-            if (!File.Exists(filterTableTextFile))
+            if (!File.Exists(deconToolsFilterFilePath))
             {
-                Logger.Log("File not found error. DeconTools filter settings could not be loaded.");
-                throw new FileNotFoundException("File not found error. DeconTools filter settings could not be loaded.");
+                var errorMessage = "DeconTools filter settings could not be loaded; File not found: " + deconToolsFilterFilePath;
+                Logger.LogError(errorMessage);
+                throw new FileNotFoundException(errorMessage);
             }
 
-            using (var sr = new StreamReader(filterTableTextFile))
+            var linesRead = 0;
+            DeconToolsFilterList.Clear();
+
+            using (var reader = new StreamReader(deconToolsFilterFilePath))
             {
-                sr.ReadLine();   //headerline
-
-                while (sr.Peek() != -1)
+                if (reader.EndOfStream)
                 {
+                    var errorMessage = "DeconTools filter file is empty: "+ deconToolsFilterFilePath;
+                    Logger.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage);
+                }
 
-                    var line = sr.ReadLine();
+                // Skip the header line, which should have 6 columns:
+                // chargeMin	chargeMax	abundanceMin	abundanceMax	iscoreCutoff	fitScoreCutoff
+                reader.ReadLine();
+                linesRead++;
 
-                    if (line == null) continue;
-                    var parsedLine = line.Split('\t');
+                while (!reader.EndOfStream)
+                {
+                    var dataLine = reader.ReadLine();
+                    linesRead++;
 
-                    if (parsedLine.Length != 6)
+                    if (string.IsNullOrWhiteSpace(dataLine))
+                        continue;
+
+                    var parsedLine = dataLine.Split('\t');
+
+                    if (parsedLine.Length < 6)
                     {
-                        Logger.Log("Error loading DeconTools filter settings file.");
-                        throw new ArgumentException("Error loading DeconTools filter settings file.");
+                        var errorMessage = string.Format(
+                            "Error loading DeconTools filter settings file; the file should have six tab-delimited columns, but line {0} has {1} columns",
+                            linesRead, parsedLine.Length);
+
+                        Logger.LogError(errorMessage);
+                        throw new ArgumentException(errorMessage);
                     }
 
-                    var zMin = Convert.ToInt32(parsedLine[0]);
-                    var zMax = Convert.ToInt32(parsedLine[1]);
-                    var abundanceMin = Convert.ToInt32(parsedLine[2]);
-                    var abundanceMax = Convert.ToInt32(parsedLine[3]);
+                    try
+                    {
+                        var zMin = Convert.ToInt32(parsedLine[0]);
+                        var zMax = Convert.ToInt32(parsedLine[1]);
+                        var abundanceMin = Convert.ToInt32(parsedLine[2]);
+                        var abundanceMax = Convert.ToInt32(parsedLine[3]);
 
-                    var iscoreCutoff = Convert.ToDouble(parsedLine[4]);
-                    var fitScoreCutoff = Convert.ToDouble(parsedLine[5]);
+                        // Interference score cutoff (0 means no interference; 1 means lots of interference)
+                        var iscoreCutoff = Convert.ToDouble(parsedLine[4]);
 
-                    var f = new DeconToolsFilter(zMin, zMax, abundanceMin, abundanceMax, fitScoreCutoff, iscoreCutoff);
-                    DeconToolsFilterList.Add(f);
+                        // Isotopic fit score cutoff
+                        var fitScoreCutoff = Convert.ToDouble(parsedLine[5]);
+
+                        var f = new DeconToolsFilter(zMin, zMax, abundanceMin, abundanceMax, fitScoreCutoff, iscoreCutoff);
+                        DeconToolsFilterList.Add(f);
+                    }
+                    catch (Exception ex)
+                    {
+                        var errorMessage = string.Format(
+                            "Error reading data from the DeconTools filter settings file on line {0}, {1}",
+                            linesRead, dataLine);
+                        Logger.LogError(errorMessage, ex);
+
+                        throw new Exception(errorMessage + ": " + ex.Message);
+                    }
                 }
             }
-
-
-
         }
-
-
-        #endregion
-
-        #region Properties
-
-        #endregion
-
-        #region Public Methods
-
 
         public void DisplayFilters()
         {
@@ -81,14 +105,6 @@ namespace FeatureFinder.Control
             }
 
         }
-
-
-
-        #endregion
-
-        #region Private Methods
-
-        #endregion
 
     }
 }

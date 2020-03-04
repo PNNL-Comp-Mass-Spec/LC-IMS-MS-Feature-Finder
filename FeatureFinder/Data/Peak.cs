@@ -19,8 +19,9 @@ namespace FeatureFinder.Data
         {
             if (xValues.Count != yValues.Count)
             {
-                Logger.Log("The xValues and yValues Lists must be the same size to create a Peak");
-                throw new InvalidOperationException("The xValues and yValues Lists must be the same size to create a Peak");
+                var errorMessage = "The xValues and yValues Lists must be the same size to create a Peak";
+                Logger.LogError(errorMessage);
+                throw new InvalidOperationException(errorMessage);
             }
 
             var xyPairList = new List<XYPair>();

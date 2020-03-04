@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using FeatureFinder.Data;
 using FeatureFinder.Data.Maps;
-//using UIMFLibrary;
 using FeatureFinder.Utilities;
 using UIMFLibrary;
 
@@ -19,35 +18,50 @@ namespace FeatureFinder.Control
         /// <summary>
         /// Constructor for passing in a string containing the location of the ISOS csv file
         /// </summary>
-        public IsosReader(string isosFilePath, string outputFolderPath)
+        public IsosReader(string isosFilePath, string outputDirectoryPath)
         {
             if (string.IsNullOrWhiteSpace(isosFilePath))
-                throw new ArgumentException("Isos file path must be defined", nameof(isosFilePath));
+            {
+                var errorMessage = "Isos file path must be defined; unable to instantiate a new IsosReader";
+                Logger.LogError(errorMessage);
+                throw new ArgumentException(errorMessage, nameof(isosFilePath));
+            }
 
             var isosFile = new FileInfo(isosFilePath);
 
             var baseFileName = Regex.Split(Path.GetFileName(isosFilePath), "_isos")[0];
 
-            DirectoryInfo outputFolder;
-            if (string.IsNullOrWhiteSpace(outputFolderPath) || outputFolderPath == ".")
+            DirectoryInfo outputDirectory;
+            if (string.IsNullOrWhiteSpace(outputDirectoryPath) || outputDirectoryPath == ".")
             {
-                outputFolder = isosFile.Directory;
+                outputDirectory = isosFile.Directory;
             }
             else
             {
-                outputFolder = new DirectoryInfo(outputFolderPath);
+                outputDirectory = new DirectoryInfo(outputDirectoryPath);
             }
 
-            if (!outputFolder.Exists)
+            if (outputDirectory == null)
             {
-                if (outputFolder.Parent != null && outputFolder.Parent.Exists)
-                    outputFolder.Create();
+                var errorMessage = "Could not determine the output directory; unable to instantiate a new IsosReader";
+                Logger.LogError(errorMessage);
+                throw new ArgumentException(errorMessage);
+            }
+
+            if (!outputDirectory.Exists)
+            {
+                if (outputDirectory.Parent != null && outputDirectory.Parent.Exists)
+                    outputDirectory.Create();
                 else
-                    throw new ArgumentException("Output folder not found: " + outputFolderPath, nameof(outputFolderPath));
+                {
+                    var errorMessage = "Output directory not found; unable to instantiate a new IsosReader: " + outputDirectoryPath;
+                    Logger.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage, nameof(outputDirectoryPath));
+                }
             }
 
             m_isosFileReader = new StreamReader(new FileStream(isosFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-            m_isosFileWriter = new StreamWriter(Path.Combine(outputFolder.FullName, baseFileName + "_Filtered_isos.csv"));
+            m_isosFileWriter = new StreamWriter(Path.Combine(outputDirectory.FullName, baseFileName + "_Filtered_isos.csv"));
 
             // Load the _scans.csv file (if it exists)
             CreateLCScanToFrameTypeMapping(isosFile.DirectoryName, baseFileName);
@@ -58,11 +72,12 @@ namespace FeatureFinder.Control
             // Calculate the drift time for each MS Feature. We are choosing to not use the Decon2ls output.
             //DataReader uimfReader = new UIMFLibrary.DataReader();
 
-            // string uimfRawdataFile = Path.Combine(isosFile.DirectoryName, FileUtil.GetUimfFileForIsosFile(isosFile.Name));
-            //if (!File.Exists(uimfRawdataFile))
+            // string uimfRawDataFile = Path.Combine(isosFile.DirectoryName, FileUtil.GetUimfFileForIsosFile(isosFile.Name));
+            //if (!File.Exists(uimfRawDataFile))
             //{
-            //    Logger.Log("File not found error. Could not find the file: " + uimfRawdataFile);
-            //    throw new FileNotFoundException("File not found error. Could not find the file: " + uimfRawdataFile);
+            //    var errorMessage = "File not found error. Could not find the file: " + uimfRawDataFile;
+            //    Logger.LogError(errorMessage, ex);
+            //    throw new FileNotFoundException(errorMessage);
             //}
 
             //if (uimfReader.OpenUIMF(Path.Combine(isosFile.DirectoryName, FileUtil.GetUimfFileForIsosFile(isosFile.Name))))
@@ -93,10 +108,10 @@ namespace FeatureFinder.Control
         #endregion
 
         #region Private Methods
-        private void CreateLCScanToFrameTypeMapping(string inputFolderPath, string baseFileName)
+        private void CreateLCScanToFrameTypeMapping(string inputDirectoryPath, string baseFileName)
         {
 
-            var scansFilePath = Path.Combine(inputFolderPath, baseFileName + "_scans.csv");
+            var scansFilePath = Path.Combine(inputDirectoryPath, baseFileName + "_scans.csv");
 
             if (!File.Exists(scansFilePath))
             {
@@ -262,9 +277,9 @@ namespace FeatureFinder.Control
 
             if (columnMap.Count == 0)
             {
-                //TODO: Create default mapping?
-                Logger.Log("Isos file does not contain column headers. Cannot continue.");
-                throw new ApplicationException("Isos file does not contain column headers. Cannot continue.");
+                var errorMessage = "Isos file does not contain column headers. Cannot continue.";
+                Logger.LogError(errorMessage);
+                throw new ApplicationException(errorMessage);
             }
 
             return columnMap;

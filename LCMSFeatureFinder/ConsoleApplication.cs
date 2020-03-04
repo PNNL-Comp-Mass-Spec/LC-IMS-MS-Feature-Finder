@@ -166,7 +166,7 @@ namespace LCMSFeatureFinder
             }
             catch (Exception ex)
             {
-                Logger.Log("Exception while processing: " + ex.Message);
+                Logger.LogError("Exception while processing", ex);
                 System.Threading.Thread.Sleep(1500);
                 return -11;
             }
@@ -210,10 +210,9 @@ namespace LCMSFeatureFinder
                 controller.Execute();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.Log(e.Message);
-                Logger.Log(e.StackTrace);
+                Logger.LogError("Exception in RunLCIMSMSFeatureFinder", ex);
                 return false;
             }
         }
