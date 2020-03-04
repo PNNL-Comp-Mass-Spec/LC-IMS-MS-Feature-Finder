@@ -88,20 +88,23 @@ namespace FeatureFinder.Control
             }
         }
 
+        /// <summary>
+        /// Display the filters at the console
+        /// </summary>
         public void DisplayFilters()
         {
+            Console.WriteLine(
+                "{0,-10} {1,-10} {2,-13} {3,-13} {4,-13} {5,-13}",
+                "chargeMin", "chargeMax", "abundanceMin", "abundanceMax", "iscoreCutoff", "fitScoreCutoff");
+
             foreach (var filter in DeconToolsFilterList)
             {
-                var filterValues = new List<string>
-                {
-                    filter.ChargeMinimum.ToString(),
-                    filter.ChargeMaximum.ToString(),
-                    filter.AbundanceMinimum.ToString(),
-                    filter.AbundanceMaximum.ToString(),
-                    filter.FitScoreMaximum.ToString("0.000"),
-                    filter.InterferenceScoreMaximum.ToString("0.000")
-                };
-                Console.WriteLine(string.Join("\t", filterValues));
+                Console.WriteLine(
+                    "{0,-10} {1,-10} {2,-13} {3,-13} {4,-13:F3} {5,-13:F3}",
+                    filter.ChargeMinimum, filter.ChargeMaximum,
+                    filter.AbundanceMinimum, filter.AbundanceMaximum,
+                    filter.InterferenceScoreMaximum, filter.FitScoreMaximum);
+
             }
 
         }
