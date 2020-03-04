@@ -14,7 +14,7 @@ namespace FeatureFinder.FunctionalTests
             var testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_NoConfDtn_2011-03-21.ini";
 
             var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
+            iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
@@ -31,7 +31,7 @@ namespace FeatureFinder.FunctionalTests
             var testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-03-21.ini";
 
             var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
+            iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 

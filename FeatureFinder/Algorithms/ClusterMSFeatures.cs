@@ -7,9 +7,9 @@ namespace FeatureFinder.Algorithms
 {
     public static class ClusterMSFeatures
     {
-        public static IEnumerable<IMSMSFeature> ClusterByMass(IEnumerable<MSFeature> msFeatureEnumerable)
+        public static IEnumerable<imsMsFeature> ClusterByMass(IEnumerable<MSFeature> msFeatureEnumerable)
         {
-            var imsmsFeatureList = new List<IMSMSFeature>();
+            var imsMsFeatureList = new List<imsMsFeature>();
 
             var massToleranceBase = Settings.MassMonoisotopicConstraint;
 
@@ -17,7 +17,7 @@ namespace FeatureFinder.Algorithms
                                   orderby msFeature.MassMonoisotopic
                                   select msFeature;
 
-            IMSMSFeature imsmsFeature = null;
+            imsMsFeature imsMsFeature = null;
             var massReference = double.MinValue;
 
             foreach (var msFeature in sortByMassQuery)
@@ -28,50 +28,50 @@ namespace FeatureFinder.Algorithms
                 var massToleranceHigh = massReference + massTolerance;
                 var massToleranceLow = massReference - massTolerance;
 
-                if (mass >= massToleranceLow && mass <= massToleranceHigh && imsmsFeature != null)
+                if (mass >= massToleranceLow && mass <= massToleranceHigh && imsMsFeature != null)
                 {
-                    imsmsFeature.AddMSFeature(msFeature);
+                    imsMsFeature.AddMSFeature(msFeature);
                 }
                 else
                 {
-                    imsmsFeature = new IMSMSFeature(msFeature.ScanLC, msFeature.Charge);
-                    imsmsFeature.AddMSFeature(msFeature);
-                    imsmsFeatureList.Add(imsmsFeature);
+                    imsMsFeature = new imsMsFeature(msFeature.ScanLC, msFeature.Charge);
+                    imsMsFeature.AddMSFeature(msFeature);
+                    imsMsFeatureList.Add(imsMsFeature);
                 }
 
                 massReference = mass;
             }
 
-            return imsmsFeatureList;
+            return imsMsFeatureList;
         }
 
-        public static IEnumerable<IMSMSFeature> SplitByIMSScan(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable, int maxGap)
+        public static IEnumerable<imsMsFeature> SplitByIMSScan(IEnumerable<imsMsFeature> imsMsFeatureEnumerable, int maxGap)
         {
-            var newIMSMSFeatureList = new List<IMSMSFeature>();
-            foreach (var imsmsFeature in imsmsFeatureEnumerable)
+            var newImsMsFeatureList = new List<imsMsFeature>();
+            foreach (var imsMsFeature in imsMsFeatureEnumerable)
             {
-                IEnumerable<MSFeature> msFeatureList = imsmsFeature.MSFeatureList.OrderBy(x => x.ScanIMS);
-                IMSMSFeature newIMSMSFeature = null;
+                IEnumerable<MSFeature> msFeatureList = imsMsFeature.MSFeatureList.OrderBy(x => x.ScanIMS);
+                imsMsFeature newImsMsFeature = null;
                 var scanIMSReference = -99999;
 
                 foreach (var msFeature in msFeatureList)
                 {
                     if (msFeature.ScanIMS - scanIMSReference > maxGap)
                     {
-                        newIMSMSFeature = new IMSMSFeature(imsmsFeature.ScanLC, imsmsFeature.Charge);
-                        newIMSMSFeature.AddMSFeature(msFeature);
-                        newIMSMSFeatureList.Add(newIMSMSFeature);
+                        newImsMsFeature = new imsMsFeature(imsMsFeature.ScanLC, imsMsFeature.Charge);
+                        newImsMsFeature.AddMSFeature(msFeature);
+                        newImsMsFeatureList.Add(newImsMsFeature);
                     }
                     else
                     {
-                        newIMSMSFeature?.AddMSFeature(msFeature);
+                        newImsMsFeature?.AddMSFeature(msFeature);
                     }
 
                     scanIMSReference = msFeature.ScanIMS;
                 }
             }
 
-            return newIMSMSFeatureList;
+            return newImsMsFeatureList;
         }
     }
 }

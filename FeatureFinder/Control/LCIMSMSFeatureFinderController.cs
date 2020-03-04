@@ -21,8 +21,7 @@ namespace FeatureFinder.Control
 
         #region Public Methods
 
-        public IEnumerable<LCIMSMSFeature> LCimsmsFeatures { get; set; }
-
+        public IEnumerable<LCIMSMSFeature> LcImsMsFeatures { get; set; }
 
         public void Execute()
         {
@@ -33,7 +32,7 @@ namespace FeatureFinder.Control
 
                 var filteredMSFeatureList = m_isosReader.MSFeatureList;
 
-                var imsmsfeatureBag = new ConcurrentBag<IMSMSFeature>();
+                var imsMsFeatureBag = new ConcurrentBag<imsMsFeature>();
 
                 if (Settings.UseCharge)
                 {
@@ -43,11 +42,11 @@ namespace FeatureFinder.Control
 
                     Parallel.ForEach(groupByScanLCAndChargeQuery, msFeatureGroup =>
                     {
-                        var imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+                        var imsMsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
 
-                        foreach (var imsmsFeature in imsmsFeatureList)
+                        foreach (var imsMsFeature in imsMsFeatureList)
                         {
-                            imsmsfeatureBag.Add(imsmsFeature);
+                            imsMsFeatureBag.Add(imsMsFeature);
                         }
                     });
                 }
@@ -59,66 +58,68 @@ namespace FeatureFinder.Control
 
                     Parallel.ForEach(groupByScanLCQuery, msFeatureGroup =>
                     {
-                        var imsmsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
+                        var imsMsFeatureList = ClusterMSFeatures.ClusterByMass(msFeatureGroup);
 
-                        foreach (var imsmsFeature in imsmsFeatureList)
+                        foreach (var imsMsFeature in imsMsFeatureList)
                         {
-                            imsmsfeatureBag.Add(imsmsFeature);
+                            imsMsFeatureBag.Add(imsMsFeature);
                         }
                     });
                 }
 
-                Logger.Log("Total Number of Unfiltered IMS-MS Features = " + imsmsfeatureBag.Count);
+                Logger.Log("Total Number of Unfiltered IMS-MS Features = " + imsMsFeatureBag.Count);
+
                 //Logger.Log("Filtering out short IMS-MS Features...");
 
-                //IEnumerable<IMSMSFeature> imsmsFeatureEnumerable = FeatureUtil.FilterByMemberCount(imsmsfeatureBag);
-                //imsmsfeatureBag = null;
+                //IEnumerable<imsMsFeature> imsMsFeatureEnumerable = FeatureUtil.FilterByMemberCount(imsMsFeatureBag);
+                //imsMsFeatureBag = null;
 
-                //Logger.Log("Total Number of Filtered IMS-MS Features = " + imsmsFeatureEnumerable.Count());
+                //Logger.Log("Total Number of Filtered IMS-MS Features = " + imsMsFeatureEnumerable.Count());
+
                 Logger.Log("Creating LC-IMS-MS Features...");
 
-                var lcimsmsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
+                var lcImsMsFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
 
                 if (Settings.UseCharge)
                 {
-                    var groupByChargeQuery = from imsmsFeature in imsmsfeatureBag
-                                             group imsmsFeature by imsmsFeature.Charge into newGroup
+                    var groupByChargeQuery = from imsMsFeature in imsMsFeatureBag
+                                             group imsMsFeature by imsMsFeature.Charge into newGroup
                                              select newGroup;
 
-                    Parallel.ForEach(groupByChargeQuery, imsmsFeatureGroup =>
+                    Parallel.ForEach(groupByChargeQuery, imsMsFeatureGroup =>
                     {
-                        var lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsFeatureGroup);
+                        var lcimsmsFeatureList = ClusterImsMsFeatures.ClusterByMassAndScanLC(imsMsFeatureGroup);
 
                         foreach (var lcimsmsFeature in lcimsmsFeatureList)
                         {
-                            lcimsmsFeatureBag.Add(lcimsmsFeature);
+                            lcImsMsFeatureBag.Add(lcimsmsFeature);
                         }
                     });
                 }
                 else
                 {
-                    var lcimsmsFeatureList = ClusterIMSMSFeatures.ClusterByMassAndScanLC(imsmsfeatureBag);
+                    var lcimsmsFeatureList = ClusterImsMsFeatures.ClusterByMassAndScanLC(imsMsFeatureBag);
 
                     foreach (var lcimsmsFeature in lcimsmsFeatureList)
                     {
-                        lcimsmsFeatureBag.Add(lcimsmsFeature);
+                        lcImsMsFeatureBag.Add(lcimsmsFeature);
                     }
                 }
 
-                Logger.Log("Total Number of LC-IMS-MS Features = " + lcimsmsFeatureBag.Count);
+                Logger.Log("Total Number of LC-IMS-MS Features = " + lcImsMsFeatureBag.Count);
 
-                IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable;
+                IEnumerable<LCIMSMSFeature> lcImsMsFeatures;
 
                 if (Settings.IMSDaCorrectionMax > 0 && !Settings.FilterFlaggedData)
                 {
                     Logger.Log("Executing Dalton Correction Algorithm on LC-IMS-MS Features...");
 
                     var daCorrectedLCIMSMSFeatureBag = new ConcurrentBag<LCIMSMSFeature>();
-                    var lcimsmsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
+                    var lcImsMsFeatureListBag = new ConcurrentBag<IEnumerable<LCIMSMSFeature>>();
 
                     if (Settings.UseCharge)
                     {
-                        var groupByChargeQuery2 = from lcimsmsFeature in lcimsmsFeatureBag
+                        var groupByChargeQuery2 = from lcimsmsFeature in lcImsMsFeatureBag
                                                   group lcimsmsFeature by lcimsmsFeature.Charge into newGroup
                                                   select newGroup;
 
@@ -128,21 +129,21 @@ namespace FeatureFinder.Control
 
                             foreach (var lcimsmsFeatureList in returnList)
                             {
-                                lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
+                                lcImsMsFeatureListBag.Add(lcimsmsFeatureList);
                             }
                         });
                     }
                     else
                     {
-                        IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcimsmsFeatureBag);
+                        IEnumerable<IEnumerable<LCIMSMSFeature>> returnList = FeatureUtil.PartitionFeaturesByMass(lcImsMsFeatureBag);
 
                         foreach (var lcimsmsFeatureList in returnList)
                         {
-                            lcimsmsFeatureListBag.Add(lcimsmsFeatureList);
+                            lcImsMsFeatureListBag.Add(lcimsmsFeatureList);
                         }
                     }
 
-                    Parallel.ForEach(lcimsmsFeatureListBag, lcimsmsFeatureGroup =>
+                    Parallel.ForEach(lcImsMsFeatureListBag, lcimsmsFeatureGroup =>
                     {
                         var lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
 
@@ -196,9 +197,9 @@ namespace FeatureFinder.Control
                     }
                     else
                     {
-                        foreach (var imsmsFeature in lcimsmsFeature.IMSMSFeatureList)
+                        foreach (var imsMsFeature in lcimsmsFeature.imsMsFeatureList)
                         {
-                            msFeatureListOutput.AddRange(imsmsFeature.MSFeatureList);
+                            msFeatureListOutput.AddRange(imsMsFeature.MSFeatureList);
                         }
                     }
                 }

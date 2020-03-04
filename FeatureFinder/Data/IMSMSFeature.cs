@@ -3,14 +3,14 @@ using System.Linq;
 
 namespace FeatureFinder.Data
 {
-    public class IMSMSFeature
+    public class imsMsFeature
     {
         public byte Charge { get; set; }
         public int ScanLC { get; set; }
 
         public List<MSFeature> MSFeatureList { get; set; }
 
-        public IMSMSFeature(int scanLC, byte charge)
+        public imsMsFeature(int scanLC, byte charge)
         {
             MSFeatureList = new List<MSFeature>();
             ScanLC = scanLC;

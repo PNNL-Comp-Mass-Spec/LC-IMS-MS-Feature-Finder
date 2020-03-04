@@ -23,7 +23,7 @@ namespace Test
             var loader = new DeconToolsFilterLoader(deconToolsParamFile.FullName);
             loader.DisplayFilters();
 
-            var testfeature1 = new MSFeature
+            var testFeature1 = new MSFeature
             {
                 Abundance = 16117,
                 DriftTime = 20.584f,
@@ -38,7 +38,7 @@ namespace Test
             };
 
 
-            var isValid = DeconToolsFilterUtil.IsValidMSFeature(testfeature1, loader.DeconToolsFilterList);
+            var isValid = DeconToolsFilterUtil.IsValidMSFeature(testFeature1, loader.DeconToolsFilterList);
 
             Assert.IsTrue(isValid);
 

@@ -11,7 +11,7 @@ namespace Test
     {
         [Test]
         [TestCase("FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16.ini")]
-        public void deconToolsFiltersAreBeingReadIn_test1(string settingsFileName)
+        public void DeconToolsFiltersAreBeingReadIn_test1(string settingsFileName)
         {
             var methodName = MethodBase.GetCurrentMethod().Name;
 
@@ -22,7 +22,7 @@ namespace Test
 
             Console.WriteLine("Reading settings in " + iniFile.FullName);
             var iniReader = new IniReader(iniFile.FullName);
-            iniReader.CreateSettings();
+            iniReader.UpdateSettings();
 
             Assert.AreEqual(12, Settings.DeconToolsFilterList.Count);
 
@@ -31,12 +31,12 @@ namespace Test
         [Test]
         [TestCase("FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16.ini")]
         [Category("Long_Running")]
-        public void deconToolsfiltersAreBeingAppliedTest(string settingsFileName)
+        public void DeconToolsFiltersAreBeingAppliedTest(string settingsFileName)
         {
             var methodName = MethodBase.GetCurrentMethod().Name;
 
             // FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16.ini references
-            // Sarc_MS2_90_6Apr11_Cheetah_11-02-19_inverse_isos.csv and DeconToolsIsosFilters_IMS4_2011-04-28.txt in folder
+            // Sarc_MS2_90_6Apr11_Cheetah_11-02-19_inverse_isos.csv and DeconToolsIsosFilters_IMS4_2011-04-28.txt in directory
             // \\proto-2\UnitTest_Files\DeconTools_TestFiles\LCMSFeatureFinder
 
             var iniFile = Test.GetTestFile(methodName, settingsFileName);
@@ -46,7 +46,7 @@ namespace Test
 
             Console.WriteLine("Reading settings in " + iniFile.FullName);
             var iniReader = new IniReader(iniFile.FullName);
-            iniReader.CreateSettings();
+            iniReader.UpdateSettings();
 
             if (string.IsNullOrWhiteSpace(Settings.InputDirectory) && iniFile.Directory != null)
                 Settings.InputDirectory = iniFile.Directory.FullName;

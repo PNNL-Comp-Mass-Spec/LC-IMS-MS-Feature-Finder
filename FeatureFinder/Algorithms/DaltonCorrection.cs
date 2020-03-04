@@ -9,15 +9,15 @@ namespace FeatureFinder.Algorithms
 {
     public static class DaltonCorrection
     {
-        public static IEnumerable<LCIMSMSFeature> CorrectLCIMSMSFeatures(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static IEnumerable<LCIMSMSFeature> CorrectLCIMSMSFeatures(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
             var daCorrectionMax = Settings.IMSDaCorrectionMax;
             var massToleranceBase = Settings.MassMonoisotopicConstraint;
             var totalFound = 0;
 
-            foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
+            foreach (var lcimsmsFeature in lcImsMsFeatureEnumerable)
             {
-                if (lcimsmsFeature.IMSMSFeatureList.Count == 0)
+                if (lcimsmsFeature.imsMsFeatureList.Count == 0)
                 {
                     continue;
                 }
@@ -27,11 +27,11 @@ namespace FeatureFinder.Algorithms
 
                 var errorFlagPercentage = lcimsmsFeature.GetFlaggedPercentage();
 
-                var searchForDaErrorQuery = from otherLCIMSMSFeature in lcimsmsFeatureEnumerable
+                var searchForDaErrorQuery = from otherLCIMSMSFeature in lcImsMsFeatureEnumerable
                                             where
                                                 Math.Abs(averageMass - otherLCIMSMSFeature.CalculateAverageMonoisotopicMass()) >= (1 - massTolerance)
                                                 && Math.Abs(averageMass - otherLCIMSMSFeature.CalculateAverageMonoisotopicMass()) <= (1 + massTolerance)
-                                                && otherLCIMSMSFeature.IMSMSFeatureList.Count > 0
+                                                && otherLCIMSMSFeature.imsMsFeatureList.Count > 0
                                             orderby Math.Abs(errorFlagPercentage - otherLCIMSMSFeature.GetFlaggedPercentage()) descending
                                             select otherLCIMSMSFeature;
 
@@ -56,7 +56,7 @@ namespace FeatureFinder.Algorithms
                 }
             }
 
-            var newFeatureListQuery = lcimsmsFeatureEnumerable.Where(lcimsmsFeature => lcimsmsFeature.IMSMSFeatureList.Count > 0);
+            var newFeatureListQuery = lcImsMsFeatureEnumerable.Where(lcimsmsFeature => lcimsmsFeature.imsMsFeatureList.Count > 0);
 
             return newFeatureListQuery.AsEnumerable();
         }

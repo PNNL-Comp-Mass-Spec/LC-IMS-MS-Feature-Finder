@@ -71,7 +71,7 @@ namespace LCMSFeatureFinder
                 }
 
                 var iniReader = new IniReader(iniFile.FullName);
-                iniReader.CreateSettings();
+                iniReader.UpdateSettings();
 
                 Logger.Log("LCMSFeatureFinder Version " + assemblyVersion);
                 Logger.Log("Loading settings from INI file: " + iniFile.FullName);

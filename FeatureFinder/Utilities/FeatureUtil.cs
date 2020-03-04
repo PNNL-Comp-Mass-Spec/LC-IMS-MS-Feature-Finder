@@ -11,7 +11,7 @@ namespace FeatureFinder.Utilities
 {
     public static class FeatureUtil
     {
-        public static void WriteLCIMSMSFeatureToFile(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static void WriteLCIMSMSFeatureToFile(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
             var outputDirectory = "";
@@ -65,7 +65,7 @@ namespace FeatureFinder.Utilities
 
                 var index = 0;
 
-                foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
+                foreach (var lcimsmsFeature in lcImsMsFeatureEnumerable)
                 {
                     MSFeature msFeatureRep = null;
 
@@ -82,21 +82,21 @@ namespace FeatureFinder.Utilities
                     double totalInterferenceScore = 0;
                     double totalAbundanceTimesDriftTime = 0;
 
-                    var sortByScanLCQuery = (from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
-                                             orderby imsmsFeature.ScanLC
-                                             select imsmsFeature).ToList();
+                    var sortByScanLCQuery = (from imsMsFeature in lcimsmsFeature.imsMsFeatureList
+                                             orderby imsMsFeature.ScanLC
+                                             select imsMsFeature).ToList();
 
                     var scanLCStart = sortByScanLCQuery.First().ScanLC;
                     var scanLCEnd = sortByScanLCQuery.Last().ScanLC;
 
-                    foreach (var imsmsFeature in sortByScanLCQuery)
+                    foreach (var imsMsFeature in sortByScanLCQuery)
                     {
                         var minIMSScan = int.MaxValue;
                         var maxIMSScan = int.MinValue;
 
                         var isFeatureRep = false;
 
-                        foreach (var msFeature in imsmsFeature.MSFeatureList)
+                        foreach (var msFeature in imsMsFeature.MSFeatureList)
                         {
                             var filteredFeatureId = msFeature.FilteredIndex >= 0 ? msFeature.FilteredIndex.ToString() : "";
                             mapWriter.WriteLine(index + "\t" + msFeature.IndexInFile + "\t" + filteredFeatureId);
@@ -225,7 +225,7 @@ namespace FeatureFinder.Utilities
 
         }
 
-        public static IEnumerable<IMSMSFeature> FilterByMemberCount(IEnumerable<IMSMSFeature> imsmsFeatureEnumerable)
+        public static IEnumerable<imsMsFeature> FilterByMemberCount(IEnumerable<imsMsFeature> imsMsFeatureEnumerable)
         {
             var filterQuery = from imsmsFeature in imsmsFeatureEnumerable
                               where imsmsFeature.MSFeatureList.Count > 3
@@ -234,7 +234,7 @@ namespace FeatureFinder.Utilities
             return filterQuery.AsEnumerable();
         }
 
-        public static IEnumerable<LCIMSMSFeature> FilterByMemberCount(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static IEnumerable<LCIMSMSFeature> FilterByMemberCount(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
             var filterQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
                               where lcimsmsFeature.GetMemberCount() > 3
@@ -243,15 +243,15 @@ namespace FeatureFinder.Utilities
             return filterQuery.AsEnumerable();
         }
 
-        public static IEnumerable<LCIMSMSFeature> FilterSingleLCScan(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static IEnumerable<LCIMSMSFeature> FilterSingleLCScan(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
             var lcimsmsFeatureList = new List<LCIMSMSFeature>();
 
-            foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
+            foreach (var lcimsmsFeature in lcImsMsFeatureEnumerable)
             {
-                var referenceScanLC = lcimsmsFeature.IMSMSFeatureList[0].ScanLC;
+                var referenceScanLC = lcimsmsFeature.imsMsFeatureList[0].ScanLC;
 
-                if (lcimsmsFeature.IMSMSFeatureList.Any(imsmsFeature => imsmsFeature.ScanLC != referenceScanLC))
+                if (lcimsmsFeature.imsMsFeatureList.Any(imsMsFeature => imsMsFeature.ScanLC != referenceScanLC))
                 {
                     lcimsmsFeatureList.Add(lcimsmsFeature);
                 }
@@ -260,7 +260,7 @@ namespace FeatureFinder.Utilities
             return lcimsmsFeatureList;
         }
 
-        public static bool DoLCIMSMSFeaturesFitTogether(LCIMSMSFeature feature1, LCIMSMSFeature feature2)
+        public static bool DoLcImsMsFeaturesFitTogether(LCIMSMSFeature feature1, LCIMSMSFeature feature2)
         {
             if (feature1.Charge != feature2.Charge)
             {
@@ -272,27 +272,27 @@ namespace FeatureFinder.Utilities
             var maxLCScan1 = int.MinValue;
             var maxLCScan2 = int.MaxValue;
 
-            var lcScanToIMSMSFeatureMap1 = new Dictionary<int, IMSMSFeature>();
+            var lcScanToImsMsFeatureMap1 = new Dictionary<int, imsMsFeature>();
 
-            foreach (var imsmsFeature1 in feature1.IMSMSFeatureList)
+            foreach (var imsMsFeature1 in feature1.imsMsFeatureList)
             {
-                var lcScan = imsmsFeature1.ScanLC;
+                var lcScan = imsMsFeature1.ScanLC;
 
                 if (lcScan < minLCScan1) minLCScan1 = lcScan;
                 if (lcScan > maxLCScan1) maxLCScan1 = lcScan;
 
-                lcScanToIMSMSFeatureMap1.Add(imsmsFeature1.ScanLC, imsmsFeature1);
+                lcScanToImsMsFeatureMap1.Add(imsMsFeature1.ScanLC, imsMsFeature1);
             }
 
-            foreach (var imsmsFeature2 in feature2.IMSMSFeatureList)
+            foreach (var imsMsFeature2 in feature2.imsMsFeatureList)
             {
-                var lcScan = imsmsFeature2.ScanLC;
+                var lcScan = imsMsFeature2.ScanLC;
 
                 if (lcScan < minLCScan2) minLCScan2 = lcScan;
                 if (lcScan > maxLCScan2) maxLCScan2 = lcScan;
 
-                if (!lcScanToIMSMSFeatureMap1.TryGetValue(lcScan, out var imsmsFeature1)) continue;
-                if (DoIMSMSFeaturesFitTogether(imsmsFeature1, imsmsFeature2)) continue;
+                if (!lcScanToImsMsFeatureMap1.TryGetValue(lcScan, out var imsMsFeature1)) continue;
+                if (DoImsMsFeaturesFitTogether(imsMsFeature1, imsMsFeature2)) continue;
                 return false;
             }
 
@@ -309,14 +309,14 @@ namespace FeatureFinder.Utilities
             return true;
         }
 
-        public static bool DoIMSMSFeaturesFitTogether(IMSMSFeature feature1, IMSMSFeature feature2)
+        public static bool DoImsMsFeaturesFitTogether(imsMsFeature feature1, imsMsFeature feature2)
         {
             var imsScanList1 = feature1.MSFeatureList.Select(msFeature1 => msFeature1.ScanIMS).ToList();
 
             return feature2.MSFeatureList.All(msFeature2 => !imsScanList1.Contains(msFeature2.ScanIMS));
         }
 
-        public static void MergeIMSMSFeatures(IMSMSFeature dominantFeature, IMSMSFeature recessiveFeature)
+        public static void MergeImsMsFeatures(imsMsFeature dominantFeature, imsMsFeature recessiveFeature)
         {
             dominantFeature.AddMSFeatureList(recessiveFeature.MSFeatureList);
             recessiveFeature.MSFeatureList.Clear();
@@ -325,17 +325,17 @@ namespace FeatureFinder.Utilities
 
         public static void MergeLCIMSMSFeatures(LCIMSMSFeature dominantFeature, LCIMSMSFeature recessiveFeature)
         {
-            var referenceMass = dominantFeature.IMSMSFeatureList[0].MSFeatureList[0].MassMonoisotopic;
-            var massToChange = recessiveFeature.IMSMSFeatureList[0].MSFeatureList[0].MassMonoisotopic;
+            var referenceMass = dominantFeature.imsMsFeatureList[0].MSFeatureList[0].MassMonoisotopic;
+            var massToChange = recessiveFeature.imsMsFeatureList[0].MSFeatureList[0].MassMonoisotopic;
 
             var massChange = (int)Math.Round(referenceMass - massToChange);
 
-            var scanLCToIMSMSFeatureMap = dominantFeature.IMSMSFeatureList.ToDictionary(dominantIMSMSFeature => dominantIMSMSFeature.ScanLC);
+            var scanLcToImsMsFeatureMap = dominantFeature.imsMsFeatureList.ToDictionary(dominantImsMsFeature => dominantImsMsFeature.ScanLC);
 
-            foreach (var recessiveIMSMSFeature in recessiveFeature.IMSMSFeatureList)
+            foreach (var recessiveImsMsFeature in recessiveFeature.imsMsFeatureList)
             {
-                // First correct the Mass of the recessive IMSMSFeature
-                foreach (var msFeature in recessiveIMSMSFeature.MSFeatureList)
+                // First correct the Mass of the recessive imsMsFeature
+                foreach (var msFeature in recessiveImsMsFeature.MSFeatureList)
                 {
                     msFeature.MassMonoisotopic += massChange;
 
@@ -343,24 +343,24 @@ namespace FeatureFinder.Utilities
                     //msFeature.Mz = (msFeature.MassMonoisotopic / msFeature.Charge) + (float)1.00727849;
                 }
 
-                if (scanLCToIMSMSFeatureMap.TryGetValue(recessiveIMSMSFeature.ScanLC, out var dominantIMSMSFeature))
+                if (scanLcToImsMsFeatureMap.TryGetValue(recessiveImsMsFeature.ScanLC, out var dominantImsMsFeature))
                 {
-                    MergeIMSMSFeatures(dominantIMSMSFeature, recessiveIMSMSFeature);
+                    MergeImsMsFeatures(dominantImsMsFeature, recessiveImsMsFeature);
                 }
                 else
                 {
-                    dominantFeature.AddIMSMSFeature(recessiveIMSMSFeature);
+                    dominantFeature.AddImsMsFeature(recessiveImsMsFeature);
                 }
             }
 
-            recessiveFeature.IMSMSFeatureList.Clear();
+            recessiveFeature.imsMsFeatureList.Clear();
         }
 
-        public static List<List<LCIMSMSFeature>> PartitionFeaturesByMass(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static List<List<LCIMSMSFeature>> PartitionFeaturesByMass(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
             var returnList = new List<List<LCIMSMSFeature>>();
 
-            var sortByMassQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
+            var sortByMassQuery = from lcimsmsFeature in lcImsMsFeatureEnumerable
                                   orderby lcimsmsFeature.CalculateAverageMonoisotopicMass()
                                   select lcimsmsFeature;
 
@@ -384,36 +384,36 @@ namespace FeatureFinder.Utilities
             return returnList;
         }
 
-        public static IEnumerable<LCIMSMSFeature> SplitLCIMSMSFeaturesByScanLC(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static IEnumerable<LCIMSMSFeature> SplitLCIMSMSFeaturesByScanLC(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
             var lcimsmsFeatureList = new List<LCIMSMSFeature>();
 
-            var lcimcmsFeatureIndex = 0;
+            var lcImsMsFeatureIndex = 0;
 
-            foreach (var lcimsmsFeature in lcimsmsFeatureEnumerable)
+            foreach (var lcimsmsFeature in lcImsMsFeatureEnumerable)
             {
-                var sortByScanLC = from imsmsFeature in lcimsmsFeature.IMSMSFeatureList
-                                   orderby imsmsFeature.ScanLC
-                                   select imsmsFeature;
+                var sortByScanLC = from imsMsFeature in lcimsmsFeature.imsMsFeatureList
+                                   orderby imsMsFeature.ScanLC
+                                   select imsMsFeature;
 
-                LCIMSMSFeature newLCIMSMSFeature = null;
+                LCIMSMSFeature newLcImsMsFeature = null;
                 var referenceScanLC = -99999;
 
-                foreach (var imsmsFeature in sortByScanLC)
+                foreach (var imsMsFeature in sortByScanLC)
                 {
-                    var scanLC = imsmsFeature.ScanLC;
+                    var scanLC = imsMsFeature.ScanLC;
 
                     if (scanLC - referenceScanLC > Settings.LCGapSizeMax)
                     {
-                        newLCIMSMSFeature = new LCIMSMSFeature(imsmsFeature.Charge);
-                        newLCIMSMSFeature.AddIMSMSFeature(imsmsFeature);
-                        newLCIMSMSFeature.OriginalIndex = lcimcmsFeatureIndex;
-                        lcimcmsFeatureIndex++;
-                        lcimsmsFeatureList.Add(newLCIMSMSFeature);
+                        newLcImsMsFeature = new LCIMSMSFeature(imsMsFeature.Charge);
+                        newLcImsMsFeature.AddImsMsFeature(imsMsFeature);
+                        newLcImsMsFeature.OriginalIndex = lcImsMsFeatureIndex;
+                        lcImsMsFeatureIndex++;
+                        lcimsmsFeatureList.Add(newLcImsMsFeature);
                     }
                     else
                     {
-                        newLCIMSMSFeature?.AddIMSMSFeature(imsmsFeature);
+                        newLcImsMsFeature?.AddImsMsFeature(imsMsFeature);
                     }
 
                     referenceScanLC = scanLC;
@@ -423,9 +423,9 @@ namespace FeatureFinder.Utilities
             return lcimsmsFeatureList;
         }
 
-        public static IEnumerable<LCIMSMSFeature> SortByMass(IEnumerable<LCIMSMSFeature> lcimsmsFeatureEnumerable)
+        public static IEnumerable<LCIMSMSFeature> SortByMass(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
-            var sortByMassQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
+            var sortByMassQuery = from lcimsmsFeature in lcImsMsFeatureEnumerable
                                   orderby lcimsmsFeature.Charge, lcimsmsFeature.CalculateAverageMonoisotopicMass()
                                   select lcimsmsFeature;
 

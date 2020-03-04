@@ -8,16 +8,17 @@ namespace Test
 {
     public class Test
     {
-        public const string UNIT_TEST_FOLDER = @"\\proto-2\UnitTest_Files\DeconTools_TestFiles\LCMSFeatureFinder";
+        public const string UNIT_TEST_DIRECTORY = @"\\proto-2\UnitTest_Files\DeconTools_TestFiles\LCMSFeatureFinder";
 
         public static FileInfo GetTestFile(string methodName, string fileToFind)
         {
-            var testFolderPath = "";
-            if (!File.Exists(fileToFind) &&
-                Directory.Exists(UNIT_TEST_FOLDER))
-                testFolderPath = UNIT_TEST_FOLDER;
+            string testDirectoryPath;
+            if (!File.Exists(fileToFind) && Directory.Exists(UNIT_TEST_DIRECTORY))
+                testDirectoryPath = UNIT_TEST_DIRECTORY;
+            else
+                testDirectoryPath = string.Empty;
 
-            var fileInfo = new FileInfo(Path.Combine(testFolderPath, fileToFind));
+            var fileInfo = new FileInfo(Path.Combine(testDirectoryPath, fileToFind));
             if (fileInfo.Exists)
                 return fileInfo;
 
@@ -48,7 +49,7 @@ namespace Test
 
             Console.WriteLine("Reading settings in " + iniFile.FullName);
             var iniReader = new IniReader(iniFile.FullName);
-            iniReader.CreateSettings();
+            iniReader.UpdateSettings();
 
             if (string.IsNullOrWhiteSpace(Settings.InputDirectory) && iniFile.Directory != null)
                 Settings.InputDirectory = iniFile.Directory.FullName;
@@ -66,7 +67,7 @@ namespace Test
                 Assert.Ignore("Skipping test " + methodName + " since file not found: " + isosFile.FullName);
 
             if (isosFile.Directory == null)
-                Assert.Ignore("Skipping test " + methodName + " since cannot determine the parent folder of: " + isosFile.FullName);
+                Assert.Ignore("Skipping test " + methodName + " since cannot determine the parent directory of: " + isosFile.FullName);
 
             Console.WriteLine("Processing " + isosFile.FullName);
 

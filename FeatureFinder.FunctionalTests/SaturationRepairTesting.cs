@@ -24,20 +24,20 @@ namespace FeatureFinder.FunctionalTests
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            var testfile =
+            var testFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
-            var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
+            var iniReader = new IniReader(testFile);
+            iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
 
-            Assert.AreEqual(2, controller.LCimsmsFeatures.Count());
+            Assert.AreEqual(2, controller.LcImsMsFeatures.Count());
 
-            var testFeature1 = (from n in controller.LCimsmsFeatures where n.Charge == 2 select n).FirstOrDefault();
+            var testFeature1 = (from n in controller.LcImsMsFeatures where n.Charge == 2 select n).FirstOrDefault();
 
             Assert.IsNotNull(testFeature1);
 
@@ -57,20 +57,20 @@ namespace FeatureFinder.FunctionalTests
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            var testfile =
+            var testFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
-            var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
+            var iniReader = new IniReader(testFile);
+            iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
 
-            Assert.AreEqual(2, controller.LCimsmsFeatures.Count());
+            Assert.AreEqual(2, controller.LcImsMsFeatures.Count());
 
-            var testFeature1 = (from n in controller.LCimsmsFeatures where n.Charge == 2 select n).FirstOrDefault();
+            var testFeature1 = (from n in controller.LcImsMsFeatures where n.Charge == 2 select n).FirstOrDefault();
 
             Assert.IsNotNull(testFeature1);
 
@@ -91,11 +91,11 @@ namespace FeatureFinder.FunctionalTests
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            var testfile =
+            var testFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
-            var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
+            var iniReader = new IniReader(testFile);
+            iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
@@ -104,9 +104,9 @@ namespace FeatureFinder.FunctionalTests
 
 
 
-            Assert.AreEqual(1, controller.LCimsmsFeatures.Count());
+            Assert.AreEqual(1, controller.LcImsMsFeatures.Count());
 
-            var testFeature1 = controller.LCimsmsFeatures.ElementAt(0);
+            var testFeature1 = controller.LcImsMsFeatures.ElementAt(0);
 
             Assert.IsNotNull(testFeature1);
             Assert.AreEqual(22, testFeature1.GetMemberCount());
@@ -131,20 +131,20 @@ namespace FeatureFinder.FunctionalTests
             File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-            var testfile =
+            var testFile =
                 @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
-            var iniReader = new IniReader(testfile);
-            iniReader.CreateSettings();
+            var iniReader = new IniReader(testFile);
+            iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
             var controller = new LCIMSMSFeatureFinderController(isosReader);
             controller.Execute();
 
-            Assert.AreEqual(2, controller.LCimsmsFeatures.Count());
+            Assert.AreEqual(2, controller.LcImsMsFeatures.Count());
 
-            var testFeature1 = controller.LCimsmsFeatures.ElementAt(1);
+            var testFeature1 = controller.LcImsMsFeatures.ElementAt(1);
 
             Assert.IsNotNull(testFeature1);
             Assert.AreEqual(20, testFeature1.GetMemberCount());
@@ -189,10 +189,10 @@ namespace FeatureFinder.FunctionalTests
         //    File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-        //    string testfile =
+        //    string testFile =
         //        @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
-        //    var iniReader = new IniReader(testfile);
-        //    iniReader.CreateSettings();
+        //    var iniReader = new IniReader(testFile);
+        //    iniReader.UpdateSettings();
 
         //    var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
@@ -211,7 +211,7 @@ namespace FeatureFinder.FunctionalTests
         //    string copiedFeaturesLogFile = directoryInfo.FullName + "\\" +
         //                                fileInfo.Name.Replace("_isos.csv", "_FeatureFinder_Log.txt");
 
-        //    //copy the LCMSFeatures file back to my working folder
+        //    //copy the LCMSFeatures file back to my working directory
         //    File.Copy(sourceFeaturesFile, copiedFeaturesFile,true);
         //    File.Copy(sourceLogFile, copiedFeaturesLogFile, true);
 
@@ -230,19 +230,17 @@ namespace FeatureFinder.FunctionalTests
         //    File.Copy(sourceIsosFile, copiedIsosFileName, true);
 
 
-        //    string testfile =
+        //    string testFile =
         //        @"\\protoapps\UserData\Slysz\Data\Redmine_Issues\Issue947_saturationTesting\FF_IMS4Filters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-05-16_issue947.ini";
 
-        //    var iniReader = new IniReader(testfile);
-        //    iniReader.CreateSettings();
+        //    var iniReader = new IniReader(testFile);
+        //    iniReader.UpdateSettings();
 
         //    var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
 
         //    var controller = new LCIMSMSFeatureFinderController(isosReader);
         //    controller.Execute();
         //}
-
-
 
         private void DisplayFeatureStats(LCIMSMSFeature testFeature1)
         {

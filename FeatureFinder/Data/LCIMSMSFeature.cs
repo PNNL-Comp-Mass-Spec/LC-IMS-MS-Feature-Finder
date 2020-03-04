@@ -12,7 +12,7 @@ namespace FeatureFinder.Data
     {
         public byte Charge { get; set; }
 
-        public List<IMSMSFeature> IMSMSFeatureList { get; set; }
+        public List<imsMsFeature> imsMsFeatureList { get; set; }
 
         public float IMSScore { get; set; }
         public float LCScore { get; set; }
@@ -24,7 +24,7 @@ namespace FeatureFinder.Data
 
         public LCIMSMSFeature(byte charge)
         {
-            IMSMSFeatureList = new List<IMSMSFeature>();
+            imsMsFeatureList = new List<imsMsFeature>();
             Charge = charge;
             IMSScore = 0;
             LCScore = 0;
@@ -34,32 +34,32 @@ namespace FeatureFinder.Data
             AbundanceSumRaw = 0;
         }
 
-        public void AddIMSMSFeature(IMSMSFeature imsmsFeature)
+        public void AddImsMsFeature(imsMsFeature imsMsFeature)
         {
-            var lcScan = imsmsFeature.ScanLC;
+            var lcScan = imsMsFeature.ScanLC;
 
-            foreach (var otherIMSMSFeature in IMSMSFeatureList.Where(otherIMSMSFeature => otherIMSMSFeature.ScanLC == lcScan))
+            foreach (var otherImsMsFeature in imsMsFeatureList.Where(otherImsMsFeature => otherImsMsFeature.ScanLC == lcScan))
             {
-                FeatureUtil.MergeIMSMSFeatures(imsmsFeature, otherIMSMSFeature);
-                IMSMSFeatureList.Add(imsmsFeature);
-                IMSMSFeatureList.Remove(otherIMSMSFeature);
+                FeatureUtil.MergeImsMsFeatures(imsMsFeature, otherImsMsFeature);
+                imsMsFeatureList.Add(imsMsFeature);
+                imsMsFeatureList.Remove(otherImsMsFeature);
                 return;
             }
 
-            IMSMSFeatureList.Add(imsmsFeature);
+            imsMsFeatureList.Add(imsMsFeature);
         }
 
         public int GetMemberCount()
         {
-            return IMSMSFeatureList.Sum(imsmsFeature => imsmsFeature.MSFeatureList.Count);
+            return imsMsFeatureList.Sum(imsMsFeature => imsMsFeature.MSFeatureList.Count);
         }
 
         public int GetSaturatedMemberCount()
         {
             var numSaturated = 0;
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                foreach (var msFeature in imsmsFeature.MSFeatureList)
+                foreach (var msFeature in imsMsFeature.MSFeatureList)
                 {
                     if (msFeature.IsSaturated)
                     {
@@ -81,10 +81,10 @@ namespace FeatureFinder.Data
             var totalMemberCount = 0;
             var massTotal = 0.0;
 
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                var memberCount = imsmsFeature.MSFeatureList.Count;
-                massTotal += imsmsFeature.CalculateAverageMonoisotopicMass() * memberCount;
+                var memberCount = imsMsFeature.MSFeatureList.Count;
+                massTotal += imsMsFeature.CalculateAverageMonoisotopicMass() * memberCount;
                 totalMemberCount += memberCount;
             }
 
@@ -98,10 +98,10 @@ namespace FeatureFinder.Data
             var totalMemberCount = 0;
             var mzTotal = 0.0;
 
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                var memberCount = imsmsFeature.MSFeatureList.Count;
-                mzTotal += imsmsFeature.CalculateAverageMz() * memberCount;
+                var memberCount = imsMsFeature.MSFeatureList.Count;
+                mzTotal += imsMsFeature.CalculateAverageMz() * memberCount;
                 totalMemberCount += memberCount;
             }
 
@@ -112,7 +112,7 @@ namespace FeatureFinder.Data
 
         public double GetIntensity()
         {
-            return IMSMSFeatureList.Sum(imsmsFeature => imsmsFeature.GetIntensity());
+            return imsMsFeatureList.Sum(imsMsFeature => imsMsFeature.GetIntensity());
         }
 
         public double GetFlaggedPercentage()
@@ -120,7 +120,7 @@ namespace FeatureFinder.Data
             var numFlagged = 0;
             var numTotal = 0;
 
-            foreach (var msFeature in IMSMSFeatureList.SelectMany(imsmsFeature => imsmsFeature.MSFeatureList))
+            foreach (var msFeature in imsMsFeatureList.SelectMany(imsMsFeature => imsMsFeature.MSFeatureList))
             {
                 if (msFeature.ErrorFlag == 1)
                 {
@@ -138,9 +138,9 @@ namespace FeatureFinder.Data
         {
             var msFeatureList = new List<MSFeature>();
 
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+                msFeatureList.AddRange(imsMsFeature.MSFeatureList);
             }
 
             var sortByScanLCQuery = (from msFeature in msFeatureList
@@ -167,9 +167,9 @@ namespace FeatureFinder.Data
         {
             var msFeatureList = new List<MSFeature>();
 
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+                msFeatureList.AddRange(imsMsFeature.MSFeatureList);
             }
 
             var sortByScanLCQuery = (from msFeature in msFeatureList
@@ -199,9 +199,9 @@ namespace FeatureFinder.Data
         {
             var msFeatureList = new List<MSFeature>();
 
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+                msFeatureList.AddRange(imsMsFeature.MSFeatureList);
             }
 
             var sortByScanLCQuery = (from msFeature in msFeatureList
@@ -229,9 +229,9 @@ namespace FeatureFinder.Data
         {
             var msFeatureList = new List<MSFeature>();
 
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+                msFeatureList.AddRange(imsMsFeature.MSFeatureList);
             }
 
             var sortByAbundanceQuery = from msFeature in msFeatureList
@@ -253,10 +253,10 @@ namespace FeatureFinder.Data
             {
                 float summedIntensityForIMSScan = 0;
 
-                foreach (var imsmsFeature in IMSMSFeatureList)
+                foreach (var imsMsFeature in imsMsFeatureList)
                 {
                     summedIntensityForIMSScan +=
-                        imsmsFeature.MSFeatureList.Where(p => p.ScanIMS == imsScan).Select(p =>(float)p.IntensityUnSummed).Sum       //note: need float due overflow exception from value exceeding int32
+                        imsMsFeature.MSFeatureList.Where(p => p.ScanIMS == imsScan).Select(p =>(float)p.IntensityUnSummed).Sum       //note: need float due overflow exception from value exceeding int32
                             ();
                 }
 
@@ -333,9 +333,9 @@ namespace FeatureFinder.Data
         {
             var msFeatureList = new List<MSFeature>();
 
-            foreach (var imsmsFeature in IMSMSFeatureList)
+            foreach (var imsMsFeature in imsMsFeatureList)
             {
-                msFeatureList.AddRange(imsmsFeature.MSFeatureList);
+                msFeatureList.AddRange(imsMsFeature.MSFeatureList);
             }
 
             var groupByScanLCQuery = from msFeature in msFeatureList
