@@ -227,17 +227,17 @@ namespace FeatureFinder.Utilities
 
         public static IEnumerable<imsMsFeature> FilterByMemberCount(IEnumerable<imsMsFeature> imsMsFeatureEnumerable)
         {
-            var filterQuery = from imsmsFeature in imsmsFeatureEnumerable
-                              where imsmsFeature.MSFeatureList.Count > 3
-                              select imsmsFeature;
+            var filterQuery = from imsMsFeature in imsMsFeatureEnumerable
+                              where imsMsFeature.MSFeatureList.Count >= Settings.FeatureLengthMin
+                              select imsMsFeature;
 
             return filterQuery.AsEnumerable();
         }
 
         public static IEnumerable<LCIMSMSFeature> FilterByMemberCount(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
-            var filterQuery = from lcimsmsFeature in lcimsmsFeatureEnumerable
-                              where lcimsmsFeature.GetMemberCount() > 3
+            var filterQuery = from lcimsmsFeature in lcImsMsFeatureEnumerable
+                              where lcimsmsFeature.GetMemberCount() >= Settings.FeatureLengthMin
                               select lcimsmsFeature;
 
             return filterQuery.AsEnumerable();
