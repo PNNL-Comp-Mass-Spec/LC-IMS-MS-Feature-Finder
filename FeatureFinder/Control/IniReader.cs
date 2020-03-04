@@ -1,251 +1,328 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
+using PRISM;
 using UIMFLibrary;
 
 namespace FeatureFinder.Control
 {
     public class IniReader
     {
-        private readonly string m_path;
+        private readonly Dictionary<string, Dictionary<string, string>> mSettingsBySection;
 
-        [DllImport("kernel32")]
-        private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
-
-        public IniReader(string path)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settingsFilePath"></param>
+        public IniReader(string settingsFilePath)
         {
-            if (File.Exists(path))
+            if (!File.Exists(settingsFilePath))
             {
-                m_path = path;
+                var errorMessage = "Could not find the settings file: " + settingsFilePath;
+                Logger.LogError(errorMessage);
+                throw new FileNotFoundException(errorMessage);
             }
-            else
-            {
-                Logger.Log("Could not find file '" + path + "'.");
-                throw new FileNotFoundException("Could not find file '" + path + "'.");
-            }
+
+            mSettingsBySection = LoadIniFile(settingsFilePath);
         }
 
-        public void CreateSettings()
+        /// <summary>
+        /// Updates the program's settings using the .ini settings file passed to the constructor
+        /// </summary>
+        public void UpdateSettings()
         {
+
             /*
              * Files Settings
              */
-            var value = IniReadValue("Files", "InputFileName");
-            if (!string.IsNullOrWhiteSpace(value))
+            var inputFilePath = GetValueForKey("Files", "InputFileName");
+            if (!string.IsNullOrWhiteSpace(inputFilePath))
             {
-                var directoryName = Path.GetDirectoryName(value);
+                var directoryName = Path.GetDirectoryName(inputFilePath);
                 if (directoryName != null && !directoryName.Equals(string.Empty))
                 {
-                    Settings.InputDirectory = Path.GetDirectoryName(value) + "\\";
+                    Settings.InputDirectory = Path.GetDirectoryName(inputFilePath) + "\\";
                 }
 
-                Settings.InputFileName = Path.GetFileName(value);
+                Settings.InputFileName = Path.GetFileName(inputFilePath);
             }
 
-            value = IniReadValue("Files", "OutputDirectory");
-            if (!string.IsNullOrWhiteSpace(value))
+            var outputDirectory = GetValueForKey("Files", "OutputDirectory");
+            if (!string.IsNullOrWhiteSpace(outputDirectory))
             {
-                Settings.OutputDirectory = value + "\\";
+                Settings.OutputDirectory = outputDirectory + "\\";
             }
             else
             {
                 Settings.OutputDirectory = Settings.InputDirectory;
             }
 
-            value = IniReadValue("Files", "DeconToolsFilterFileName");
-            if (!string.IsNullOrWhiteSpace(value))
+            var deconToolsFilterFile = GetValueForKey("Files", "DeconToolsFilterFileName");
+            if (!string.IsNullOrWhiteSpace(deconToolsFilterFile))
             {
-                Settings.DeconToolsFilterFileName = value;
-                var loader = new DeconToolsFilterLoader(value);
+                Settings.DeconToolsFilterFileName = deconToolsFilterFile;
+
+                Console.WriteLine("Reading " + deconToolsFilterFile);
+                var loader = new DeconToolsFilterLoader(deconToolsFilterFile);
+
+                loader.DisplayFilters();
+
                 Settings.DeconToolsFilterList = loader.DeconToolsFilterList;
             }
             else
             {
-                Settings.DeconToolsFilterList = new System.Collections.Generic.List<DeconToolsFilter>();
-
+                Settings.DeconToolsFilterList = new List<DeconToolsFilter>();
             }
 
             /*
              * DataFilters Settings
              */
-            value = IniReadValue("DataFilters", "MaxIsotopicFit");
-            if (!string.IsNullOrWhiteSpace(value))
+            var  maxIsotopicFit = GetValueForKey("DataFilters", "MaxIsotopicFit");
+            if (!string.IsNullOrWhiteSpace(maxIsotopicFit))
             {
-                Settings.FitMax = float.Parse(value);
+                Settings.FitMax = float.Parse(maxIsotopicFit);
             }
 
-            value = IniReadValue("DataFilters", "MaxIScore");
-            if (!string.IsNullOrWhiteSpace(value))
+            var maxIScore = GetValueForKey("DataFilters", "MaxIScore");
+            if (!string.IsNullOrWhiteSpace(maxIScore))
             {
-                Settings.InterferenceScoreMax = float.Parse(value);
+                Settings.InterferenceScoreMax = float.Parse(maxIScore);
             }
 
-            value = IniReadValue("DataFilters", "MinimumIntensity");
-            if (!string.IsNullOrWhiteSpace(value))
+            var minimumIntensity = GetValueForKey("DataFilters", "MinimumIntensity");
+            if (!string.IsNullOrWhiteSpace(minimumIntensity))
             {
-                Settings.IntensityMin = float.Parse(value);
+                Settings.IntensityMin = float.Parse(minimumIntensity);
             }
 
-            value = IniReadValue("DataFilters", "UseHardCodedFilters");
-            if (!string.IsNullOrWhiteSpace(value))
+            var useHardCodedFilters = GetValueForKey("DataFilters", "UseHardCodedFilters");
+            if (!string.IsNullOrWhiteSpace(useHardCodedFilters))
             {
-                Settings.FilterUsingHardCodedFilters = bool.Parse(value);
+                Settings.FilterUsingHardCodedFilters = bool.Parse(useHardCodedFilters);
             }
 
-            value = IniReadValue("DataFilters", "FilterFlaggedData");
-            if (!string.IsNullOrWhiteSpace(value))
+            var filterFlaggedData = GetValueForKey("DataFilters", "FilterFlaggedData");
+            if (!string.IsNullOrWhiteSpace(filterFlaggedData))
             {
-                Settings.FilterFlaggedData = bool.Parse(value);
+                Settings.FilterFlaggedData = bool.Parse(filterFlaggedData);
             }
 
-            value = IniReadValue("DataFilters", "IMSMinScan");
-            if (!string.IsNullOrWhiteSpace(value))
+            var imsMinScan = GetValueForKey("DataFilters", "IMSMinScan");
+            if (!string.IsNullOrWhiteSpace(imsMinScan))
             {
-                Settings.ScanIMSMin = int.Parse(value);
+                Settings.ScanIMSMin = int.Parse(imsMinScan);
             }
 
-            value = IniReadValue("DataFilters", "IMSMaxScan");
-            if (!string.IsNullOrWhiteSpace(value))
+            var imsMaxScan = GetValueForKey("DataFilters", "IMSMaxScan");
+            if (!string.IsNullOrWhiteSpace(imsMaxScan))
             {
-                Settings.ScanIMSMax = int.Parse(value);
+                Settings.ScanIMSMax = int.Parse(imsMaxScan);
                 if (Settings.ScanIMSMax <= 0) Settings.ScanIMSMax = int.MaxValue;
             }
 
-            value = IniReadValue("DataFilters", "LCMinScan");
-            if (!string.IsNullOrWhiteSpace(value))
+            var lcMinScan = GetValueForKey("DataFilters", "LCMinScan");
+            if (!string.IsNullOrWhiteSpace(lcMinScan))
             {
-                Settings.ScanLCMin = int.Parse(value);
+                Settings.ScanLCMin = int.Parse(lcMinScan);
             }
 
-            value = IniReadValue("DataFilters", "LCMaxScan");
-            if (!string.IsNullOrWhiteSpace(value))
+            var lcMaxScan = GetValueForKey("DataFilters", "LCMaxScan");
+            if (!string.IsNullOrWhiteSpace(lcMaxScan))
             {
-                Settings.ScanLCMax = int.Parse(value);
+                Settings.ScanLCMax = int.Parse(lcMaxScan);
                 if (Settings.ScanLCMax <= 0) Settings.ScanLCMax = int.MaxValue;
             }
 
-            value = IniReadValue("DataFilters", "MonoMassStart");
-            if (!string.IsNullOrWhiteSpace(value))
+            var monoisotopicMassMin = GetValueForKey("DataFilters", "MonoMassStart");
+            if (!string.IsNullOrWhiteSpace(monoisotopicMassMin))
             {
-                Settings.MassMonoisotopicStart = float.Parse(value);
+                Settings.MassMonoisotopicStart = float.Parse(monoisotopicMassMin);
             }
 
-            value = IniReadValue("DataFilters", "MonoMassEnd");
-            if (!string.IsNullOrWhiteSpace(value))
+            var monoisotopicMassMax = GetValueForKey("DataFilters", "MonoMassEnd");
+            if (!string.IsNullOrWhiteSpace(monoisotopicMassMax))
             {
-                Settings.MassMonoisotopicEnd = float.Parse(value);
+                Settings.MassMonoisotopicEnd = float.Parse(monoisotopicMassMax);
             }
 
-            value = IniReadValue("DataFilters", "FrameType");
-            if (!string.IsNullOrWhiteSpace(value))
+            var frameTypeFilter = GetValueForKey("DataFilters", "FrameType");
+            if (!string.IsNullOrWhiteSpace(frameTypeFilter))
             {
-                Settings.FrameTypeFilter = (DataReader.FrameType)short.Parse(value);
+                Settings.FrameTypeFilter = (UIMFData.FrameType)short.Parse(frameTypeFilter);
             }
 
             /*
              * UMCCreationOptions Settings
              */
-            value = IniReadValue("UMCCreationOptions", "IgnoreIMSDriftTime");
-            if (!string.IsNullOrWhiteSpace(value))
+            var ignoreImsDriftTime = GetValueForKey("UMCCreationOptions", "IgnoreIMSDriftTime");
+            if (!string.IsNullOrWhiteSpace(ignoreImsDriftTime))
             {
-                Settings.IgnoreIMSDriftTime = bool.Parse(value);
+                Settings.IgnoreIMSDriftTime = bool.Parse(ignoreImsDriftTime);
             }
 
-            value = IniReadValue("UMCCreationOptions", "MonoMassConstraint");
-            if (!string.IsNullOrWhiteSpace(value))
+            // Monoisotopic mass constraint, in ppm
+            var monoMassConstraint = GetValueForKey("UMCCreationOptions", "MonoMassConstraint");
+            if (!string.IsNullOrWhiteSpace(monoMassConstraint))
             {
-                Settings.MassMonoisotopicConstraint = float.Parse(value);
+                Settings.MassMonoisotopicConstraint = float.Parse(monoMassConstraint);
             }
 
-            value = IniReadValue("UMCCreationOptions", "MonoMassConstraintIsPPM");
-            if (!string.IsNullOrWhiteSpace(value))
+            // Obsolete:
+            // var monoMassConstraintIsPPM = GetValueForKey("UMCCreationOptions", "MonoMassConstraintIsPPM");
+
+            // Obsolete:
+            // var useGenericNET = GetValueForKey("UMCCreationOptions", "UseGenericNET");
+
+            var useCharge = GetValueForKey("UMCCreationOptions", "UseCharge");
+            if (!string.IsNullOrWhiteSpace(useCharge))
             {
-                Settings.MassMonoisotopicConstraintIsPPM = bool.Parse(value);
+                Settings.UseCharge = bool.Parse(useCharge);
             }
 
-            value = IniReadValue("UMCCreationOptions", "UseGenericNET");
-            if (!string.IsNullOrWhiteSpace(value))
+            var minFeatureLengthPoints = GetValueForKey("UMCCreationOptions", "MinFeatureLengthPoints");
+            if (!string.IsNullOrWhiteSpace(minFeatureLengthPoints))
             {
-                Settings.UseGenericNET = bool.Parse(value);
+                Settings.FeatureLengthMin = short.Parse(minFeatureLengthPoints);
             }
 
-            value = IniReadValue("UMCCreationOptions", "UseCharge");
-            if (!string.IsNullOrWhiteSpace(value))
+            var lcGapMaxSize = GetValueForKey("UMCCreationOptions", "LCGapMaxSize");
+            if (!string.IsNullOrWhiteSpace(lcGapMaxSize))
             {
-                Settings.UseCharge = bool.Parse(value);
+                Settings.LCGapSizeMax = short.Parse(lcGapMaxSize);
             }
 
-            value = IniReadValue("UMCCreationOptions", "MinFeatureLengthPoints");
-            if (!string.IsNullOrWhiteSpace(value))
+            var imsMaxDaCorrection = GetValueForKey("UMCCreationOptions", "IMSMaxDaCorrection");
+            if (!string.IsNullOrWhiteSpace(imsMaxDaCorrection))
             {
-                Settings.FeatureLengthMin = short.Parse(value);
-            }
-
-            value = IniReadValue("UMCCreationOptions", "LCGapMaxSize");
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                Settings.LCGapSizeMax = short.Parse(value);
-            }
-
-            value = IniReadValue("UMCCreationOptions", "IMSMaxDaCorrection");
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                int readValue = short.Parse(value);
+                int readValue = short.Parse(imsMaxDaCorrection);
 
                 Settings.IMSDaCorrectionMax = readValue < 0 ? 0 : readValue;
             }
 
-            value = IniReadValue("UMCCreationOptions", "UMCFitScoreMinimum");
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                Settings.UMCFitScoreMinimum = float.Parse(value);
-            }
+            // Obsolete:
+            // var umcFitScoreMinimum = GetValueForKey("UMCCreationOptions", "UMCFitScoreMinimum");
 
-            /*
-             * UMCSplittingOptions Settings
-             */
-            value = IniReadValue("UMCSplittingOptions", "Split");
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                Settings.Split = bool.Parse(value);
-            }
-
-            value = IniReadValue("UMCSplittingOptions", "MinimumDifferenceInMedianPpmMassToSplit");
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                Settings.MinimumDifferenceInMedianPpmMassToSplit = short.Parse(value);
-            }
+            // Obsolete:
+            // umcSplittingEnabled = GetValueForKey("UMCSplittingOptions", "Split");
+            // minimumDifferenceInMedianPpmMass = GetValueForKey("UMCSplittingOptions", "MinimumDifferenceInMedianPpmMassToSplit");
 
             /*
              * DriftProfile Settings
              */
-            value = IniReadValue("DriftProfileOptions", "UseConformationDetection");
-            if (!string.IsNullOrWhiteSpace(value))
+            var useConformationDetection = GetValueForKey("DriftProfileOptions", "UseConformationDetection");
+            if (!string.IsNullOrWhiteSpace(useConformationDetection))
             {
-                Settings.UseConformationDetection = bool.Parse(value);
+                Settings.UseConformationDetection = bool.Parse(useConformationDetection);
             }
 
-            value = IniReadValue("DriftProfileOptions", "SmoothingStDev");
-            if (!string.IsNullOrWhiteSpace(value))
+            var smoothingStDev = GetValueForKey("DriftProfileOptions", "SmoothingStDev");
+            if (!string.IsNullOrWhiteSpace(smoothingStDev))
             {
-                Settings.SmoothingStDev = float.Parse(value);
+                Settings.SmoothingStDev = float.Parse(smoothingStDev);
             }
 
             /*
              * PostCreationFiltering Settings
              */
-            value = IniReadValue("PostCreationFilteringOptions", "FilterIsosToSinglePoint");
-            if (!string.IsNullOrWhiteSpace(value))
+            var filterIsosToSinglePoint = GetValueForKey("PostCreationFilteringOptions", "FilterIsosToSinglePoint");
+            if (!string.IsNullOrWhiteSpace(filterIsosToSinglePoint))
             {
-                Settings.FilterIsosToSinglePoint = bool.Parse(value);
+                Settings.FilterIsosToSinglePoint = bool.Parse(filterIsosToSinglePoint);
             }
         }
 
-        private string IniReadValue(string Section, string Key)
+        private string GetValueForKey(string sectionName, string keyName, string valueIfMissing = "")
         {
-            var stringBuilder = new StringBuilder(255);
-            GetPrivateProfileString(Section, Key, "", stringBuilder, 255, m_path);
-            return stringBuilder.ToString();
+            // ReSharper disable once InvertIf
+            if (mSettingsBySection.TryGetValue(sectionName, out var sectionInfo))
+            {
+                if (sectionInfo.TryGetValue(keyName, out var keyValue))
+                    return keyValue;
+            }
+
+            return valueIfMissing;
+        }
+
+        private Dictionary<string, Dictionary<string, string>> LoadIniFile(string settingsFilePath)
+        {
+            var settings = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+            var splitChar = new[] {'='};
+
+            var sectionMatcher = new Regex(@"^\[(?<SectionName>.+)\]", RegexOptions.Compiled);
+
+            var currentSection = string.Empty;
+            var linesRead = 0;
+
+            try
+            {
+                using (var reader = new StreamReader(new FileStream(settingsFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        var dataLine = reader.ReadLine();
+                        linesRead++;
+
+                        if (string.IsNullOrWhiteSpace(dataLine))
+                            continue;
+
+                        var trimmedLine = dataLine.Trim();
+                        if (trimmedLine.StartsWith(";") || trimmedLine.StartsWith("#"))
+                        {
+                            // Comment line
+                            continue;
+                        }
+
+                        var sectionMatch = sectionMatcher.Match(trimmedLine);
+                        if (sectionMatch.Success)
+                        {
+                            currentSection = sectionMatch.Groups["SectionName"].Value;
+                            continue;
+                        }
+
+                        var splitLine = trimmedLine.Split(splitChar, 2);
+
+                        if (splitLine.Length < 2)
+                        {
+                            ConsoleMsgUtils.ShowWarning("Ignoring line {0} since no equals sign: {1}", linesRead, dataLine);
+                        }
+
+                        var key = splitLine[0];
+                        var value = splitLine[1];
+
+                        if (settings.TryGetValue(currentSection, out var sectionInfo))
+                        {
+                            StoreKey(linesRead, currentSection, sectionInfo, key, value);
+                            continue;
+                        }
+
+                        var newSectionInfo = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        settings.Add(currentSection, newSectionInfo);
+
+                        StoreKey(linesRead, currentSection, newSectionInfo, key, value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "Exception reading data from settings file " + settingsFilePath;
+                Logger.LogError(errorMessage, ex);
+                throw new Exception(errorMessage + ": " + ex.Message, ex);
+            }
+
+            return settings;
+        }
+
+        private void StoreKey(int linesRead, string sectionName, IDictionary<string, string> sectionInfo, string key, string value)
+        {
+            if (sectionInfo.ContainsKey(key))
+            {
+                ConsoleMsgUtils.ShowWarning(
+                    "Line {0} has a duplicate key named {1} in section {2}; ignoring duplicate value {3}",
+                    linesRead, key, sectionName, value);
+            }
+
+            sectionInfo.Add(key, value);
         }
     }
 }
