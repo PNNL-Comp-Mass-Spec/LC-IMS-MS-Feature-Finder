@@ -93,7 +93,7 @@ namespace FeatureFinder.Control
             MassMonoisotopicStart = 0;
             MassMonoisotopicEnd = 15000;
             MassMonoisotopicConstraint = 20f;
-            FeatureLengthMin = 3;
+            FeatureLengthMin = 4;
             UseCharge = false;
             LCGapSizeMax = 5;
 
@@ -144,7 +144,7 @@ namespace FeatureFinder.Control
             Console.WriteLine("; Monoisotopic mass tolerance for grouping data, in ppm");
             Console.WriteLine("MonoMassConstraint=20");
             Console.WriteLine("UseCharge=True");
-            Console.WriteLine("MinFeatureLengthPoints=3");
+            Console.WriteLine("MinFeatureLengthPoints=4");
             Console.WriteLine("LCGapMaxSize=4");
             Console.WriteLine("IMSMaxDaCorrection=1");
 
