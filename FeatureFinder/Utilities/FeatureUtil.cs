@@ -139,11 +139,10 @@ namespace FeatureFinder.Utilities
                     if (float.IsInfinity(lcimsmsFeature.IMSScore) || float.IsNaN(lcimsmsFeature.IMSScore)) lcimsmsFeature.IMSScore = 0;
                     if (float.IsInfinity(lcimsmsFeature.LCScore) || float.IsNaN(lcimsmsFeature.LCScore)) lcimsmsFeature.IMSScore = 0;
 
-                    var memberPercentage = msFeatureCount / (double)lcimsmsFeature.MaxMemberCount;
-                    if (double.IsInfinity(memberPercentage) || double.IsNaN(memberPercentage)) memberPercentage = 0.0;
+                    // When conformation detection is enabled, this is the number of members of this feature divided by the member count of the conform with the most members
+                    var memberPercentage = ValidateScore(msFeatureCount / (double)lcimsmsFeature.MaxMemberCount);
 
-                    var combinedScore = (lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0;
-                    if (double.IsInfinity(combinedScore) || double.IsNaN(combinedScore)) combinedScore = 0.0;
+                    var combinedScore = ValidateScore((lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0);
 
                     var driftTimeWeightedAverage = totalAbundanceTimesDriftTime / totalAbundance;
 
@@ -432,6 +431,21 @@ namespace FeatureFinder.Utilities
                                   select lcimsmsFeature;
 
             return sortByMassQuery.AsEnumerable();
+        }
+
+        /// <summary>
+        /// If the value is infinity or NaN, return valueIfInfinityOrNaN
+        /// Otherwise, return the value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="valueIfInfinityOrNaN"></param>
+        /// <returns></returns>
+        private static double ValidateScore(double value, double valueIfInfinityOrNaN = 0.0)
+        {
+            if (double.IsInfinity(value) || double.IsNaN(value))
+                return valueIfInfinityOrNaN;
+
+            return value;
         }
     }
 }
