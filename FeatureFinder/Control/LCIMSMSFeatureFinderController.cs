@@ -145,7 +145,7 @@ namespace FeatureFinder.Control
 
                     Parallel.ForEach(lcImsMsFeatureListBag, lcimsmsFeatureGroup =>
                     {
-                        var lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup);
+                        var lcimsmsFeatureList = DaltonCorrection.CorrectLCIMSMSFeatures(lcimsmsFeatureGroup.ToList());
 
                         foreach (var lcimsmsFeature in lcimsmsFeatureList)
                         {

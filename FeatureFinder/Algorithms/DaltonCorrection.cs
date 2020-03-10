@@ -9,10 +9,11 @@ namespace FeatureFinder.Algorithms
 {
     public static class DaltonCorrection
     {
-        public static IEnumerable<LCIMSMSFeature> CorrectLCIMSMSFeatures(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
+        public static IEnumerable<LCIMSMSFeature> CorrectLCIMSMSFeatures(List<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
-            var daCorrectionMax = Settings.IMSDaCorrectionMax;
             var massToleranceBase = Settings.MassMonoisotopicConstraint;
+
+            // ReSharper disable once NotAccessedVariable
             var totalFound = 0;
 
             foreach (var lcimsmsFeature in lcImsMsFeatureEnumerable)
