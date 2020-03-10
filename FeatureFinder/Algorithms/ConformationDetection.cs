@@ -49,16 +49,15 @@ namespace FeatureFinder.Algorithms
                     var framePressure = uimfReader.GetFramePressureForCalculationOfDriftTime(scanLC);
                     var frameType = frameParams.FrameType;
 
-
-                    //For saturated Features, will extract the imsScan profile from the MSFeature data (which contains the adjusted intensities)
-                    //For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
-                    //We need to do the normalization and scaling so the two approaches give comparable intensity outputs
+                    // For saturated Features, will extract the imsScan profile from the MSFeature data (which contains the adjusted intensities)
+                    // For non-saturated Features, extract the imsScan profile from the raw data. Then normalize it and scale the intensities to match that of MSFeature data
+                    // We need to do the normalization and scaling so the two approaches give comparable intensity outputs
                     var containsSaturatedFeatures = lcimsmsFeature.GetSaturatedMemberCount() > 0;
 
                     var msfeature = lcimsmsFeature.GetMSFeatureRep();
                     var maxIntensity = msfeature.Abundance;
 
-                    //Some features are barely saturated. We want to go to the raw data for those. (We miss these if we don't!)
+                    // Some features are barely saturated. We want to go to the raw data for those. (We miss these if we don't!)
                     var isAboveIntensityThreshold = msfeature.IntensityUnSummed > 25000;     //note that Unsummed MS is considered saturated at 50000;
 
                     List<XYPair> imsScanProfile;
@@ -300,7 +299,7 @@ namespace FeatureFinder.Algorithms
                 {
                     //Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ FOUND EMPTY $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
                     // TODO: Figure out why this actually happens. I believe that this SHOULD NOT happen. Below is a hack to return a conformation even if this happens
-                    // It actually looks like most of these occurences are due to large gaps in the drift time, which cause a small peak to be found in the gap which has no members.
+                    // It actually looks like most of these occurrences are due to large gaps in the drift time, which cause a small peak to be found in the gap which has no members.
 
                     //Console.WriteLine("**********************************************************************");
                     //Console.WriteLine("Detected Drift Time = " + driftTime + "\tLow = " + lowDriftTime + "\tHigh = " + highDriftTime);
