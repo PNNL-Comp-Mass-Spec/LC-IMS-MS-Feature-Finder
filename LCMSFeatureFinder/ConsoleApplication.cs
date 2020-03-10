@@ -20,7 +20,7 @@ namespace LCMSFeatureFinder
     /// </remarks>
     class ConsoleApplication
     {
-        private const string PROGRAM_DATE = "March 5, 2020";
+        private const string PROGRAM_DATE = "March 10, 2020";
 
         // Uncomment this to prevent selecting text at the console from pausing program execution
         //

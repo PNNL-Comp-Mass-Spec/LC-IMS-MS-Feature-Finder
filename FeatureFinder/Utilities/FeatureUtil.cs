@@ -131,10 +131,10 @@ namespace FeatureFinder.Utilities
                         }
                     }
 
-                    var averageMass = totalMass / msFeatureCount;
-                    var averageFit = 1.0 - ((totalFit / msFeatureCount) / Settings.FitMax);
-                    var averageInterferenceScore = (totalInterferenceScore / msFeatureCount);
-                    var averageDecon2lsFit = (totalFit / msFeatureCount);
+                    var averageMass = totalMass / Math.Max(msFeatureCount, 1);
+                    var averageFit = 1.0 - totalFit / Math.Max(msFeatureCount, 1) / Math.Max(Settings.FitMax, 0.001);
+                    var averageInterferenceScore = (totalInterferenceScore / Math.Max(msFeatureCount, 1));
+                    var averageDecon2lsFit = totalFit / Math.Max(msFeatureCount, 1);
 
                     if (float.IsInfinity(lcimsmsFeature.IMSScore) || float.IsNaN(lcimsmsFeature.IMSScore)) lcimsmsFeature.IMSScore = 0;
                     if (float.IsInfinity(lcimsmsFeature.LCScore) || float.IsNaN(lcimsmsFeature.LCScore)) lcimsmsFeature.IMSScore = 0;
