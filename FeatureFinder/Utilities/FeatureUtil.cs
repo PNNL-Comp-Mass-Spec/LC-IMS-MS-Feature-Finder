@@ -148,21 +148,21 @@ namespace FeatureFinder.Utilities
                     var driftTimeWeightedAverage = totalAbundanceTimesDriftTime / totalAbundance;
 
                     var outLine = new List<string>
-                {
-                    index.ToString(),
-                    lcimsmsFeature.OriginalIndex.ToString(),
-                    averageMass.ToString("0.0####"),
-                    averageMass.ToString("0.0####"),
-                    minMass.ToString("0.0####"),
-                    maxMass.ToString("0.0####"),
-                    ScanLCMap.Mapping[scanLCStart].ToString(),
-                    ScanLCMap.Mapping[scanLCEnd].ToString()
-                };
+                    {
+                        index.ToString(),                                   // Feature_Index
+                        lcimsmsFeature.OriginalIndex.ToString(),            // Original_Index
+                        averageMass.ToString("0.0####"),                    // Monoisotopic_Mass
+                        averageMass.ToString("0.0####"),                    // Average_Mono_Mass
+                        minMass.ToString("0.0####"),                        // UMC_MW_Min
+                        maxMass.ToString("0.0####"),                        // UMC_MW_Max
+                        ScanLCMap.Mapping[scanLCStart].ToString(),          // Scan_Start, aka Frame Start
+                        ScanLCMap.Mapping[scanLCEnd].ToString()             // Scan_End, aka Frame End
+                    };
 
                     if (msFeatureRep != null)
                     {
-                        outLine.Add(ScanLCMap.Mapping[msFeatureRep.ScanLC].ToString());
-                        outLine.Add(msFeatureRep.ScanIMS.ToString());
+                        outLine.Add(ScanLCMap.Mapping[msFeatureRep.ScanLC].ToString());     // Central Frame for this feature (class representative frame)
+                        outLine.Add(msFeatureRep.ScanIMS.ToString());                       // Central IMS scan for this feature (class representative scan)
                     }
                     else
                     {
@@ -170,50 +170,50 @@ namespace FeatureFinder.Utilities
                         outLine.Add(string.Empty);
                     }
 
-                    outLine.Add(repMinIMSScan.ToString());
-                    outLine.Add(repMaxIMSScan.ToString());
-                    outLine.Add(PRISM.StringUtilities.ValueToString(averageInterferenceScore, 5));
-                    outLine.Add(PRISM.StringUtilities.ValueToString(averageDecon2lsFit, 5));
-                    outLine.Add(msFeatureCount.ToString());
-                    outLine.Add(saturatedMSFeatureCount.ToString());
-                    outLine.Add(maxAbundance.ToString());
+                    outLine.Add(repMinIMSScan.ToString());                                                     // IMS_Scan_Start
+                    outLine.Add(repMaxIMSScan.ToString());                                                     // IMS_Scan_End
+                    outLine.Add(PRISM.StringUtilities.ValueToString(averageInterferenceScore, 5));             // Avg_Interference_Score; closer to 0 is better
+                    outLine.Add(PRISM.StringUtilities.ValueToString(averageDecon2lsFit, 5));                   // Average Decon2ls_Fit_Score; closer to 0 is better
+                    outLine.Add(msFeatureCount.ToString());                                                    // UMC_Member_Count
+                    outLine.Add(saturatedMSFeatureCount.ToString());                                           // Saturated_Member_Count
+                    outLine.Add(maxAbundance.ToString());                                                      // Maximum abundance
 
 
                     if (Settings.UseConformationDetection)
                     {
-                        outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.AbundanceSumRaw, 5));
+                        outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.AbundanceSumRaw, 5));   // Overall feature Abundance
                     }
                     else
                     {
-                        outLine.Add(totalAbundance.ToString());
+                        outLine.Add(totalAbundance.ToString());                                                // Overall feature Abundance
                     }
 
                     if (msFeatureRep != null)
                     {
-                        outLine.Add(msFeatureRep.Mz.ToString("0.0####"));
+                        outLine.Add(msFeatureRep.Mz.ToString("0.0####"));                                      // Class representative m/z
                     }
                     else
                     {
                         outLine.Add(string.Empty);
                     }
 
-                    outLine.Add(lcimsmsFeature.Charge.ToString());      // ClassRepCharge
-                    outLine.Add(lcimsmsFeature.Charge.ToString());      // ChargeMax
+                    outLine.Add(lcimsmsFeature.Charge.ToString());                                            // ClassRepCharge
+                    outLine.Add(lcimsmsFeature.Charge.ToString());                                            // ChargeMax
 
                     if (Settings.UseConformationDetection)
                     {
-                        outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.DriftTime, 5));
+                        outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.DriftTime, 5));  // Class drift time
                     }
                     else
                     {
-                        outLine.Add(PRISM.StringUtilities.ValueToString(driftTimeWeightedAverage, 5));
+                        outLine.Add(PRISM.StringUtilities.ValueToString(driftTimeWeightedAverage, 5));  // Class drift time
                     }
 
 
                     outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.IMSScore, 5));   // Conformation_Fit_Score
                     outLine.Add(PRISM.StringUtilities.ValueToString(lcimsmsFeature.LCScore, 5));    // LC_Fit_Score
-                    outLine.Add(PRISM.StringUtilities.ValueToString(averageFit, 5));                // Average_Isotopic_Fit
-                    outLine.Add(PRISM.StringUtilities.ValueToString(memberPercentage, 5));          // Members_Percentage
+                    outLine.Add(PRISM.StringUtilities.ValueToString(averageFit, 5));                // Average_Isotopic_Fit; closer to 1 is better, since computed as 1 - DeconTools_Fit
+                    outLine.Add(PRISM.StringUtilities.ValueToString(memberPercentage, 5));          // Members_Percentage (1 if this conformer is the conformer with the most members)
                     outLine.Add(PRISM.StringUtilities.ValueToString(combinedScore, 5));             // Combined_Score
 
                     featureWriter.WriteLine(string.Join("\t", outLine));
