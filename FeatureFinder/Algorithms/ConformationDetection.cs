@@ -22,7 +22,7 @@ namespace FeatureFinder.Algorithms
 
             if (!uimfFile.Exists)
             {
-                Logger.Log("Uimf file not found at " + uimfFile.FullName + "; skipping conformer detection");
+                Logger.Log("UIMF file not found at " + uimfFile.FullName + "; skipping conformer detection");
                 return newLcImsMsFeatureList;
             }
 
@@ -331,9 +331,9 @@ namespace FeatureFinder.Algorithms
 
         private static void DisplayPeakXYData(Peak smoothedDriftProfilePeak)
         {
-            foreach (var xypair in smoothedDriftProfilePeak.XYPairList)
+            foreach (var xyPair in smoothedDriftProfilePeak.XYPairList)
             {
-                Console.WriteLine(xypair.XValue + "\t" + xypair.YValue);
+                Console.WriteLine(xyPair.XValue + "\t" + xyPair.YValue);
 
             }
         }

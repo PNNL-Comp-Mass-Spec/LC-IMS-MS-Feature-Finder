@@ -11,9 +11,9 @@ namespace FeatureFinder.FunctionalTests
         public void standardFile_no_conformationDetection_test1()
         {
 
-            var testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_NoConfDtn_2011-03-21.ini";
+            var testFile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_NoConfDtn_2011-03-21.ini";
 
-            var iniReader = new IniReader(testfile);
+            var iniReader = new IniReader(testFile);
             iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);
@@ -28,9 +28,9 @@ namespace FeatureFinder.FunctionalTests
         public void standardFile_conformationDetection_test1()
         {
 
-            var testfile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-03-21.ini";
+            var testFile = @"\\protoapps\UserData\Slysz\Standard_Testing\LCMSFeatureFinder\UIMF\Parameter_Files\FF_IMS_UseHardCodedFilters_NoFlags_20ppm_Min3Pts_4MaxLCGap_NoDaCorr_ConfDtn_2011-03-21.ini";
 
-            var iniReader = new IniReader(testfile);
+            var iniReader = new IniReader(testFile);
             iniReader.UpdateSettings();
 
             var isosReader = new IsosReader(Settings.InputFileName, Settings.OutputDirectory);

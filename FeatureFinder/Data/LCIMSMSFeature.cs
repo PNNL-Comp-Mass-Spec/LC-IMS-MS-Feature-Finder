@@ -315,18 +315,18 @@ namespace FeatureFinder.Data
 
 
             int[] scanValues = null;
-            int[] intensityVals = null;
+            int[] intensityValues = null;
 
             var sigma = msFeatureRep.Fwhm / 2.35;
             var toleranceInMZ = 2 * sigma ;    //  this is a +/- value;  so    4* sigma = 95% of a normal distribution
 
             //Before: a wide m/z was used when generating the drift time profile.
-            //uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, wideToleranceInMZ, ref scanValues, ref intensityVals);
+            //uimfReader.GetDriftTimeProfile(frameIndexMinimum, frameIndexMaximum, frameType, scanIMSMinimum, scanIMSMaximum, midPointMZ, wideToleranceInMZ, ref scanValues, ref intensityValues);
 
             //now:  a narrow m/z range is used when generating the drift time profile
-            uimfReader.GetDriftTimeProfile(frameMinimum, frameMaximum, frameType, scanIMSMinimum, scanIMSMaximum, mzMostAbundantIsotope, toleranceInMZ, ref scanValues, ref intensityVals);
+            uimfReader.GetDriftTimeProfile(frameMinimum, frameMaximum, frameType, scanIMSMinimum, scanIMSMaximum, mzMostAbundantIsotope, toleranceInMZ, ref scanValues, ref intensityValues);
 
-            var imsScanProfile = intensityVals.Select((t, i) => new XYPair(scanIMSMinimum + i, t)).ToList();
+            var imsScanProfile = intensityValues.Select((t, i) => new XYPair(scanIMSMinimum + i, t)).ToList();
 
             ConformationDetection.PadXYPairsWithZeros(ref imsScanProfile, 5);
 

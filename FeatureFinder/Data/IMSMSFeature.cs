@@ -109,11 +109,11 @@ namespace FeatureFinder.Data
 
         public MSFeature FindRepMSFeature()
         {
-            var sortByAbudnanceQuery = from msFeature in MSFeatureList
+            var sortByAbundanceQuery = from msFeature in MSFeatureList
                                        orderby msFeature.Abundance descending
                                        select msFeature;
 
-            return sortByAbudnanceQuery.First();
+            return sortByAbundanceQuery.First();
         }
     }
 }
