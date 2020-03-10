@@ -108,6 +108,6 @@ namespace FeatureFinder.Data
 
         public bool IsSaturated { get; set; }
 
-        public DataReader.FrameType FrameType { get; set; }
+        public UIMFData.FrameType FrameType { get; set; }
     }
 }

@@ -276,7 +276,7 @@ namespace FeatureFinder.Data
         }
 
 
-        public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, DataReader.FrameType frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
+        public List<XYPair> GetIMSScanProfileFromRawData(DataReader uimfReader, UIMFData.FrameType frameType, double binWidth, double calibrationSlope, double calibrationIntercept)
         {
 
             GetMinAndMaxScanLCAndScanIMSAndMSFeatureRep(
