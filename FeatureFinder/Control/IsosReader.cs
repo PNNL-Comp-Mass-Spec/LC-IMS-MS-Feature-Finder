@@ -343,7 +343,7 @@ namespace FeatureFinder.Control
                     if (ColumnMap.ContainsKey("MSFeature.MassMostAbundant")) msFeature.MassMostAbundantIsotope = double.Parse(columns[ColumnMap["MSFeature.MassMostAbundant"]], System.Globalization.NumberStyles.Any);
                     if (ColumnMap.ContainsKey("MSFeature.Fwhm")) msFeature.Fwhm = float.Parse(columns[ColumnMap["MSFeature.Fwhm"]], System.Globalization.NumberStyles.Any);
                     if (ColumnMap.ContainsKey("MSFeature.DriftTimeIMS")) msFeature.DriftTime = float.Parse(columns[ColumnMap["MSFeature.DriftTimeIMS"]], System.Globalization.NumberStyles.Any);
-                    if (ColumnMap.ContainsKey("MSFeature.ErrorFlag")) msFeature.ErrorFlag = (byte)(columns[ColumnMap["MSFeature.ErrorFlag"]].Equals("") ? 0 : Int16.Parse(columns[ColumnMap["MSFeature.ErrorFlag"]], System.Globalization.NumberStyles.Any));
+                    if (ColumnMap.ContainsKey("MSFeature.ErrorFlag")) msFeature.ErrorFlag = (byte)(columns[ColumnMap["MSFeature.ErrorFlag"]].Equals(string.Empty) ? 0 : Int16.Parse(columns[ColumnMap["MSFeature.ErrorFlag"]], System.Globalization.NumberStyles.Any));
                     if (ColumnMap.ContainsKey("MSFeature.IsSaturated")) msFeature.IsSaturated = Convert.ToBoolean(Int16.Parse(columns[ColumnMap["MSFeature.IsSaturated"]], System.Globalization.NumberStyles.Any));
 
                     if (PassesFilters(msFeature))

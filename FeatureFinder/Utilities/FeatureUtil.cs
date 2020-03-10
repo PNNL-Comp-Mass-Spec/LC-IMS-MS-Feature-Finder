@@ -14,7 +14,7 @@ namespace FeatureFinder.Utilities
         public static void WriteLCIMSMSFeatureToFile(IEnumerable<LCIMSMSFeature> lcImsMsFeatureEnumerable)
         {
             var baseFileName = Regex.Split(Settings.InputFileName, "_isos")[0];
-            var outputDirectory = "";
+            var outputDirectory = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(Settings.OutputDirectory))
             {
@@ -98,7 +98,7 @@ namespace FeatureFinder.Utilities
 
                         foreach (var msFeature in imsMsFeature.MSFeatureList)
                         {
-                            var filteredFeatureId = msFeature.FilteredIndex >= 0 ? msFeature.FilteredIndex.ToString() : "";
+                            var filteredFeatureId = msFeature.FilteredIndex >= 0 ? msFeature.FilteredIndex.ToString() : string.Empty;
                             mapWriter.WriteLine(index + "\t" + msFeature.IndexInFile + "\t" + filteredFeatureId);
 
                             if (msFeature.Abundance > maxAbundance)
@@ -166,8 +166,8 @@ namespace FeatureFinder.Utilities
                     }
                     else
                     {
-                        outLine.Add("");
-                        outLine.Add("");
+                        outLine.Add(string.Empty);
+                        outLine.Add(string.Empty);
                     }
 
                     outLine.Add(repMinIMSScan.ToString());
@@ -194,7 +194,7 @@ namespace FeatureFinder.Utilities
                     }
                     else
                     {
-                        outLine.Add("");
+                        outLine.Add(string.Empty);
                     }
 
                     outLine.Add(lcimsmsFeature.Charge.ToString());      // ClassRepCharge

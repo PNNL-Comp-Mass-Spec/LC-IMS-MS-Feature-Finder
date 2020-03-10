@@ -290,7 +290,7 @@ namespace FeatureFinder.Algorithms
 
                         Console.Write(imsMsFeature.GetIntensity() + "\t");
                     }
-                    Console.WriteLine("");
+                    Console.WriteLine(string.Empty);
                     Console.WriteLine("*************************************************");
                     */
                     // TODO: Calculate LC Score
