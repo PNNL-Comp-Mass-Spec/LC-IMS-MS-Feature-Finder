@@ -6,13 +6,6 @@ namespace FeatureFinder.Control
 {
     public static class Settings
     {
-        public enum FrameType
-        {
-            NoFilter = -1,
-            Prescan = 0,
-            MS,
-            MSMS
-        }
 
         public static string InputDirectory { get; set; }
         public static string InputFileName { get; set; }

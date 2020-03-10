@@ -287,8 +287,8 @@ namespace FeatureFinder.Data
                 out var scanLCMinimum, out var scanLCMaximum,
                 out var scanIMSMinimum, out var scanIMSMaximum, out var msFeatureRep);
 
-            double currentFWHM = msFeatureRep.Fwhm;
-            var currentMonoMZ = msFeatureRep.MassMonoisotopic/msFeatureRep.Charge + 1.0072649;
+            // double currentFWHM = msFeatureRep.Fwhm;
+            // var currentMonoMZ = msFeatureRep.MassMonoisotopic/msFeatureRep.Charge + 1.0072649;
             var mzMostAbundantIsotope = msFeatureRep.MassMostAbundantIsotope / msFeatureRep.Charge + 1.00727649;
 
 
