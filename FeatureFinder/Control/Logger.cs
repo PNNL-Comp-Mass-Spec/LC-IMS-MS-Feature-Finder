@@ -40,6 +40,7 @@ namespace FeatureFinder.Control
             m_textWriter.WriteLine(textWithTimestamp);
         }
 
+        [Obsolete("Unused")]
         public static void ChangeLogFileLocation(string fileLocation)
         {
             CloseLog();

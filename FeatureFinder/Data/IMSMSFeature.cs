@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FeatureFinder.Data
@@ -43,6 +44,7 @@ namespace FeatureFinder.Data
             return MSFeatureList.Sum(msFeature => msFeature.Abundance);
         }
 
+        [Obsolete("Unused")]
         public Dictionary<double, double> GetIntensityValues()
         {
             var intensityDictionary = new Dictionary<double, double>();
@@ -65,6 +67,7 @@ namespace FeatureFinder.Data
             return intensityDictionary;
         }
 
+        [Obsolete("Unused")]
         public void GetMinAndMaxDriftTimes(out double driftTimeMinimum, out double driftTimeMaximum)
         {
             var sortByDriftTimeQuery = (from msFeature in MSFeatureList
@@ -85,6 +88,7 @@ namespace FeatureFinder.Data
             scanIMSMaximum = sortByScanIMSQuery.Last().ScanIMS;
         }
 
+        [Obsolete("Unused")]
         public IEnumerable<MSFeature> FindMSFeaturesInDriftTimeRange(double lowDriftTime, double highDriftTime)
         {
             var findByDriftTimeQuery = from msFeature in MSFeatureList

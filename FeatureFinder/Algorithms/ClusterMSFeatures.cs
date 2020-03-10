@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FeatureFinder.Data;
 using FeatureFinder.Control;
@@ -45,6 +46,7 @@ namespace FeatureFinder.Algorithms
             return imsMsFeatureList;
         }
 
+        [Obsolete("Unused")]
         public static IEnumerable<imsMsFeature> SplitByIMSScan(IEnumerable<imsMsFeature> imsMsFeatureEnumerable, int maxGap)
         {
             var newImsMsFeatureList = new List<imsMsFeature>();

@@ -93,6 +93,7 @@ namespace FeatureFinder.Data
             return averageMass;
         }
 
+        [Obsolete("Unused")]
         public double CalculateAverageMz()
         {
             var totalMemberCount = 0;
@@ -110,6 +111,7 @@ namespace FeatureFinder.Data
             return averageMz;
         }
 
+        [Obsolete("Unused")]
         public double GetIntensity()
         {
             return imsMsFeatureList.Sum(imsMsFeature => imsMsFeature.GetIntensity());
@@ -134,6 +136,7 @@ namespace FeatureFinder.Data
             return percentage;
         }
 
+        [Obsolete("Unused")]
         public void GetMinAndMaxScanLC(out int scanLCMinimum, out int scanLCMaximum)
         {
             var msFeatureList = new List<MSFeature>();
@@ -193,6 +196,7 @@ namespace FeatureFinder.Data
             msFeatureRep = sortByAbundanceQuery.First();
         }
 
+        [Obsolete("Unused")]
         public void GetMinAndMaxScanLCAndDriftTimeAndMSFeatureRep(
             out int scanLCMinimum, out int scanLCMaximum,
             out double driftTimeMinimum, out double driftTimeMaximum, out MSFeature msFeatureRep)
@@ -329,6 +333,7 @@ namespace FeatureFinder.Data
             return imsScanProfile;
         }
 
+        [Obsolete("Unused")]
         public void PrintLCAndDriftTimeMap()
         {
             var msFeatureList = new List<MSFeature>();

@@ -61,6 +61,7 @@ namespace FeatureFinder.Data
             xValueMaximum = sortByXValue.Last().XValue;
         }
 
+        [Obsolete("Unused")]
         public double GetXValueOfMaximumYValue()
         {
             var sortByYValue = from xyPair in XYPairList
@@ -88,6 +89,7 @@ namespace FeatureFinder.Data
             return sortByXValue.First().XValue;
         }
 
+        [Obsolete("Unused")]
         public void PrintPeakToConsole()
         {
             var sortByXValue = from xyPair in XYPairList
@@ -101,6 +103,7 @@ namespace FeatureFinder.Data
             }
         }
 
+        [Obsolete("Unused")]
         public double GetWeightedApex()
         {
             double totalY = 0;

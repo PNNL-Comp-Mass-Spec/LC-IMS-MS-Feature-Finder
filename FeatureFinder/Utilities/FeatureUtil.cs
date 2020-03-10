@@ -225,6 +225,7 @@ namespace FeatureFinder.Utilities
 
         }
 
+        [Obsolete("Unused")]
         public static IEnumerable<imsMsFeature> FilterByMemberCount(IEnumerable<imsMsFeature> imsMsFeatureEnumerable)
         {
             var filterQuery = from imsMsFeature in imsMsFeatureEnumerable
@@ -260,6 +261,7 @@ namespace FeatureFinder.Utilities
             return lcimsmsFeatureList;
         }
 
+        [Obsolete("Unused")]
         public static bool DoLcImsMsFeaturesFitTogether(LCIMSMSFeature feature1, LCIMSMSFeature feature2)
         {
             if (feature1.Charge != feature2.Charge)
