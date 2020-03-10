@@ -146,7 +146,9 @@ namespace Test
 
             Assert.AreEqual(lcmsFeatureCount, filteredIsosCount, "Mismatch between number of LC-IMS-MS features and Filtered_Isos data points");
 
-            Assert.AreEqual(2046, lcmsFeatureCount, "Unexpected number of LC-IMS-features");
+            // Old value: 2046
+            // Value in March 2020: 2204
+            Assert.AreEqual(2204, lcmsFeatureCount, "Unexpected number of LC-IMS-features");
 
             if (lcmsFeaturesHeaderLine == null || !lcmsFeaturesHeaderLine.StartsWith("Feature_Index"))
                 Assert.Fail("LCMSFeatures file header line does not start with Feature_Index");
