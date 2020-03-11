@@ -139,7 +139,7 @@ namespace FeatureFinder.Utilities
                     if (float.IsInfinity(lcimsmsFeature.IMSScore) || float.IsNaN(lcimsmsFeature.IMSScore)) lcimsmsFeature.IMSScore = 0;
                     if (float.IsInfinity(lcimsmsFeature.LCScore) || float.IsNaN(lcimsmsFeature.LCScore)) lcimsmsFeature.IMSScore = 0;
 
-                    // When conformation detection is enabled, this is the number of members of this feature divided by the member count of the conform with the most members
+                    // When conformation detection is enabled, this is the number of members of this feature divided by the member count of the conformer with the most members
                     var memberPercentage = ValidateScore(msFeatureCount / (double)lcimsmsFeature.MaxMemberCount);
 
                     var combinedScore = ValidateScore((lcimsmsFeature.IMSScore + averageFit + memberPercentage) / 3.0);

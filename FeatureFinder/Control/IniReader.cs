@@ -203,8 +203,10 @@ namespace FeatureFinder.Control
             // Obsolete:
             // var umcFitScoreMinimum = GetValueForKey("UMCCreationOptions", "UMCFitScoreMinimum");
 
-            // Obsolete:
+            // Obsolete: splitting is always enabled when finding LC-IMS-MS features
             // umcSplittingEnabled = GetValueForKey("UMCSplittingOptions", "Split");
+
+            // Obsolete (not implemented)
             // minimumDifferenceInMedianPpmMass = GetValueForKey("UMCSplittingOptions", "MinimumDifferenceInMedianPpmMassToSplit");
 
             /*

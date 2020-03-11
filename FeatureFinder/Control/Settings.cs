@@ -22,8 +22,10 @@ namespace FeatureFinder.Control
         /// </summary>
         public static short FeatureLengthMin { get; set; }
 
-        // Obsolete (not implemented)
+        // Obsolete: splitting is always enabled when finding LC-IMS-MS features
         // public static bool Split { get; set; }
+
+        // Obsolete (not implemented)
         // public static short MinimumDifferenceInMedianPpmMassToSplit { get; set; }
 
         public static short LCGapSizeMax { get; set; }
@@ -90,9 +92,12 @@ namespace FeatureFinder.Control
             UseCharge = false;
             LCGapSizeMax = 5;
 
+            // Obsolete: splitting is always enabled when finding LC-IMS-MS features
+            // Split = true;
+
             // Obsolete (not implemented)
             // MinimumDifferenceInMedianPpmMassToSplit = 4;
-            // Split = true;
+
             IMSDaCorrectionMax = 0;
             SmoothingStDev = 2f;
             UseConformationDetection = true;
@@ -141,9 +146,11 @@ namespace FeatureFinder.Control
             Console.WriteLine("LCGapMaxSize=4");
             Console.WriteLine("IMSMaxDaCorrection=1");
 
-            // Obsolete (not implemented)
+            // Obsolete: splitting is always enabled when finding LC-IMS-MS features
             // Console.WriteLine("[UMCSplittingOptions]");
             // Console.WriteLine("Split=True");
+
+            // Obsolete (not implemented)
             // Console.WriteLine("MinimumDifferenceInMedianPpmMassToSplit=4");
 
             Console.WriteLine("[DriftProfileOptions]");
