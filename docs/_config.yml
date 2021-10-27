@@ -2,3 +2,6 @@
 name: LC-IMS-MS-Feature-Finder
 description: Finds LC-IMS-MS features using deisotoped features from DeconTools
 url: https://pnnl-comp-mass-spec.github.io/LC-IMS-MS-Feature-Finder/
+
+# Google Analytics
+google_analytics: G-LXXKP1N66C
