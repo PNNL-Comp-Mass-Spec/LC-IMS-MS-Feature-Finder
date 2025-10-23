@@ -16,7 +16,7 @@ namespace LCMSFeatureFinder
     /// Program started in October, 2010
     ///
     /// E-mail: matthew.monroe@pnnl.gov or proteomics@pnnl.gov
-    /// Website: http://omics.pnl.gov/ or http://panomics.pnnl.gov/
+    /// Website: https://github.com/PNNL-Comp-Mass-Spec/ or https://www.pnnl.gov/integrative-omics
     /// </remarks>
     class ConsoleApplication
     {
@@ -290,11 +290,11 @@ namespace LCMSFeatureFinder
             Console.WriteLine("To see an example settings file, use " + exeName + " /X");
             Console.WriteLine("To see an example file for parameter DeconToolsFilterFileName, use " + exeName + " /Y");
             Console.WriteLine();
-            Console.WriteLine("Program written by Kevin Crowell for the Department of Energy (PNNL, Richland, WA) in 2010");
+            Console.WriteLine("Program written by Kevin Crowell for the Department of Energy (PNNL, Richland, WA)");
             Console.WriteLine("Version: " + GetAppVersion());
             Console.WriteLine();
             Console.WriteLine("E-mail: matthew.monroe@pnnl.gov or proteomics@pnnl.gov");
-            Console.WriteLine("Website: http://omics.pnl.gov/ or http://panomics.pnnl.gov/");
+            Console.WriteLine("Website: https://github.com/PNNL-Comp-Mass-Spec/ or https://www.pnnl.gov/integrative-omics");
             Console.WriteLine();
 
             System.Threading.Thread.Sleep(1500);
